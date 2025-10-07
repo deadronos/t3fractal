@@ -1,5 +1,5 @@
 import Link from "next/link";
-import {GlobalProvider} from "../../.triplex/provider"
+import {GlobalProvider} from "providers/provider"
 
 export default function HomePage() {
   return (
