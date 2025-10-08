@@ -10,28 +10,46 @@ const CANVAS_HEIGHT = 260;
 
 export default function FractalViewer({ depth, parameter, amplifiers }: FractalViewerProps): ReactElement {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const workerRef = useRef<Worker | null>(null);
   const resizeRef = useRef<ResizeObserver | null>(null);
   const [size, setSize] = useState({ width: CANVAS_WIDTH, height: CANVAS_HEIGHT });
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || typeof window === "undefined") return;
+    // Observe the container (pure-CSS alignment). The container width is
+    // governed by the card layout, separator and other content, so observing
+    // it ensures the canvas aligns visually with the separator and flex
+    // content above.
+    const target = containerRef.current ?? canvasRef.current;
+    if (!target || typeof window === "undefined") return;
 
-    // observe size (CSS pixels)
     if (resizeRef.current) resizeRef.current.disconnect();
-    const ro = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (!entry) return;
-      const cr = entry.contentRect;
-      setSize({ width: Math.max(50, Math.floor(cr.width)), height: Math.max(50, Math.floor(cr.height)) });
-    });
-    resizeRef.current = ro;
-    ro.observe(canvas);
 
+    if (typeof ResizeObserver !== "undefined") {
+      const ro = new ResizeObserver((entries) => {
+        const entry = entries[0];
+        if (!entry) return;
+        const cr = entry.contentRect;
+        setSize({ width: Math.max(50, Math.floor(cr.width)), height: Math.max(50, Math.floor(cr.height)) });
+      });
+      resizeRef.current = ro;
+      ro.observe(target as Element);
+
+      return () => {
+        ro.disconnect();
+        resizeRef.current = null;
+      };
+    }
+
+    // Fallback: measure via getBoundingClientRect and listen for window resize
+    const updateSize = () => {
+      const rect = (target as Element).getBoundingClientRect();
+      setSize({ width: Math.max(50, Math.floor(rect.width)), height: Math.max(50, Math.floor(rect.height)) });
+    };
+    updateSize();
+    window.addEventListener("resize", updateSize);
     return () => {
-      ro.disconnect();
-      resizeRef.current = null;
+      window.removeEventListener("resize", updateSize);
     };
   }, []);
 
@@ -148,14 +166,15 @@ export default function FractalViewer({ depth, parameter, amplifiers }: FractalV
   }, [depth, parameter, amplifiers, size]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={CANVAS_WIDTH}
-      height={CANVAS_HEIGHT}
-      className="fractal-canvas"
-      aria-label="Fractal renderer showing the current zoom level"
-      style={{ width: '100%', height: 'auto' }}
-    />
+    <div ref={containerRef} className="fractal-canvas-wrap">
+      <canvas
+        ref={canvasRef}
+        width={CANVAS_WIDTH}
+        height={CANVAS_HEIGHT}
+        className="fractal-canvas"
+        aria-label="Fractal renderer showing the current zoom level"
+      />
+    </div>
   );
 }
 

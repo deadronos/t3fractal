@@ -63,11 +63,36 @@
 
 .fractal-canvas {
   width: 100%;
+  /* allow the canvas to scale responsively while preserving the original aspect ratio (360x260) */
+  aspect-ratio: 18 / 13; /* 360 / 260 */
+  min-height: 220px; /* ensure it's not tiny on narrow screens */
+  max-height: 620px; /* avoid overly tall canvases on very large screens */
+  /* prevent the canvas becoming an extremely narrow column on wide layouts */
+  min-width: 280px;
+  max-width: 100%;
   height: auto;
+  display: block;
   border-radius: 16px;
   border: 1px solid rgba(125, 211, 252, 0.35);
   background: radial-gradient(circle at center, rgba(148, 163, 184, 0.12), transparent 70%);
   margin-bottom: 1.25rem;
+}
+
+.fractal-canvas-wrap {
+  /* ensure the wrapper follows the content width of the card and
+     aligns with other block elements like the separator */
+  width: 100%;
+  box-sizing: border-box; /* ensure width measurement includes padding/border consistently */
+}
+
+@media (min-width: 1024px) {
+  /* on large screens keep the original aspect ratio but allow a larger min size */
+  .fractal-canvas {
+    aspect-ratio: 18 / 13; /* 360 / 260 */
+    min-width: 360px;
+    min-height: 260px;
+    max-height: 620px;
+  }
 }
 
 .slider-group {
