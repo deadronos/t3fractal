@@ -14,8 +14,8 @@
     "preview": "next build && next start",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test" : "vitest",
-    "e2e" : "playwright"
+    "test": "vitest",
+    "e2e": "playwright"
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.9.0",
