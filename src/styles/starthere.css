@@ -1,3 +1,141 @@
 @import "tailwindcss";
 
+.startherebox {
+  min-height: 100vh;
+  padding: 2rem 1.5rem 3rem;
+  background: radial-gradient(circle at top, rgba(64, 224, 208, 0.08), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.08), transparent 45%),
+    radial-gradient(circle at bottom left, rgba(56, 189, 248, 0.06), transparent 40%),
+    #050510;
+  color: var(--gray-12);
+}
+
+.starthere-grid {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.starthere-menu {
+  padding: 1.5rem 2rem;
+  background: linear-gradient(90deg, rgba(41, 37, 82, 0.8), rgba(15, 118, 110, 0.55));
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(5, 5, 40, 0.45);
+  gap: 1.5rem;
+}
+
+.starthere-menu .menu-title {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--mint-9);
+}
+
+.fractal-card,
+.zone-card,
+.upgrade-card,
+.prestige-card,
+.log-card,
+.control-card,
+.zone-entry,
+.upgrade-row {
+  background: rgba(12, 12, 28, 0.85);
+  border-radius: 18px;
+  border: 1px solid rgba(120, 119, 198, 0.15);
+  box-shadow: 0 16px 30px rgba(9, 9, 26, 0.35);
+}
+
+.fractal-card {
+  padding: 1.75rem;
+}
+
+.control-card {
+  padding: 1.25rem;
+}
+
+.zone-card,
+.upgrade-card,
+.prestige-card,
+.log-card {
+  padding: 1.5rem;
+}
+
+.fractal-canvas {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(125, 211, 252, 0.35);
+  background: radial-gradient(circle at center, rgba(148, 163, 184, 0.12), transparent 70%);
+  margin-bottom: 1.25rem;
+}
+
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.slider-group .rt-SliderRoot {
+  height: 0.75rem;
+}
+
+.slider-group .rt-SliderRange {
+  background: linear-gradient(90deg, var(--cyan-8), var(--mint-9));
+}
+
+.slider-group .rt-SliderThumb {
+  width: 18px;
+  height: 18px;
+}
+
+.zone-entry {
+  padding: 1.25rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.zone-entry.zone-unlocked {
+  border-color: rgba(110, 231, 183, 0.35);
+  transform: translateY(-3px);
+}
+
+.zone-entry.zone-locked {
+  opacity: 0.65;
+}
+
+.upgrade-row {
+  padding: 1.25rem;
+}
+
+.prestige-upgrades {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border-radius: 16px;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(94, 234, 212, 0.18);
+}
+
+.log-card {
+  min-height: 220px;
+}
+
+.log-card .rt-Text:first-child {
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .startherebox {
+    padding: 1.5rem;
+  }
+
+  .starthere-menu {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .fractal-card,
+  .zone-card,
+  .upgrade-card,
+  .prestige-card,
+  .log-card {
+    padding: 1.25rem;
+  }
+}
 
