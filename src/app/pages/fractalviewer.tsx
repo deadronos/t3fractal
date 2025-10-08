@@ -1,131 +1,151 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactElement } from "react";
 
-type ComplexParameter = {
-  real: number;
-  imaginary: number;
-};
+type ComplexParameter = { real: number; imaginary: number };
 
-type FractalViewerProps = {
-  depth: number;
-  parameter: ComplexParameter;
-  amplifiers: number;
-};
+type FractalViewerProps = { depth: number; parameter: ComplexParameter; amplifiers: number };
 
 const CANVAS_WIDTH = 360;
 const CANVAS_HEIGHT = 260;
 
-const clamp = (value: number, lower: number, upper: number): number =>
-  Math.max(lower, Math.min(value, upper));
-
-const renderFractal = (
-  context: CanvasRenderingContext2D,
-  depth: number,
-  parameter: ComplexParameter,
-  amplifiers: number,
-) => {
-  const width = context.canvas.width;
-  const height = context.canvas.height;
-  const maxIterations = Math.floor(40 + depth * 14 + amplifiers * 12);
-  const zoom = Math.pow(1.3, depth + amplifiers * 0.5);
-  const paletteShift = (depth * 17 + amplifiers * 45) % 360;
-
-  const imageData = context.createImageData(width, height);
-  const data = imageData.data;
-
-  let dataIndex = 0;
-
-  for (let py = 0; py < height; py += 1) {
-    const imaginaryComponent =
-      (py - height / 2) / (0.5 * zoom * height) + parameter.imaginary;
-
-    for (let px = 0; px < width; px += 1) {
-      const realComponent =
-        (px - width / 2) / (0.5 * zoom * width) + parameter.real;
-
-      let x = 0;
-      let y = 0;
-      let iteration = 0;
-
-      while (x * x + y * y <= 4 && iteration < maxIterations) {
-        const xTemp = x * x - y * y + realComponent;
-        y = 2 * x * y + imaginaryComponent;
-        x = xTemp;
-        iteration += 1;
-      }
-
-      const normalised = iteration / maxIterations;
-      const hue = (paletteShift + 360 * Math.pow(normalised, 0.6)) % 360;
-      const saturation = 70 + Math.sin(depth * 0.4) * 10;
-      const lightness = iteration === maxIterations ? 5 : clamp(40 + normalised * 50, 10, 95);
-
-      const [r, g, b] = hslToRgb(hue / 360, saturation / 100, lightness / 100);
-
-      data[dataIndex + 0] = r;
-      data[dataIndex + 1] = g;
-      data[dataIndex + 2] = b;
-      data[dataIndex + 3] = 255;
-      dataIndex += 4;
-    }
-  }
-
-  context.putImageData(imageData, 0, 0);
-};
-
-const hslToRgb = (h: number, s: number, l: number): [number, number, number] => {
-  if (s === 0) {
-    const value = Math.round(l * 255);
-    return [value, value, value];
-  }
-
-  const hueToRgb = (p: number, q: number, t: number): number => {
-    let temp = t;
-    if (temp < 0) {
-      temp += 1;
-    }
-    if (temp > 1) {
-      temp -= 1;
-    }
-    if (temp < 1 / 6) {
-      return p + (q - p) * 6 * temp;
-    }
-    if (temp < 1 / 2) {
-      return q;
-    }
-    if (temp < 2 / 3) {
-      return p + (q - p) * (2 / 3 - temp) * 6;
-    }
-    return p;
-  };
-
-  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-  const p = 2 * l - q;
-
-  const r = hueToRgb(p, q, h + 1 / 3);
-  const g = hueToRgb(p, q, h);
-  const b = hueToRgb(p, q, h - 1 / 3);
-
-  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-};
-
-export default function FractalViewer({
-  depth,
-  parameter,
-  amplifiers,
-}: FractalViewerProps): ReactElement {
+export default function FractalViewer({ depth, parameter, amplifiers }: FractalViewerProps): ReactElement {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const workerRef = useRef<Worker | null>(null);
+  const resizeRef = useRef<ResizeObserver | null>(null);
+  const [size, setSize] = useState({ width: CANVAS_WIDTH, height: CANVAS_HEIGHT });
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) {
-      return;
+    if (!canvas || typeof window === "undefined") return;
+
+    // observe size (CSS pixels)
+    if (resizeRef.current) resizeRef.current.disconnect();
+    const ro = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const cr = entry.contentRect;
+      setSize({ width: Math.max(50, Math.floor(cr.width)), height: Math.max(50, Math.floor(cr.height)) });
+    });
+    resizeRef.current = ro;
+    ro.observe(canvas);
+
+    return () => {
+      ro.disconnect();
+      resizeRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || typeof window === "undefined") return;
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+
+    // compute pixel size based on CSS size and DPR
+    const pixelWidth = Math.max(1, Math.floor(size.width * dpr));
+    const pixelHeight = Math.max(1, Math.floor(size.height * dpr));
+
+    // set canvas pixel dimensions and CSS size
+    canvas.width = pixelWidth;
+    canvas.height = pixelHeight;
+    canvas.style.width = `${size.width}px`;
+    canvas.style.height = `${size.height}px`;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // terminate previous worker if any
+    if (workerRef.current) {
+      workerRef.current.terminate();
+      workerRef.current = null;
     }
-    const context = canvas.getContext("2d");
-    if (!context) {
-      return;
-    }
-    renderFractal(context, depth, parameter, amplifiers);
-  }, [depth, parameter, amplifiers]);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const workerCode = `
+      self.onmessage = function(e) {
+        const { width, height, depth, parameter, amplifiers, tileHeight } = e.data;
+        const maxIterations = Math.floor(40 + depth * 14 + amplifiers * 12);
+        const zoom = Math.pow(1.3, depth + amplifiers * 0.5);
+        const paletteShift = (depth * 17 + amplifiers * 45) % 360;
+
+        const clamp = (v, l, u) => Math.max(l, Math.min(v, u));
+        const hslToRgb = (h, s, l) => {
+          if (s === 0) { const val = Math.round(l * 255); return [val,val,val]; }
+          const hueToRgb = (p,q,t) => {
+            if (t < 0) t += 1; if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q-p)*6*t; if (t < 1/2) return q; if (t < 2/3) return p + (q-p)*(2/3 - t)*6; return p;
+          };
+          const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+          const p = 2 * l - q;
+          const r = hueToRgb(p,q,h + 1/3);
+          const g = hueToRgb(p,q,h);
+          const b = hueToRgb(p,q,h - 1/3);
+          return [Math.round(r*255), Math.round(g*255), Math.round(b*255)];
+        };
+
+        for (let y0 = 0; y0 < height; y0 += tileHeight) {
+          const h = Math.min(tileHeight, height - y0);
+          const buffer = new Uint8ClampedArray(width * h * 4);
+          let di = 0;
+          for (let py = y0; py < y0 + h; py++) {
+            const imaginaryComponent = (py - height/2) / (0.5 * zoom * height) + parameter.imaginary;
+            for (let px = 0; px < width; px++) {
+              const realComponent = (px - width/2) / (0.5 * zoom * width) + parameter.real;
+              let x = 0, y = 0, iter = 0;
+              while (x*x + y*y <= 4 && iter < maxIterations) {
+                const xt = x*x - y*y + realComponent;
+                y = 2 * x * y + imaginaryComponent;
+                x = xt; iter++;
+              }
+              const normalised = iter / maxIterations;
+              const hue = (paletteShift + 360 * Math.pow(normalised, 0.6)) % 360;
+              const saturation = 70 + Math.sin(depth * 0.4) * 10;
+              const lightness = iter === maxIterations ? 5 : clamp(40 + normalised * 50, 10, 95);
+              const [r,g,b] = hslToRgb(hue/360, saturation/100, lightness/100);
+              buffer[di++] = r; buffer[di++] = g; buffer[di++] = b; buffer[di++] = 255;
+            }
+          }
+          self.postMessage({ type: 'tile', y: y0, height: h, width: width, buffer: buffer.buffer }, [buffer.buffer]);
+        }
+        self.postMessage({ type: 'done' });
+      };
+    `;
+
+    const blob = new Blob([workerCode], { type: 'application/javascript' });
+    const worker = new Worker(URL.createObjectURL(blob));
+    workerRef.current = worker;
+
+    const tileHeight = Math.max(4, Math.floor(8 * dpr));
+
+    worker.onmessage = (ev: MessageEvent) => {
+      const msg = ev.data as
+        | { type: 'tile'; y: number; height: number; width: number; buffer: ArrayBuffer }
+        | { type: 'done' };
+      if (msg.type === 'tile') {
+        const { y, height: h, width, buffer } = msg;
+        requestAnimationFrame(() => {
+          try {
+            const uint = new Uint8ClampedArray(buffer);
+            const imageData = new ImageData(uint, width, h);
+            // draw using pixel coordinates (worker produced DPR-scaled pixels)
+            ctx.putImageData(imageData, 0, y);
+          } catch {
+            // ignore
+          }
+        });
+      }
+    };
+
+    // start rendering with pixel dimensions
+    worker.postMessage({ width: pixelWidth, height: pixelHeight, depth, parameter, amplifiers, tileHeight });
+
+    return () => {
+      if (workerRef.current) {
+        workerRef.current.terminate();
+        workerRef.current = null;
+      }
+    };
+  }, [depth, parameter, amplifiers, size]);
 
   return (
     <canvas
@@ -134,6 +154,7 @@ export default function FractalViewer({
       height={CANVAS_HEIGHT}
       className="fractal-canvas"
       aria-label="Fractal renderer showing the current zoom level"
+      style={{ width: '100%', height: 'auto' }}
     />
   );
 }
