@@ -1,6 +1,13 @@
+@import "@radix-ui/themes/styles.css";
 @import "tailwindcss";
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
 
 @theme {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.radix-themes {
+  background-color: var(--color-indigo-300)
 }
