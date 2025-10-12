@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 .startherebox {
+  position: relative;
+  overflow: hidden;
   min-height: 100vh;
   padding: 2rem 1.5rem 3rem;
   background: radial-gradient(circle at top, rgba(64, 224, 208, 0.08), transparent 55%),
@@ -8,6 +10,30 @@
     radial-gradient(circle at bottom left, rgba(56, 189, 248, 0.06), transparent 40%),
     #050510;
   color: var(--gray-12);
+}
+
+.startherebox::before,
+.startherebox::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  pointer-events: none;
+  background: conic-gradient(
+    from 180deg,
+    rgba(45, 212, 191, 0.12),
+    rgba(99, 102, 241, 0.08),
+    rgba(45, 212, 191, 0.12)
+  );
+  filter: blur(40px);
+  opacity: 0.75;
+  animation: auroraFlow 24s linear infinite;
+}
+
+.startherebox::after {
+  animation-direction: reverse;
+  animation-duration: 36s;
+  mix-blend-mode: screen;
+  opacity: 0.4;
 }
 
 .starthere-grid {
@@ -39,7 +65,8 @@
 .log-card,
 .control-card,
 .zone-entry,
-.upgrade-row {
+.upgrade-row,
+.event-card {
   background: rgba(12, 12, 28, 0.85);
   border-radius: 18px;
   border: 1px solid rgba(120, 119, 198, 0.15);
@@ -57,17 +84,43 @@
 .zone-card,
 .upgrade-card,
 .prestige-card,
-.log-card {
+.log-card,
+.event-card {
   padding: 1.5rem;
 }
 
 .fractal-canvas {
   width: 100%;
+  /* allow the canvas to scale responsively while preserving the original aspect ratio (360x260) */
+  aspect-ratio: 18 / 13; /* 360 / 260 */
+  min-height: 220px; /* ensure it's not tiny on narrow screens */
+  max-height: 620px; /* avoid overly tall canvases on very large screens */
+  /* prevent the canvas becoming an extremely narrow column on wide layouts */
+  min-width: 280px;
+  max-width: 100%;
   height: auto;
+  display: block;
   border-radius: 16px;
   border: 1px solid rgba(125, 211, 252, 0.35);
   background: radial-gradient(circle at center, rgba(148, 163, 184, 0.12), transparent 70%);
   margin-bottom: 1.25rem;
+}
+
+.fractal-canvas-wrap {
+  /* ensure the wrapper follows the content width of the card and
+     aligns with other block elements like the separator */
+  width: 100%;
+  box-sizing: border-box; /* ensure width measurement includes padding/border consistently */
+}
+
+@media (min-width: 800px) {
+  /* on large screens keep the original aspect ratio but allow a larger min size */
+  .fractal-canvas {
+    aspect-ratio: 18 / 13; /* 360 / 260 */
+    min-width: 360px;
+    min-height: 260px;
+    max-height: 620px;
+  }
 }
 
 .slider-group {
@@ -88,6 +141,59 @@
 .slider-group .rt-SliderThumb {
   width: 18px;
   height: 18px;
+}
+
+.event-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.event-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.18), transparent 55%);
+  opacity: 0.9;
+}
+
+.event-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.cosmic-stat {
+  padding: 0.5rem 0;
+}
+
+.cosmic-meter {
+  width: 100%;
+  height: 0.55rem;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.65);
+  overflow: hidden;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.cosmic-meter.anomaly {
+  border-color: rgba(139, 92, 246, 0.35);
+  background: rgba(30, 24, 75, 0.65);
+}
+
+.cosmic-meter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.8), rgba(16, 185, 129, 0.95));
+  border-radius: inherit;
+  transition: width 0.4s ease;
+}
+
+.cosmic-meter.anomaly .cosmic-meter-fill {
+  background: linear-gradient(90deg, rgba(165, 105, 255, 0.8), rgba(79, 70, 229, 0.95));
+}
+
+.countdown-badge {
+  white-space: normal;
+  text-align: right;
+  max-width: 220px;
 }
 
 .zone-entry {
@@ -139,6 +245,18 @@
   .prestige-card,
   .log-card {
     padding: 1.25rem;
+  }
+}
+
+@keyframes auroraFlow {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
   }
 }
 
