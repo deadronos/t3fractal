@@ -1,8 +1,8 @@
 # [TASK002] - Set up Zustand game state management
 
-**Status:** Pending
+**Status:** In Progress
 **Added:** October 8, 2025
-**Updated:** October 8, 2025
+**Updated:** 2025-10-11
 
 ## Original Request
 
@@ -30,25 +30,29 @@ Zustand was chosen for its simplicity, TypeScript support, and middleware capabi
 - [ ] Add exploration state tracking
 - [ ] Test state persistence across page reloads
 
+
 ## Progress Tracking
 
-**Overall Status:** Not Started - 0% Complete
+**Overall Status:** In Progress - 15% Complete
 
 ### Subtasks
 
 | ID  | Description           | Status                                     | Updated | Notes                |
 | --- | --------------------- | ------------------------------------------ | ------- | -------------------- |
-| 2.1 | Create Zustand store structure | Not Started | - | Basic store setup with TypeScript |
-| 2.2 | Implement resource state | Not Started | - | Fractal Data and other resources |
+| 2.1 | Create Zustand store structure | Complete | 2025-10-09 | Store skeleton created with interfaces defined |
+| 2.2 | Implement resource state | In Progress | 2025-10-11 | Fractal Data counters and basic actions implemented |
 | 2.3 | Add upgrade state management | Not Started | - | Upgrade levels and effects |
-| 2.4 | Implement persistence middleware | Not Started | - | localStorage integration |
-| 2.5 | Create resource actions | Not Started | - | Collection and spending functions |
+| 2.4 | Implement persistence middleware | Not Started | - | localStorage integration planned |
+| 2.5 | Create resource actions | In Progress | 2025-10-11 | collectResource and spendResource actions added |
 | 2.6 | Add exploration state | Not Started | - | Position and zoom tracking |
 | 2.7 | Test persistence | Not Started | - | Verify state survives reloads |
 
 ## Progress Log
 
-### October 8, 2025
+### 2025-10-09
 
-- Created task specification for Zustand game state management
-- Defined implementation plan and subtasks
+- Created initial Zustand store skeleton with TypeScript interfaces and basic structure.
+
+### 2025-10-11
+
+- Implemented basic resource counters and core actions (collect/spend). Marked subtasks 2.2 and 2.5 as In Progress to reflect active implementation.
