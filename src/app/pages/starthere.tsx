@@ -1,14 +1,26 @@
-'use client';
+"use client";
 
 import "@/styles/starthere.css";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactElement } from "react";
 
-import { Box, Button, Card, Flex, Grid, Heading, Separator, Slider, Text } from "@radix-ui/themes";
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  Flex,
+  Grid,
+  Heading,
+  Separator,
+  Slider,
+  Text,
+} from "@radix-ui/themes";
 
 import FractalViewer from "./fractalviewer";
 import StartHereMenu from "./startheremenu";
+import { resolveCosmicEvent } from "./cosmicEvents";
 
 type UpgradeKey = "probe" | "processor" | "stabilizer";
 
@@ -28,21 +40,24 @@ type UpgradeConfig = {
 const UPGRADE_CONFIG: Record<UpgradeKey, UpgradeConfig> = {
   probe: {
     title: "Fractal Probes",
-    description: "Deploy autonomous explorers that map detail while you plan the next zoom.",
+    description:
+      "Deploy autonomous explorers that map detail while you plan the next zoom.",
     baseCost: 35,
     growth: 1.45,
     flavor: "Their quantum lenses never blink.",
   },
   processor: {
     title: "Quantum Processors",
-    description: "Accelerate every calculation, multiplying the insight gathered by your probes.",
+    description:
+      "Accelerate every calculation, multiplying the insight gathered by your probes.",
     baseCost: 120,
     growth: 1.6,
     flavor: "The algorithms hum in complex harmony.",
   },
   stabilizer: {
     title: "Dimensional Stabilizers",
-    description: "Anchor deeper zoom levels so the structure holds while automation continues.",
+    description:
+      "Anchor deeper zoom levels so the structure holds while automation continues.",
     baseCost: 220,
     growth: 1.55,
     flavor: "Reality threads itself tighter around the frontier.",
@@ -60,25 +75,29 @@ const FRACTAL_ZONES = [
     name: "Seahorse Valley",
     requirement: 4,
     bonus: 0.08,
-    description: "Filigree spirals curl like cosmic seahorses, enriching every data packet.",
+    description:
+      "Filigree spirals curl like cosmic seahorses, enriching every data packet.",
   },
   {
     name: "Spiral Nebula",
     requirement: 7,
     bonus: 0.18,
-    description: "Twin galaxies of recursion feed each other, boosting production dramatically.",
+    description:
+      "Twin galaxies of recursion feed each other, boosting production dramatically.",
   },
   {
     name: "Mini-Brot Frontier",
     requirement: 11,
     bonus: 0.3,
-    description: "Self-similarity upon self-similarity. You glimpse new universes in each pixel.",
+    description:
+      "Self-similarity upon self-similarity. You glimpse new universes in each pixel.",
   },
   {
     name: "Hyperbolic Bloom",
     requirement: 15,
     bonus: 0.45,
-    description: "Geometries bloom beyond Euclid. Ascension-grade knowledge saturates every line.",
+    description:
+      "Geometries bloom beyond Euclid. Ascension-grade knowledge saturates every line.",
   },
 ];
 
@@ -108,13 +127,27 @@ export default function StartHere(): ReactElement {
   const [dimensionalPoints, setDimensionalPoints] = useState<number>(0);
   const [ascensionLevel, setAscensionLevel] = useState<number>(0);
   const [amplifiers, setAmplifiers] = useState<number>(0);
+  const [resonance, setResonance] = useState<number>(4);
+  const [anomalies, setAnomalies] = useState<number>(0);
+  const [expeditionRank, setExpeditionRank] = useState<number>(0);
+  const [eventCountdown, setEventCountdown] = useState<number>(18);
   const [complexParameter, setComplexParameter] = useState<ComplexParameter>({
     ...DIMENSIONAL_TARGET,
   });
   const [activityLog, setActivityLog] = useState<string[]>([
     "Begin exploration: calibrating renderers…",
   ]);
-  const [lastZone, setLastZone] = useState<string>(FRACTAL_ZONES[0]?.name ?? "");
+  const [lastZone, setLastZone] = useState<string>(
+    FRACTAL_ZONES[0]?.name ?? "",
+  );
+  const latestSnapshotRef = useRef({
+    depth,
+    resonance,
+    anomalies,
+    ascensionLevel,
+    dimensionalPoints,
+    fractalData,
+  });
 
   const pushLog = useCallback((message: string) => {
     setActivityLog((previous) => [message, ...previous].slice(0, 6));
@@ -139,8 +172,23 @@ export default function StartHere(): ReactElement {
     const ascensionBonus = 1 + ascensionLevel * 0.25 + amplifiers * 0.35;
     const depthBonus = 1 + Math.floor(depth) * 0.05;
     const dimensionalBonus = 1 + dimensionalPoints * 0.02;
-    return ascensionBonus * depthBonus * dimensionalBonus;
-  }, [ascensionLevel, amplifiers, depth, dimensionalPoints]);
+    const resonanceBonus = 1 + resonance * 0.015;
+    const anomalyPenalty = Math.max(0.6, 1 - anomalies * 0.03);
+    return (
+      ascensionBonus *
+      depthBonus *
+      dimensionalBonus *
+      resonanceBonus *
+      anomalyPenalty
+    );
+  }, [
+    ascensionLevel,
+    amplifiers,
+    anomalies,
+    depth,
+    dimensionalPoints,
+    resonance,
+  ]);
 
   const parameterEfficiency = useMemo(() => {
     const distance = Math.hypot(
@@ -169,7 +217,8 @@ export default function StartHere(): ReactElement {
     [depth],
   );
 
-  const currentZone = unlockedZones[unlockedZones.length - 1] ?? FRACTAL_ZONES[0];
+  const currentZone =
+    unlockedZones[unlockedZones.length - 1] ?? FRACTAL_ZONES[0];
 
   const zoneBonus = currentZone ? 1 + currentZone.bonus : 1;
 
@@ -179,8 +228,47 @@ export default function StartHere(): ReactElement {
     if (upgrades.stabilizer <= 0) {
       return 0;
     }
-    return (0.06 + upgrades.stabilizer * 0.025) * parameterEfficiency;
-  }, [parameterEfficiency, upgrades.stabilizer]);
+    const resonanceAssist = 1 + Math.min(resonance * 0.02, 0.6);
+    return (
+      (0.06 + upgrades.stabilizer * 0.025) *
+      parameterEfficiency *
+      resonanceAssist
+    );
+  }, [parameterEfficiency, resonance, upgrades.stabilizer]);
+
+  const expeditionCost = useMemo(
+    () =>
+      Math.floor(90 + depth * 25 + ascensionLevel * 35 + expeditionRank * 20),
+    [ascensionLevel, depth, expeditionRank],
+  );
+
+  const expeditionPreview = useMemo(
+    () => Math.floor(6 + depth * 0.6 + resonance * 0.3 + ascensionLevel * 1.5),
+    [ascensionLevel, depth, resonance],
+  );
+
+  const stabiliseCost = useMemo(
+    () => Math.floor(24 + anomalies * 9 + ascensionLevel * 6),
+    [anomalies, ascensionLevel],
+  );
+
+  useEffect(() => {
+    latestSnapshotRef.current = {
+      depth,
+      resonance,
+      anomalies,
+      ascensionLevel,
+      dimensionalPoints,
+      fractalData,
+    };
+  }, [
+    anomalies,
+    ascensionLevel,
+    depth,
+    dimensionalPoints,
+    fractalData,
+    resonance,
+  ]);
 
   useEffect(() => {
     if (effectiveDataPerSecond <= 0 && passiveDepthGain <= 0) {
@@ -203,9 +291,55 @@ export default function StartHere(): ReactElement {
     if (!currentZone || currentZone.name === lastZone) {
       return;
     }
-    pushLog(`New region unlocked: ${currentZone.name}. ${currentZone.description}`);
+    pushLog(
+      `New region unlocked: ${currentZone.name}. ${currentZone.description}`,
+    );
     setLastZone(currentZone.name);
   }, [currentZone, lastZone, pushLog]);
+
+  const triggerCosmicEvent = useCallback(() => {
+    const { event, outcome } = resolveCosmicEvent(latestSnapshotRef.current);
+    const {
+      dataDelta = 0,
+      resonanceDelta = 0,
+      anomaliesDelta = 0,
+      depthDelta = 0,
+      dimensionalPointsDelta = 0,
+    } = outcome;
+
+    if (dataDelta !== 0) {
+      setFractalData((previous) => Math.max(0, previous + dataDelta));
+    }
+    if (resonanceDelta !== 0) {
+      setResonance((previous) => Math.max(0, previous + resonanceDelta));
+    }
+    if (anomaliesDelta !== 0) {
+      setAnomalies((previous) => Math.max(0, previous + anomaliesDelta));
+    }
+    if (depthDelta !== 0) {
+      setDepth((previous) => Math.max(0, previous + depthDelta));
+    }
+    if (dimensionalPointsDelta !== 0) {
+      setDimensionalPoints((previous) =>
+        Math.max(0, previous + dimensionalPointsDelta),
+      );
+    }
+    pushLog(`[Event] ${event.name}: ${outcome.log}`);
+  }, [pushLog]);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setEventCountdown((previous) => {
+        if (previous <= 1) {
+          triggerCosmicEvent();
+          return 16 + Math.floor(Math.random() * 9);
+        }
+        return previous - 1;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(interval);
+  }, [triggerCosmicEvent]);
 
   const handleZoomDeeper = useCallback(() => {
     let zoomApproved = false;
@@ -231,6 +365,59 @@ export default function StartHere(): ReactElement {
     setDepth((previous) => Math.max(0, previous - 1));
     pushLog("Stabilised view at a safer zoom.");
   }, [pushLog]);
+
+  const handleExpedition = useCallback(() => {
+    let authorised = false;
+    setFractalData((previous) => {
+      if (previous < expeditionCost) {
+        return previous;
+      }
+      authorised = true;
+      return previous - expeditionCost;
+    });
+    if (!authorised) {
+      pushLog("Expedition denied: insufficient Fractal Data for launch.");
+      return;
+    }
+    const variableReward = expeditionPreview + Math.floor(Math.random() * 4);
+    setResonance((previous) => previous + variableReward);
+    setDepth((previous) => previous + 0.25);
+    setExpeditionRank((previous) => previous + 1);
+    if (Math.random() > 0.72) {
+      setAnomalies((previous) => previous + 1);
+      pushLog(
+        `Expedition reports ${variableReward} resonance shards and an excitable anomaly hitchhiker.`,
+      );
+      return;
+    }
+    pushLog(
+      `Expedition returns triumphantly with ${variableReward} resonance shards.`,
+    );
+  }, [expeditionCost, expeditionPreview, pushLog]);
+
+  const handleStabiliseAnomaly = useCallback(() => {
+    if (anomalies <= 0) {
+      pushLog("Calibration steady: no anomalies demand stabilisation.");
+      return;
+    }
+    let authorised = false;
+    setFractalData((previous) => {
+      if (previous < stabiliseCost) {
+        return previous;
+      }
+      authorised = true;
+      return previous - stabiliseCost;
+    });
+    if (!authorised) {
+      pushLog(
+        "Stabilisation cancelled: gather more Fractal Data for the ritual.",
+      );
+      return;
+    }
+    setAnomalies((previous) => Math.max(0, previous - 1));
+    setResonance((previous) => previous + 2);
+    pushLog("Quantum botanists prune an anomaly garden into calm symmetry.");
+  }, [anomalies, pushLog, stabiliseCost]);
 
   const handleUpgradePurchase = useCallback(
     (key: UpgradeKey) => {
@@ -272,7 +459,15 @@ export default function StartHere(): ReactElement {
     setDepth(0);
     setUpgrades({ probe: 0, processor: 0, stabilizer: 0 });
     setAmplifiers(0);
-    pushLog(`Dimensional Ascension complete. Gained ${ascensionYield} Dimensional Points.`);
+    setResonance((previous) =>
+      Math.max(3, Math.floor(previous * 0.35) + ascensionYield),
+    );
+    setAnomalies(0);
+    setEventCountdown(18);
+    setExpeditionRank(0);
+    pushLog(
+      `Dimensional Ascension complete. Gained ${ascensionYield} Dimensional Points.`,
+    );
   }, [ascendReady, ascensionYield, pushLog]);
 
   const amplifierCost = useMemo(
@@ -305,6 +500,22 @@ export default function StartHere(): ReactElement {
   );
 
   const dimensionalEfficiency = (parameterEfficiency * 100).toFixed(0);
+  const nextEventLabel =
+    eventCountdown <= 0 ? "Imminent" : `${eventCountdown}s`;
+  const currentZoneRequirement = currentZone?.requirement ?? 0;
+
+  const omenMessage = useMemo(() => {
+    if (anomalies >= 4) {
+      return "Council warning: anomaly gardens are blooming; stabilise soon.";
+    }
+    if (resonance >= 18) {
+      return "The Cosmic Choir hums in harmony. Expect generous events.";
+    }
+    if (currentZoneRequirement >= 10) {
+      return "Frontier scouts taste complexity in the air; brace for dazzling storms.";
+    }
+    return "Sensors idle with a gentle purr. Perfect time to chart expeditions.";
+  }, [anomalies, currentZoneRequirement, resonance]);
 
   return (
     <Box className="startherebox">
@@ -313,8 +524,14 @@ export default function StartHere(): ReactElement {
         depth={depth}
         dataPerSecond={effectiveDataPerSecond}
         dimensionalPoints={dimensionalPoints}
+        resonance={resonance}
+        anomalies={anomalies}
       />
-      <Grid className="starthere-grid" columns={{ initial: "1", md: "2" }} gap="4">
+      <Grid
+        className="starthere-grid"
+        columns={{ initial: "1", md: "2" }}
+        gap="4"
+      >
         <Flex direction="column" gap="4">
           <Card className="fractal-card">
             <Flex justify="between" align="center" mb="3">
@@ -323,13 +540,18 @@ export default function StartHere(): ReactElement {
                 Zone bonus: +{Math.round((zoneBonus - 1) * 100)}%
               </Text>
             </Flex>
-            <FractalViewer depth={depth} parameter={complexParameter} amplifiers={amplifiers} />
+            <FractalViewer
+              depth={depth}
+              parameter={complexParameter}
+              amplifiers={amplifiers}
+            />
             <Separator my="3" size="4" />
             <Grid columns={{ initial: "1", sm: "2" }} gap="4">
               <Card className="control-card">
                 <Heading size="3">Manual Navigation</Heading>
                 <Text color="gray" size="2" mb="3">
-                  Each zoom consumes Fractal Data but reveals exponentially richer structures.
+                  Each zoom consumes Fractal Data but reveals exponentially
+                  richer structures.
                 </Text>
                 <Flex gap="3" mb="3" wrap="wrap">
                   <Button onClick={handleZoomDeeper} color="green">
@@ -340,32 +562,42 @@ export default function StartHere(): ReactElement {
                   </Button>
                 </Flex>
                 <Text size="2" color="gray">
-                  Passive stabilisers add {passiveDepthGain.toFixed(2)} depth / sec when active.
+                  Passive stabilisers add {passiveDepthGain.toFixed(2)} depth /
+                  sec when active.
                 </Text>
               </Card>
               <Card className="control-card">
                 <Heading size="3">Complex Parameter Tuning</Heading>
                 <Text size="2" color="gray">
-                  Align with the sweet spot (c = -0.75 + 0.11i) to maximise efficiency.
+                  Align with the sweet spot (c = -0.75 + 0.11i) to maximise
+                  efficiency.
                 </Text>
                 <Box className="slider-group">
-                  <Text weight="medium">Real: {complexParameter.real.toFixed(2)}</Text>
+                  <Text weight="medium">
+                    Real: {complexParameter.real.toFixed(2)}
+                  </Text>
                   <Slider
                     min={-2}
                     max={1}
                     step={0.01}
                     value={[complexParameter.real]}
-                    onValueChange={([value]) => handleParameterChange({ real: value })}
+                    onValueChange={([value]) =>
+                      handleParameterChange({ real: value })
+                    }
                   />
                 </Box>
                 <Box className="slider-group">
-                  <Text weight="medium">Imaginary: {complexParameter.imaginary.toFixed(2)}i</Text>
+                  <Text weight="medium">
+                    Imaginary: {complexParameter.imaginary.toFixed(2)}i
+                  </Text>
                   <Slider
                     min={-1}
                     max={1}
                     step={0.01}
                     value={[complexParameter.imaginary]}
-                    onValueChange={([value]) => handleParameterChange({ imaginary: value })}
+                    onValueChange={([value]) =>
+                      handleParameterChange({ imaginary: value })
+                    }
                   />
                 </Box>
                 <Text size="2" color="mint">
@@ -374,17 +606,91 @@ export default function StartHere(): ReactElement {
               </Card>
             </Grid>
           </Card>
+          <Card className="event-card">
+            <Heading size="4">Cosmic Forecast</Heading>
+            <Text size="2" color="gray">
+              The Galactic Cartographers share whimsical predictions about your
+              frontier.
+            </Text>
+            <Separator my="3" size="4" />
+            <Flex justify="between" align="center" mb="3">
+              <Flex direction="column">
+                <Text size="2" color="gray">
+                  Next phenomenon
+                </Text>
+                <Text size="3" weight="bold" color="mint">
+                  {nextEventLabel}
+                </Text>
+              </Flex>
+              <Badge
+                color={anomalies > 0 ? "iris" : "mint"}
+                variant="soft"
+                className="countdown-badge"
+              >
+                {omenMessage}
+              </Badge>
+            </Flex>
+            <Flex direction="column" gap="2" className="cosmic-stat">
+              <Flex justify="between" align="center">
+                <Text size="2">Resonance Flow</Text>
+                <Text size="2" color="mint">
+                  {resonance.toFixed(0)}
+                </Text>
+              </Flex>
+              <Box className="cosmic-meter">
+                <Box
+                  className="cosmic-meter-fill"
+                  style={{ width: `${Math.min(100, resonance * 5)}%` }}
+                />
+              </Box>
+            </Flex>
+            <Flex direction="column" gap="2" className="cosmic-stat">
+              <Flex justify="between" align="center">
+                <Text size="2">Anomaly Bloom</Text>
+                <Text size="2" color={anomalies > 0 ? "iris" : "gray"}>
+                  {anomalies}
+                </Text>
+              </Flex>
+              <Box className="cosmic-meter anomaly">
+                <Box
+                  className="cosmic-meter-fill"
+                  style={{ width: `${Math.min(100, anomalies * 20)}%` }}
+                />
+              </Box>
+            </Flex>
+            <Separator my="3" size="4" />
+            <Flex direction="column" gap="3">
+              <Button onClick={handleExpedition} color="cyan">
+                Dispatch Expedition (Cost: {formatNumber(expeditionCost)})
+              </Button>
+              <Text size="2" color="gray">
+                Expected haul: ~{expeditionPreview} resonance shards plus modest
+                depth insights.
+              </Text>
+              <Button
+                onClick={handleStabiliseAnomaly}
+                variant="soft"
+                color="purple"
+              >
+                Stabilise Anomaly (Cost: {formatNumber(stabiliseCost)})
+              </Button>
+            </Flex>
+          </Card>
           <Card className="zone-card">
             <Heading size="4">Exploration Zones</Heading>
             <Text size="2" color="gray">
-              Deeper zooms reveal new fractal biomes. Each grants a unique production bonus.
+              Deeper zooms reveal new fractal biomes. Each grants a unique
+              production bonus.
             </Text>
             <Separator my="3" size="4" />
             <Flex direction="column" gap="3">
               {FRACTAL_ZONES.map((zone) => {
                 const unlocked = depth >= zone.requirement;
                 return (
-                  <Card key={zone.name} className={`zone-entry ${unlocked ? "zone-unlocked" : "zone-locked"}`}>
+                  <Card
+                    key={zone.name}
+                    className={`zone-entry ${unlocked ? "zone-unlocked" : "zone-locked"}`}
+                  >
                     <Flex justify="between" align="center" mb="1">
                       <Heading size="3">{zone.name}</Heading>
                       <Text size="2" color={unlocked ? "mint" : "gray"}>
@@ -409,7 +715,8 @@ export default function StartHere(): ReactElement {
               Automation Upgrades
             </Heading>
             <Text size="2" color="gray">
-              Invest Fractal Data to automate exploration. Each stack compounds with your dimensional bonuses.
+              Invest Fractal Data to automate exploration. Each stack compounds
+              with your dimensional bonuses.
             </Text>
             <Separator my="3" size="4" />
             <Flex direction="column" gap="3">
@@ -444,7 +751,8 @@ export default function StartHere(): ReactElement {
               Dimensional Ascension
             </Heading>
             <Text size="2" color="gray">
-              Collapse the current fractal and start anew with permanent insight. Costs your progress but grants Dimensional Points.
+              Collapse the current fractal and start anew with permanent
+              insight. Costs your progress but grants Dimensional Points.
             </Text>
             <Separator my="3" size="4" />
             <Flex align="center" justify="between" mb="3">
@@ -454,18 +762,27 @@ export default function StartHere(): ReactElement {
                   Status: {ascendReady ? "Ready" : "Not yet"}
                 </Text>
               </Box>
-              <Button onClick={handleAscend} color={ascendReady ? "purple" : "gray"} variant={ascendReady ? "solid" : "soft"}>
+              <Button
+                onClick={handleAscend}
+                color={ascendReady ? "purple" : "gray"}
+                variant={ascendReady ? "solid" : "soft"}
+              >
                 Ascend
               </Button>
             </Flex>
             <Box className="prestige-upgrades">
               <Heading size="3">Dimensional Amplifiers</Heading>
               <Text size="2" color="gray">
-                Spend Dimensional Points for permanent production boosts that survive resets.
+                Spend Dimensional Points for permanent production boosts that
+                survive resets.
               </Text>
               <Flex align="center" justify="between" mt="2">
                 <Text size="2">Amplifiers owned: {amplifiers}</Text>
-                <Button onClick={handleAmplifierPurchase} variant="soft" color="mint">
+                <Button
+                  onClick={handleAmplifierPurchase}
+                  variant="soft"
+                  color="mint"
+                >
                   Buy ({amplifierCost} DP)
                 </Button>
               </Flex>
@@ -477,7 +794,11 @@ export default function StartHere(): ReactElement {
             </Heading>
             <Flex direction="column" gap="2">
               {activityLog.map((entry, index) => (
-                <Text key={`${entry}-${index}`} size="2" color={index === 0 ? "mint" : "gray"}>
+                <Text
+                  key={`${entry}-${index}`}
+                  size="2"
+                  color={index === 0 ? "mint" : "gray"}
+                >
                   {entry}
                 </Text>
               ))}

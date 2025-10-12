@@ -17,6 +17,7 @@
 ## Completed
 
 - [TASK000] Project setup and Memory Bank creation - Completed on October 8, 2025
+- [TASK009] Enhance gameplay and visuals - Completed on October 10, 2025
 
 ## Abandoned
 
