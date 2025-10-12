@@ -2,7 +2,7 @@
 
 **Status:** In Progress
 **Added:** October 8, 2025
-**Updated:** 2025-10-11
+**Updated:** 2025-10-12
 
 ## Original Request
 
@@ -56,3 +56,7 @@ Zustand was chosen for its simplicity, TypeScript support, and middleware capabi
 ### 2025-10-11
 
 - Implemented basic resource counters and core actions (collect/spend). Marked subtasks 2.2 and 2.5 as In Progress to reflect active implementation.
+
+### 2025-10-12
+
+- Next: add persistence middleware (localStorage) and migrate in-page state to the Zustand store; align save/load work to TASK008.
