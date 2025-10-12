@@ -157,15 +157,22 @@ export const resolveCosmicEvent = (
   const eligible = COSMIC_EVENTS.filter((event) =>
     meetsRequirement(snapshot, event),
   );
-  const pool = eligible.length > 0 ? eligible : [COSMIC_EVENTS[0]];
-  const totalWeight = pool.reduce(
-    (sum, event) => sum + clampWeight(event.weight),
-    0,
-  );
-  const target = random() * (totalWeight > 0 ? totalWeight : pool.length);
+  const fallbackEvent = COSMIC_EVENTS[0];
+  if (!fallbackEvent) {
+    throw new Error("No cosmic events defined");
+  }
+
+  const pool = eligible.length > 0 ? eligible : [fallbackEvent];
+  let totalWeight = 0;
+  for (const event of pool) {
+    totalWeight += clampWeight(event.weight);
+  }
+
+  const safeTotal = totalWeight > 0 ? totalWeight : pool.length;
+  const target = random() * safeTotal;
 
   let cumulative = 0;
-  let selected = pool[0];
+  let selected: CosmicEvent | null = null;
   for (const event of pool) {
     cumulative += clampWeight(event.weight);
     if (target <= cumulative) {
@@ -174,5 +181,6 @@ export const resolveCosmicEvent = (
     }
   }
 
-  return { event: selected, outcome: selected.apply(snapshot) };
+  const resolvedEvent = selected ?? fallbackEvent;
+  return { event: resolvedEvent, outcome: resolvedEvent.apply(snapshot) };
 };

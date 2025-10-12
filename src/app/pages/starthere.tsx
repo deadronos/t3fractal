@@ -299,28 +299,29 @@ export default function StartHere(): ReactElement {
 
   const triggerCosmicEvent = useCallback(() => {
     const { event, outcome } = resolveCosmicEvent(latestSnapshotRef.current);
-    if (outcome.dataDelta && outcome.dataDelta !== 0) {
-      setFractalData((previous) => Math.max(0, previous + outcome.dataDelta));
+    const {
+      dataDelta = 0,
+      resonanceDelta = 0,
+      anomaliesDelta = 0,
+      depthDelta = 0,
+      dimensionalPointsDelta = 0,
+    } = outcome;
+
+    if (dataDelta !== 0) {
+      setFractalData((previous) => Math.max(0, previous + dataDelta));
     }
-    if (outcome.resonanceDelta && outcome.resonanceDelta !== 0) {
-      setResonance((previous) =>
-        Math.max(0, previous + outcome.resonanceDelta),
-      );
+    if (resonanceDelta !== 0) {
+      setResonance((previous) => Math.max(0, previous + resonanceDelta));
     }
-    if (outcome.anomaliesDelta && outcome.anomaliesDelta !== 0) {
-      setAnomalies((previous) =>
-        Math.max(0, previous + outcome.anomaliesDelta),
-      );
+    if (anomaliesDelta !== 0) {
+      setAnomalies((previous) => Math.max(0, previous + anomaliesDelta));
     }
-    if (outcome.depthDelta && outcome.depthDelta !== 0) {
-      setDepth((previous) => Math.max(0, previous + outcome.depthDelta));
+    if (depthDelta !== 0) {
+      setDepth((previous) => Math.max(0, previous + depthDelta));
     }
-    if (
-      outcome.dimensionalPointsDelta &&
-      outcome.dimensionalPointsDelta !== 0
-    ) {
+    if (dimensionalPointsDelta !== 0) {
       setDimensionalPoints((previous) =>
-        Math.max(0, previous + outcome.dimensionalPointsDelta),
+        Math.max(0, previous + dimensionalPointsDelta),
       );
     }
     pushLog(`[Event] ${event.name}: ${outcome.log}`);
@@ -501,6 +502,7 @@ export default function StartHere(): ReactElement {
   const dimensionalEfficiency = (parameterEfficiency * 100).toFixed(0);
   const nextEventLabel =
     eventCountdown <= 0 ? "Imminent" : `${eventCountdown}s`;
+  const currentZoneRequirement = currentZone?.requirement ?? 0;
 
   const omenMessage = useMemo(() => {
     if (anomalies >= 4) {
@@ -509,11 +511,11 @@ export default function StartHere(): ReactElement {
     if (resonance >= 18) {
       return "The Cosmic Choir hums in harmony. Expect generous events.";
     }
-    if (currentZone.requirement >= 10) {
+    if (currentZoneRequirement >= 10) {
       return "Frontier scouts taste complexity in the air; brace for dazzling storms.";
     }
     return "Sensors idle with a gentle purr. Perfect time to chart expeditions.";
-  }, [anomalies, currentZone.requirement, resonance]);
+  }, [anomalies, currentZoneRequirement, resonance]);
 
   return (
     <Box className="startherebox">
