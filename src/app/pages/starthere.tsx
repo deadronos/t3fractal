@@ -18,7 +18,7 @@ import {
   Text,
 } from "@radix-ui/themes";
 
-import FractalViewer from "./fractalviewer";
+import FractalViewer, { type FractalRendererMode } from "./fractalviewer";
 import StartHereMenu from "./startheremenu";
 import { resolveCosmicEvent } from "./cosmicEvents";
 
@@ -517,6 +517,9 @@ export default function StartHere(): ReactElement {
     return "Sensors idle with a gentle purr. Perfect time to chart expeditions.";
   }, [anomalies, currentZoneRequirement, resonance]);
 
+  const [rendererMode, setRendererMode] =
+    useState<FractalRendererMode>("webgl");
+
   return (
     <Box className="startherebox">
       <StartHereMenu
@@ -535,7 +538,9 @@ export default function StartHere(): ReactElement {
         <Flex direction="column" gap="4">
           <Card className="fractal-card">
             <Flex justify="between" align="center" mb="3">
-              <Heading size="4">Fractal Frontier</Heading>
+              <Heading size="4">
+                Fractal Frontier {rendererMode === "webgl" ? "WebGL" : "CPU"}
+              </Heading>
               <Text size="2" color="mint">
                 Zone bonus: +{Math.round((zoneBonus - 1) * 100)}%
               </Text>
@@ -544,6 +549,7 @@ export default function StartHere(): ReactElement {
               depth={depth}
               parameter={complexParameter}
               amplifiers={amplifiers}
+              onRendererChange={setRendererMode}
             />
             <Separator my="3" size="4" />
             <Grid columns={{ initial: "1", sm: "2" }} gap="4">
