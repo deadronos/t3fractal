@@ -113,7 +113,7 @@
   box-sizing: border-box; /* ensure width measurement includes padding/border consistently */
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 800px) {
   /* on large screens keep the original aspect ratio but allow a larger min size */
   .fractal-canvas {
     aspect-ratio: 18 / 13; /* 360 / 260 */
