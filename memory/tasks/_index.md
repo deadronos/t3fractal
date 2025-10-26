@@ -2,7 +2,7 @@
 
 ## In Progress
 
-None
+- [TASK012] Implement tech debt refactors - Executing modularization of 5 code paths from report
 
 ## Pending
 
