@@ -5,7 +5,6 @@ import type { ReactElement } from "react";
 
 import { Button, Flex, Text } from "@radix-ui/themes";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import * as THREE from "three";
 
 import { calculateFractalParameters } from "@/lib/fractal/fractalMath";
 import type { ComplexParameter } from "@/lib/fractal/fractalMath";
