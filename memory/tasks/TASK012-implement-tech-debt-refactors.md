@@ -50,9 +50,9 @@ Following the spec-driven workflow with 5 phases aligned to DESIGN002:
 
 ## Progress Tracking
 
-**Overall Status:** In Progress - 25%
+**Overall Status:** In Progress - 45%
 
-### Phase 1: Data and Configuration Extraction
+### Phase 1: Data and Configuration Extraction ✅
 
 | ID | Description | Status | Updated | Notes |
 | --- | --- | --- | --- | --- |
@@ -62,18 +62,18 @@ Following the spec-driven workflow with 5 phases aligned to DESIGN002:
 | 1.4 | Move FRACTAL_ZONES to /src/data/gameConfig.ts | Complete | 2025-10-26 | With types |
 | 1.5 | Validate Phase 1 with tests | Complete | 2025-10-26 | All 22 tests passing ✅ |
 
-### Phase 2: Utility and Helper Extraction
+### Phase 2: Utility and Helper Extraction ✅
 
 | ID | Description | Status | Updated | Notes |
 | --- | --- | --- | --- | --- |
-| 2.1 | Create /src/lib/gameplay/ directory structure | Not Started | 2025-10-26 | Foundation |
-| 2.2 | Extract production math utilities | Not Started | 2025-10-26 | Priority 2 |
-| 2.3 | Extract cost formula utilities | Not Started | 2025-10-26 | Priority 2 |
-| 2.4 | Extract formatter utilities | Not Started | 2025-10-26 | Priority 2 |
-| 2.5 | Create /src/lib/fractal/fractalMath.ts | Not Started | 2025-10-26 | Priority 2 |
-| 2.6 | Add unit tests for gameplay utilities | Not Started | 2025-10-26 | Testing |
-| 2.7 | Add unit tests for fractal math | Not Started | 2025-10-26 | Testing |
-| 2.8 | Validate Phase 2 with full test suite | Not Started | 2025-10-26 | Checkpoint |
+| 2.1 | Create /src/lib/gameplay/ directory structure | Complete | 2025-10-26 | Directory created |
+| 2.2 | Extract production math utilities | Complete | 2025-10-26 | productionMath.ts created |
+| 2.3 | Extract cost formula utilities | Complete | 2025-10-26 | costFormulas.ts created |
+| 2.4 | Extract formatter utilities | Complete | 2025-10-26 | formatters.ts created |
+| 2.5 | Create /src/lib/fractal/fractalMath.ts | Not Started | 2025-10-26 | Deferred to Phase 3 |
+| 2.6 | Add unit tests for gameplay utilities | Complete | 2025-10-26 | 27 new tests added |
+| 2.7 | Add unit tests for fractal math | Not Started | 2025-10-26 | Deferred to Phase 3 |
+| 2.8 | Validate Phase 2 with full test suite | Complete | 2025-10-26 | All 49 tests passing ✅ |
 
 ### Phase 3: Worker Externalization
 
@@ -149,3 +149,24 @@ Following the spec-driven workflow with 5 phases aligned to DESIGN002:
 - Updated starthere.tsx imports to use new configuration modules
 - Validated: All 22 tests passing, linting clean (only pre-existing warnings)
 - Phase 1 complete - data extraction successful with zero breaking changes
+
+**Phase 2 Completed:**
+- Created /src/lib/gameplay/ directory structure
+- Extracted formatNumber utility to formatters.ts with JSDoc documentation
+- Extracted all cost calculations to costFormulas.ts:
+  - calculateUpgradeCost, calculateZoomCost
+  - calculateExpeditionCost, calculateExpeditionPreview
+  - calculateStabiliseCost
+- Extracted all production math to productionMath.ts:
+  - calculateProductionMultiplier, calculateParameterEfficiency
+  - calculateBaseProduction, calculatePassiveDepthGain
+  - calculateZoneBonus
+- Updated starthere.tsx to use extracted utilities
+- Added comprehensive unit tests:
+  - formatters.test.ts (4 tests)
+  - costFormulas.test.ts (7 tests)
+  - productionMath.test.ts (16 tests)
+- Total: 27 new tests, all passing
+- Validated: All 49 tests passing (22 original + 27 new)
+- Linting clean (only pre-existing warnings)
+- Phase 2 complete - utility extraction successful with full test coverage

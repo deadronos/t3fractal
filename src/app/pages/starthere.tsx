@@ -23,19 +23,21 @@ import StartHereMenu from "./startheremenu";
 import { resolveCosmicEvent } from "./cosmicEvents";
 import { useGameStore, type UpgradeKey, type ComplexParameter } from "@/store/gameStore";
 import { UPGRADE_CONFIG, FRACTAL_ZONES, DIMENSIONAL_TARGET } from "@/data/gameConfig";
-
-const formatNumber = (value: number): string => {
-  if (value >= 1e9) {
-    return `${(value / 1e9).toFixed(2)}B`;
-  }
-  if (value >= 1e6) {
-    return `${(value / 1e6).toFixed(2)}M`;
-  }
-  if (value >= 1e3) {
-    return `${(value / 1e3).toFixed(2)}K`;
-  }
-  return value.toFixed(0);
-};
+import { formatNumber } from "@/lib/gameplay/formatters";
+import {
+  calculateUpgradeCost,
+  calculateZoomCost,
+  calculateExpeditionCost,
+  calculateExpeditionPreview,
+  calculateStabiliseCost,
+} from "@/lib/gameplay/costFormulas";
+import {
+  calculateProductionMultiplier,
+  calculateParameterEfficiency,
+  calculateBaseProduction,
+  calculatePassiveDepthGain,
+  calculateZoneBonus,
+} from "@/lib/gameplay/productionMath";
 
 export default function StartHere(): ReactElement {
   // Get state and actions from Zustand store
@@ -86,56 +88,38 @@ export default function StartHere(): ReactElement {
   }, [pushActivityLog]);
 
   const upgradeCost = useCallback(
-    (key: UpgradeKey) => {
-      const config = UPGRADE_CONFIG[key];
-      const owned = upgrades[key];
-      return Math.floor(config.baseCost * Math.pow(config.growth, owned));
-    },
+    (key: UpgradeKey) => calculateUpgradeCost(key, upgrades[key]),
     [upgrades],
   );
 
   const nextDepthLevel = Math.floor(depth) + 1;
   const zoomCost = useMemo(
-    () => Math.floor(18 * Math.pow(1.55, nextDepthLevel)),
+    () => calculateZoomCost(nextDepthLevel),
     [nextDepthLevel],
   );
 
-  const productionMultiplier = useMemo(() => {
-    const ascensionBonus = 1 + ascensionLevel * 0.25 + amplifiers * 0.35;
-    const depthBonus = 1 + Math.floor(depth) * 0.05;
-    const dimensionalBonus = 1 + dimensionalPoints * 0.02;
-    const resonanceBonus = 1 + resonance * 0.015;
-    const anomalyPenalty = Math.max(0.6, 1 - anomalies * 0.03);
-    return (
-      ascensionBonus *
-      depthBonus *
-      dimensionalBonus *
-      resonanceBonus *
-      anomalyPenalty
-    );
-  }, [
-    ascensionLevel,
-    amplifiers,
-    anomalies,
-    depth,
-    dimensionalPoints,
-    resonance,
-  ]);
+  const productionMultiplier = useMemo(
+    () =>
+      calculateProductionMultiplier({
+        ascensionLevel,
+        amplifiers,
+        depth,
+        dimensionalPoints,
+        resonance,
+        anomalies,
+      }),
+    [ascensionLevel, amplifiers, anomalies, depth, dimensionalPoints, resonance],
+  );
 
-  const parameterEfficiency = useMemo(() => {
-    const distance = Math.hypot(
-      complexParameter.real - DIMENSIONAL_TARGET.real,
-      complexParameter.imaginary - DIMENSIONAL_TARGET.imaginary,
-    );
-    return Math.max(0.65, 1.45 - distance * 1.1);
-  }, [complexParameter]);
+  const parameterEfficiency = useMemo(
+    () => calculateParameterEfficiency(complexParameter, DIMENSIONAL_TARGET),
+    [complexParameter],
+  );
 
-  const baseProduction = useMemo(() => {
-    const probeYield = upgrades.probe * 0.9;
-    const processorYield = upgrades.processor * 3.5;
-    const stabilizerYield = upgrades.stabilizer * 1.6;
-    return probeYield + processorYield + stabilizerYield;
-  }, [upgrades]);
+  const baseProduction = useMemo(
+    () => calculateBaseProduction(upgrades),
+    [upgrades],
+  );
 
   const dataPerSecond = useMemo(() => {
     if (baseProduction <= 0) {
@@ -152,35 +136,32 @@ export default function StartHere(): ReactElement {
   const currentZone =
     unlockedZones[unlockedZones.length - 1] ?? FRACTAL_ZONES[0];
 
-  const zoneBonus = currentZone ? 1 + currentZone.bonus : 1;
+  const zoneBonus = currentZone ? calculateZoneBonus(currentZone.bonus) : 1;
 
   const effectiveDataPerSecond = dataPerSecond * zoneBonus;
 
-  const passiveDepthGain = useMemo(() => {
-    if (upgrades.stabilizer <= 0) {
-      return 0;
-    }
-    const resonanceAssist = 1 + Math.min(resonance * 0.02, 0.6);
-    return (
-      (0.06 + upgrades.stabilizer * 0.025) *
-      parameterEfficiency *
-      resonanceAssist
-    );
-  }, [parameterEfficiency, resonance, upgrades.stabilizer]);
+  const passiveDepthGain = useMemo(
+    () =>
+      calculatePassiveDepthGain({
+        stabilizerCount: upgrades.stabilizer,
+        resonance,
+        parameterEfficiency,
+      }),
+    [parameterEfficiency, resonance, upgrades.stabilizer],
+  );
 
   const expeditionCost = useMemo(
-    () =>
-      Math.floor(90 + depth * 25 + ascensionLevel * 35 + expeditionRank * 20),
+    () => calculateExpeditionCost(depth, ascensionLevel, expeditionRank),
     [ascensionLevel, depth, expeditionRank],
   );
 
   const expeditionPreview = useMemo(
-    () => Math.floor(6 + depth * 0.6 + resonance * 0.3 + ascensionLevel * 1.5),
+    () => calculateExpeditionPreview(depth, resonance, ascensionLevel),
     [ascensionLevel, depth, resonance],
   );
 
   const stabiliseCost = useMemo(
-    () => Math.floor(24 + anomalies * 9 + ascensionLevel * 6),
+    () => calculateStabiliseCost(anomalies, ascensionLevel),
     [anomalies, ascensionLevel],
   );
 
