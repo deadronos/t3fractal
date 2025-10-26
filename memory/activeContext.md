@@ -4,19 +4,19 @@
 
 ### Primary Focus Areas
 
-**Fractal Rendering Engine**: Implementing the core fractal visualization system using Three.js/React Three Fiber. This involves:
+**Fractal Rendering Engine**: Core fractal visualization system (Canvas + GPU shader) implemented. This includes:
 
-- Setting up the basic Canvas/WebGL rendering pipeline
-- Implementing Mandelbrot set calculations
-- Creating zoom and pan controls
-- Optimizing performance for real-time exploration
+- Canvas/WebGL rendering pipeline with CPU fallback
+- Mandelbrot calculations on GPU shader and CPU paths
+- Zoom and pan controls (basic)
+- Performance considerations for real-time exploration (GPU path implemented)
 
-**Game State Management**: Establishing the foundational game state structure with Zustand, including:
+**Game State Management**: Establishing and implementing foundational game state structure with Zustand, including:
 
-- Resource tracking (Fractal Data)
-- Upgrade system architecture
-- Persistence layer for game progress
-- State synchronization across components
+-- Resource tracking (Fractal Data) — basic counters and actions implemented
+-- Upgrade system architecture — planned
+-- Persistence layer for game progress — planned (localStorage middleware)
+-- State synchronization across components — in progress
 
 ### Secondary Focus Areas
 
@@ -34,9 +34,16 @@
 
 ## Recent Changes
 
-### Last Week (October 2025)
+### 2025-10-15
 
-**Project Setup**:
+- ✅ Implemented GPU fractal shader renderer and wire UI toggle (TASK010)
+- ✅ Gameplay and visual enhancements completed and archived (TASK009)
+
+### 2025-10-11
+
+- Started implementing Zustand game store and resource actions (TASK002)
+
+### 2025-10-08
 
 - ✅ Initialized T3 Stack project with Next.js 14, TypeScript, Tailwind CSS
 - ✅ Configured Vitest for unit testing with jsdom environment
@@ -69,10 +76,10 @@
 
 **Known Issues**:
 
-- Fractal rendering not yet implemented
-- Game state management not connected
-- No interactive gameplay elements
-- Missing core game mechanics
+- Fractal rendering: CPU and GPU paths implemented; continue to iterate for edge-case performance
+- Game state management: basic store implemented but persistence and full upgrade system not yet connected
+- Interactive gameplay elements: core mechanics implemented in TASK009, further polish required
+- Missing full feature parity across pages and comprehensive testing
 
 ## Next Steps
 
@@ -80,10 +87,10 @@
 
 **Fractal Viewer Component**:
 
-1. Create `FractalViewer` component with Canvas element
-2. Implement basic Mandelbrot set calculation function
-3. Add simple color mapping for iteration counts
-4. Integrate with React Three Fiber for 3D capabilities
+1. Finalize FractalViewer integration and ensure GPU/CPU renderer parity
+2. Complete Zustand store persistence middleware and wire to UI
+3. Add color mapping adjustments and performance tuning
+4. Integrate exploration actions with game state
 
 **Basic Game State**:
 

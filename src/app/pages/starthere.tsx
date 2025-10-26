@@ -21,125 +21,56 @@ import {
 import FractalViewer, { type FractalRendererMode } from "./fractalviewer";
 import StartHereMenu from "./startheremenu";
 import { resolveCosmicEvent } from "./cosmicEvents";
-
-type UpgradeKey = "probe" | "processor" | "stabilizer";
-
-type ComplexParameter = {
-  real: number;
-  imaginary: number;
-};
-
-type UpgradeConfig = {
-  title: string;
-  description: string;
-  baseCost: number;
-  growth: number;
-  flavor: string;
-};
-
-const UPGRADE_CONFIG: Record<UpgradeKey, UpgradeConfig> = {
-  probe: {
-    title: "Fractal Probes",
-    description:
-      "Deploy autonomous explorers that map detail while you plan the next zoom.",
-    baseCost: 35,
-    growth: 1.45,
-    flavor: "Their quantum lenses never blink.",
-  },
-  processor: {
-    title: "Quantum Processors",
-    description:
-      "Accelerate every calculation, multiplying the insight gathered by your probes.",
-    baseCost: 120,
-    growth: 1.6,
-    flavor: "The algorithms hum in complex harmony.",
-  },
-  stabilizer: {
-    title: "Dimensional Stabilizers",
-    description:
-      "Anchor deeper zoom levels so the structure holds while automation continues.",
-    baseCost: 220,
-    growth: 1.55,
-    flavor: "Reality threads itself tighter around the frontier.",
-  },
-};
-
-const FRACTAL_ZONES = [
-  {
-    name: "Mandelbrot Core",
-    requirement: 0,
-    bonus: 0.0,
-    description: "The familiar heart of the set, steady and welcoming.",
-  },
-  {
-    name: "Seahorse Valley",
-    requirement: 4,
-    bonus: 0.08,
-    description:
-      "Filigree spirals curl like cosmic seahorses, enriching every data packet.",
-  },
-  {
-    name: "Spiral Nebula",
-    requirement: 7,
-    bonus: 0.18,
-    description:
-      "Twin galaxies of recursion feed each other, boosting production dramatically.",
-  },
-  {
-    name: "Mini-Brot Frontier",
-    requirement: 11,
-    bonus: 0.3,
-    description:
-      "Self-similarity upon self-similarity. You glimpse new universes in each pixel.",
-  },
-  {
-    name: "Hyperbolic Bloom",
-    requirement: 15,
-    bonus: 0.45,
-    description:
-      "Geometries bloom beyond Euclid. Ascension-grade knowledge saturates every line.",
-  },
-];
-
-const DIMENSIONAL_TARGET: ComplexParameter = { real: -0.75, imaginary: 0.11 };
-
-const formatNumber = (value: number): string => {
-  if (value >= 1e9) {
-    return `${(value / 1e9).toFixed(2)}B`;
-  }
-  if (value >= 1e6) {
-    return `${(value / 1e6).toFixed(2)}M`;
-  }
-  if (value >= 1e3) {
-    return `${(value / 1e3).toFixed(2)}K`;
-  }
-  return value.toFixed(0);
-};
+import { useGameStore, type UpgradeKey, type ComplexParameter } from "@/store/gameStore";
+import { UPGRADE_CONFIG, FRACTAL_ZONES, DIMENSIONAL_TARGET } from "@/data/gameConfig";
+import { formatNumber } from "@/lib/gameplay/formatters";
+import {
+  calculateUpgradeCost,
+  calculateZoomCost,
+  calculateExpeditionCost,
+  calculateExpeditionPreview,
+  calculateStabiliseCost,
+} from "@/lib/gameplay/costFormulas";
+import {
+  calculateProductionMultiplier,
+  calculateParameterEfficiency,
+  calculateBaseProduction,
+  calculatePassiveDepthGain,
+  calculateZoneBonus,
+} from "@/lib/gameplay/productionMath";
 
 export default function StartHere(): ReactElement {
-  const [fractalData, setFractalData] = useState<number>(42);
-  const [depth, setDepth] = useState<number>(0);
-  const [upgrades, setUpgrades] = useState<Record<UpgradeKey, number>>({
-    probe: 0,
-    processor: 0,
-    stabilizer: 0,
-  });
-  const [dimensionalPoints, setDimensionalPoints] = useState<number>(0);
-  const [ascensionLevel, setAscensionLevel] = useState<number>(0);
-  const [amplifiers, setAmplifiers] = useState<number>(0);
-  const [resonance, setResonance] = useState<number>(4);
-  const [anomalies, setAnomalies] = useState<number>(0);
-  const [expeditionRank, setExpeditionRank] = useState<number>(0);
-  const [eventCountdown, setEventCountdown] = useState<number>(18);
-  const [complexParameter, setComplexParameter] = useState<ComplexParameter>({
-    ...DIMENSIONAL_TARGET,
-  });
-  const [activityLog, setActivityLog] = useState<string[]>([
-    "Begin exploration: calibrating renderers…",
-  ]);
-  const [lastZone, setLastZone] = useState<string>(
-    FRACTAL_ZONES[0]?.name ?? "",
-  );
+  // Get state and actions from Zustand store
+  const fractalData = useGameStore((state) => state.fractalData);
+  const depth = useGameStore((state) => state.depth);
+  const upgrades = useGameStore((state) => state.upgrades);
+  const dimensionalPoints = useGameStore((state) => state.dimensionalPoints);
+  const ascensionLevel = useGameStore((state) => state.ascensionLevel);
+  const amplifiers = useGameStore((state) => state.amplifiers);
+  const resonance = useGameStore((state) => state.resonance);
+  const anomalies = useGameStore((state) => state.anomalies);
+  const expeditionRank = useGameStore((state) => state.expeditionRank);
+  const eventCountdown = useGameStore((state) => state.eventCountdown);
+  const complexParameter = useGameStore((state) => state.complexParameter);
+  const activityLog = useGameStore((state) => state.activityLog);
+  const lastZone = useGameStore((state) => state.lastZone);
+
+  const spendFractalData = useGameStore((state) => state.spendFractalData);
+  const addFractalData = useGameStore((state) => state.addFractalData);
+  const incrementDepth = useGameStore((state) => state.incrementDepth);
+  const spendDimensionalPoints = useGameStore((state) => state.spendDimensionalPoints);
+  const incrementAmplifiers = useGameStore((state) => state.incrementAmplifiers);
+  const addResonance = useGameStore((state) => state.addResonance);
+  const addAnomalies = useGameStore((state) => state.addAnomalies);
+  const incrementExpeditionRank = useGameStore((state) => state.incrementExpeditionRank);
+  const setEventCountdown = useGameStore((state) => state.setEventCountdown);
+  const decrementEventCountdown = useGameStore((state) => state.decrementEventCountdown);
+  const incrementUpgrade = useGameStore((state) => state.incrementUpgrade);
+  const pushActivityLog = useGameStore((state) => state.pushActivityLog);
+  const setLastZone = useGameStore((state) => state.setLastZone);
+  const setComplexParameter = useGameStore((state) => state.setComplexParameter);
+  const performAscension = useGameStore((state) => state.performAscension);
+  
   const latestSnapshotRef = useRef({
     depth,
     resonance,
@@ -150,60 +81,42 @@ export default function StartHere(): ReactElement {
   });
 
   const pushLog = useCallback((message: string) => {
-    setActivityLog((previous) => [message, ...previous].slice(0, 6));
-  }, []);
+    pushActivityLog(message);
+  }, [pushActivityLog]);
 
   const upgradeCost = useCallback(
-    (key: UpgradeKey) => {
-      const config = UPGRADE_CONFIG[key];
-      const owned = upgrades[key];
-      return Math.floor(config.baseCost * Math.pow(config.growth, owned));
-    },
+    (key: UpgradeKey) => calculateUpgradeCost(key, upgrades[key]),
     [upgrades],
   );
 
   const nextDepthLevel = Math.floor(depth) + 1;
   const zoomCost = useMemo(
-    () => Math.floor(18 * Math.pow(1.55, nextDepthLevel)),
+    () => calculateZoomCost(nextDepthLevel),
     [nextDepthLevel],
   );
 
-  const productionMultiplier = useMemo(() => {
-    const ascensionBonus = 1 + ascensionLevel * 0.25 + amplifiers * 0.35;
-    const depthBonus = 1 + Math.floor(depth) * 0.05;
-    const dimensionalBonus = 1 + dimensionalPoints * 0.02;
-    const resonanceBonus = 1 + resonance * 0.015;
-    const anomalyPenalty = Math.max(0.6, 1 - anomalies * 0.03);
-    return (
-      ascensionBonus *
-      depthBonus *
-      dimensionalBonus *
-      resonanceBonus *
-      anomalyPenalty
-    );
-  }, [
-    ascensionLevel,
-    amplifiers,
-    anomalies,
-    depth,
-    dimensionalPoints,
-    resonance,
-  ]);
+  const productionMultiplier = useMemo(
+    () =>
+      calculateProductionMultiplier({
+        ascensionLevel,
+        amplifiers,
+        depth,
+        dimensionalPoints,
+        resonance,
+        anomalies,
+      }),
+    [ascensionLevel, amplifiers, anomalies, depth, dimensionalPoints, resonance],
+  );
 
-  const parameterEfficiency = useMemo(() => {
-    const distance = Math.hypot(
-      complexParameter.real - DIMENSIONAL_TARGET.real,
-      complexParameter.imaginary - DIMENSIONAL_TARGET.imaginary,
-    );
-    return Math.max(0.65, 1.45 - distance * 1.1);
-  }, [complexParameter]);
+  const parameterEfficiency = useMemo(
+    () => calculateParameterEfficiency(complexParameter, DIMENSIONAL_TARGET),
+    [complexParameter],
+  );
 
-  const baseProduction = useMemo(() => {
-    const probeYield = upgrades.probe * 0.9;
-    const processorYield = upgrades.processor * 3.5;
-    const stabilizerYield = upgrades.stabilizer * 1.6;
-    return probeYield + processorYield + stabilizerYield;
-  }, [upgrades]);
+  const baseProduction = useMemo(
+    () => calculateBaseProduction(upgrades),
+    [upgrades],
+  );
 
   const dataPerSecond = useMemo(() => {
     if (baseProduction <= 0) {
@@ -220,35 +133,32 @@ export default function StartHere(): ReactElement {
   const currentZone =
     unlockedZones[unlockedZones.length - 1] ?? FRACTAL_ZONES[0];
 
-  const zoneBonus = currentZone ? 1 + currentZone.bonus : 1;
+  const zoneBonus = currentZone ? calculateZoneBonus(currentZone.bonus) : 1;
 
   const effectiveDataPerSecond = dataPerSecond * zoneBonus;
 
-  const passiveDepthGain = useMemo(() => {
-    if (upgrades.stabilizer <= 0) {
-      return 0;
-    }
-    const resonanceAssist = 1 + Math.min(resonance * 0.02, 0.6);
-    return (
-      (0.06 + upgrades.stabilizer * 0.025) *
-      parameterEfficiency *
-      resonanceAssist
-    );
-  }, [parameterEfficiency, resonance, upgrades.stabilizer]);
+  const passiveDepthGain = useMemo(
+    () =>
+      calculatePassiveDepthGain({
+        stabilizerCount: upgrades.stabilizer,
+        resonance,
+        parameterEfficiency,
+      }),
+    [parameterEfficiency, resonance, upgrades.stabilizer],
+  );
 
   const expeditionCost = useMemo(
-    () =>
-      Math.floor(90 + depth * 25 + ascensionLevel * 35 + expeditionRank * 20),
+    () => calculateExpeditionCost(depth, ascensionLevel, expeditionRank),
     [ascensionLevel, depth, expeditionRank],
   );
 
   const expeditionPreview = useMemo(
-    () => Math.floor(6 + depth * 0.6 + resonance * 0.3 + ascensionLevel * 1.5),
+    () => calculateExpeditionPreview(depth, resonance, ascensionLevel),
     [ascensionLevel, depth, resonance],
   );
 
   const stabiliseCost = useMemo(
-    () => Math.floor(24 + anomalies * 9 + ascensionLevel * 6),
+    () => calculateStabiliseCost(anomalies, ascensionLevel),
     [anomalies, ascensionLevel],
   );
 
@@ -277,15 +187,15 @@ export default function StartHere(): ReactElement {
 
     const interval = window.setInterval(() => {
       if (effectiveDataPerSecond > 0) {
-        setFractalData((previous) => previous + effectiveDataPerSecond / 2);
+        addFractalData(effectiveDataPerSecond / 2);
       }
       if (passiveDepthGain > 0) {
-        setDepth((previous) => previous + passiveDepthGain / 2);
+        incrementDepth(passiveDepthGain / 2);
       }
     }, 500);
 
     return () => window.clearInterval(interval);
-  }, [effectiveDataPerSecond, passiveDepthGain]);
+  }, [effectiveDataPerSecond, passiveDepthGain, addFractalData, incrementDepth]);
 
   useEffect(() => {
     if (!currentZone || currentZone.name === lastZone) {
@@ -295,7 +205,7 @@ export default function StartHere(): ReactElement {
       `New region unlocked: ${currentZone.name}. ${currentZone.description}`,
     );
     setLastZone(currentZone.name);
-  }, [currentZone, lastZone, pushLog]);
+  }, [currentZone, lastZone, pushLog, setLastZone]);
 
   const triggerCosmicEvent = useCallback(() => {
     const { event, outcome } = resolveCosmicEvent(latestSnapshotRef.current);
@@ -308,83 +218,66 @@ export default function StartHere(): ReactElement {
     } = outcome;
 
     if (dataDelta !== 0) {
-      setFractalData((previous) => Math.max(0, previous + dataDelta));
+      if (dataDelta > 0) {
+        addFractalData(dataDelta);
+      } else {
+        spendFractalData(-dataDelta);
+      }
     }
     if (resonanceDelta !== 0) {
-      setResonance((previous) => Math.max(0, previous + resonanceDelta));
+      addResonance(resonanceDelta);
     }
     if (anomaliesDelta !== 0) {
-      setAnomalies((previous) => Math.max(0, previous + anomaliesDelta));
+      addAnomalies(anomaliesDelta);
     }
     if (depthDelta !== 0) {
-      setDepth((previous) => Math.max(0, previous + depthDelta));
+      incrementDepth(depthDelta);
     }
     if (dimensionalPointsDelta !== 0) {
-      setDimensionalPoints((previous) =>
-        Math.max(0, previous + dimensionalPointsDelta),
-      );
+      useGameStore.getState().addDimensionalPoints(dimensionalPointsDelta);
     }
     pushLog(`[Event] ${event.name}: ${outcome.log}`);
-  }, [pushLog]);
+  }, [pushLog, addFractalData, spendFractalData, addResonance, addAnomalies, incrementDepth]);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
-      setEventCountdown((previous) => {
-        if (previous <= 1) {
-          triggerCosmicEvent();
-          return 16 + Math.floor(Math.random() * 9);
-        }
-        return previous - 1;
-      });
+      const newValue = decrementEventCountdown();
+      if (newValue === 0) {
+        triggerCosmicEvent();
+        setEventCountdown(16 + Math.floor(Math.random() * 9));
+      }
     }, 1000);
 
     return () => window.clearInterval(interval);
-  }, [triggerCosmicEvent]);
+  }, [triggerCosmicEvent, decrementEventCountdown, setEventCountdown]);
 
   const handleZoomDeeper = useCallback(() => {
-    let zoomApproved = false;
-    setFractalData((previous) => {
-      if (previous < zoomCost) {
-        return previous;
-      }
-      zoomApproved = true;
-      return previous - zoomCost;
-    });
-    if (zoomApproved) {
-      setDepth((previous) => {
-        const updated = previous + 1;
-        pushLog(`Zoomed to depth ${Math.floor(updated)}. Details blossom.`);
-        return updated;
-      });
+    const success = spendFractalData(zoomCost);
+    if (success) {
+      incrementDepth(1);
+      pushLog(`Zoomed to depth ${Math.floor(depth + 1)}. Details blossom.`);
     } else {
       pushLog("Insufficient Fractal Data to penetrate deeper.");
     }
-  }, [pushLog, zoomCost]);
+  }, [pushLog, zoomCost, spendFractalData, incrementDepth, depth]);
 
   const handleZoomOut = useCallback(() => {
-    setDepth((previous) => Math.max(0, previous - 1));
+    incrementDepth(-1);
     pushLog("Stabilised view at a safer zoom.");
-  }, [pushLog]);
+  }, [pushLog, incrementDepth]);
 
   const handleExpedition = useCallback(() => {
-    let authorised = false;
-    setFractalData((previous) => {
-      if (previous < expeditionCost) {
-        return previous;
-      }
-      authorised = true;
-      return previous - expeditionCost;
-    });
-    if (!authorised) {
+    const success = spendFractalData(expeditionCost);
+    if (!success) {
       pushLog("Expedition denied: insufficient Fractal Data for launch.");
       return;
     }
     const variableReward = expeditionPreview + Math.floor(Math.random() * 4);
-    setResonance((previous) => previous + variableReward);
-    setDepth((previous) => previous + 0.25);
-    setExpeditionRank((previous) => previous + 1);
+    addResonance(variableReward);
+    incrementDepth(0.25);
+    incrementExpeditionRank();
     if (Math.random() > 0.72) {
-      setAnomalies((previous) => previous + 1);
+      addAnomalies(1);
       pushLog(
         `Expedition reports ${variableReward} resonance shards and an excitable anomaly hitchhiker.`,
       );
@@ -393,51 +286,37 @@ export default function StartHere(): ReactElement {
     pushLog(
       `Expedition returns triumphantly with ${variableReward} resonance shards.`,
     );
-  }, [expeditionCost, expeditionPreview, pushLog]);
+  }, [expeditionCost, expeditionPreview, pushLog, spendFractalData, addResonance, incrementDepth, incrementExpeditionRank, addAnomalies]);
 
   const handleStabiliseAnomaly = useCallback(() => {
     if (anomalies <= 0) {
       pushLog("Calibration steady: no anomalies demand stabilisation.");
       return;
     }
-    let authorised = false;
-    setFractalData((previous) => {
-      if (previous < stabiliseCost) {
-        return previous;
-      }
-      authorised = true;
-      return previous - stabiliseCost;
-    });
-    if (!authorised) {
+    const success = spendFractalData(stabiliseCost);
+    if (!success) {
       pushLog(
         "Stabilisation cancelled: gather more Fractal Data for the ritual.",
       );
       return;
     }
-    setAnomalies((previous) => Math.max(0, previous - 1));
-    setResonance((previous) => previous + 2);
+    useGameStore.getState().removeAnomaly();
+    addResonance(2);
     pushLog("Quantum botanists prune an anomaly garden into calm symmetry.");
-  }, [anomalies, pushLog, stabiliseCost]);
+  }, [anomalies, pushLog, stabiliseCost, spendFractalData, addResonance]);
 
   const handleUpgradePurchase = useCallback(
     (key: UpgradeKey) => {
       const cost = upgradeCost(key);
-      let purchase = false;
-      setFractalData((previous) => {
-        if (previous < cost) {
-          return previous;
-        }
-        purchase = true;
-        return previous - cost;
-      });
-      if (!purchase) {
+      const success = spendFractalData(cost);
+      if (!success) {
         pushLog("The frontier demands more data before that upgrade.");
         return;
       }
-      setUpgrades((previous) => ({ ...previous, [key]: previous[key] + 1 }));
+      incrementUpgrade(key);
       pushLog(`Upgrade secured: ${UPGRADE_CONFIG[key].title}.`);
     },
-    [pushLog, upgradeCost],
+    [pushLog, upgradeCost, spendFractalData, incrementUpgrade],
   );
 
   const ascendReady = depth >= 6 && fractalData >= 1200;
@@ -453,22 +332,11 @@ export default function StartHere(): ReactElement {
       pushLog("The fractal resists ascension – reach deeper detail first.");
       return;
     }
-    setDimensionalPoints((previous) => previous + ascensionYield);
-    setAscensionLevel((previous) => previous + 1);
-    setFractalData(40 + ascensionYield * 15);
-    setDepth(0);
-    setUpgrades({ probe: 0, processor: 0, stabilizer: 0 });
-    setAmplifiers(0);
-    setResonance((previous) =>
-      Math.max(3, Math.floor(previous * 0.35) + ascensionYield),
-    );
-    setAnomalies(0);
-    setEventCountdown(18);
-    setExpeditionRank(0);
+    performAscension(ascensionYield);
     pushLog(
       `Dimensional Ascension complete. Gained ${ascensionYield} Dimensional Points.`,
     );
-  }, [ascendReady, ascensionYield, pushLog]);
+  }, [ascendReady, ascensionYield, pushLog, performAscension]);
 
   const amplifierCost = useMemo(
     () => Math.floor(3 * Math.pow(2.4, amplifiers)),
@@ -476,27 +344,20 @@ export default function StartHere(): ReactElement {
   );
 
   const handleAmplifierPurchase = useCallback(() => {
-    let purchase = false;
-    setDimensionalPoints((previous) => {
-      if (previous < amplifierCost) {
-        return previous;
-      }
-      purchase = true;
-      return previous - amplifierCost;
-    });
-    if (!purchase) {
+    const success = spendDimensionalPoints(amplifierCost);
+    if (!success) {
       pushLog("Need more Dimensional Points to stabilise an amplifier.");
       return;
     }
-    setAmplifiers((previous) => previous + 1);
+    incrementAmplifiers();
     pushLog("Dimensional Amplifier anchors permanent insight.");
-  }, [amplifierCost, pushLog]);
+  }, [amplifierCost, pushLog, spendDimensionalPoints, incrementAmplifiers]);
 
   const handleParameterChange = useCallback(
     (changes: Partial<ComplexParameter>) => {
-      setComplexParameter((previous) => ({ ...previous, ...changes }));
+      setComplexParameter(changes);
     },
-    [],
+    [setComplexParameter],
   );
 
   const dimensionalEfficiency = (parameterEfficiency * 100).toFixed(0);
