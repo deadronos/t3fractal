@@ -427,6 +427,11 @@ export default function StartHere(): ReactElement {
       pushLog("The fractal resists ascension – reach deeper detail first.");
       return;
     }
+  const handleAscend = useCallback(() => {
+    if (!ascendReady) {
+      pushLog("The fractal resists ascension – reach deeper detail first.");
+      return;
+    }
     performAscension(ascensionYield);
     pushLog(
       `Dimensional Ascension complete. Gained ${ascensionYield} Dimensional Points.`,
