@@ -58,13 +58,10 @@ export default function StartHere(): ReactElement {
   const spendFractalData = useGameStore((state) => state.spendFractalData);
   const addFractalData = useGameStore((state) => state.addFractalData);
   const incrementDepth = useGameStore((state) => state.incrementDepth);
-  const setDepth = useGameStore((state) => state.setDepth);
   const spendDimensionalPoints = useGameStore((state) => state.spendDimensionalPoints);
   const incrementAmplifiers = useGameStore((state) => state.incrementAmplifiers);
   const addResonance = useGameStore((state) => state.addResonance);
-  const setResonance = useGameStore((state) => state.setResonance);
   const addAnomalies = useGameStore((state) => state.addAnomalies);
-  const setAnomalies = useGameStore((state) => state.setAnomalies);
   const incrementExpeditionRank = useGameStore((state) => state.incrementExpeditionRank);
   const setEventCountdown = useGameStore((state) => state.setEventCountdown);
   const decrementEventCountdown = useGameStore((state) => state.decrementEventCountdown);

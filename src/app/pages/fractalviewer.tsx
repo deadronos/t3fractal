@@ -213,7 +213,15 @@ export default function FractalViewer({
       }
       URL.revokeObjectURL(objectUrl);
     };
-  }, [amplifiers, depth, parameter, renderMode, size.height, size.width]);
+  }, [
+    amplifiers,
+    canvasRef,
+    depth,
+    parameter,
+    renderMode,
+    size.height,
+    size.width,
+  ]);
 
   const handleCpuClick = useCallback(
     () => updateRendererMode("cpu"),
