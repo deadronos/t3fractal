@@ -7,7 +7,7 @@ type FractalCPUCanvasProps = {
   depth: number;
   parameter: ComplexParameter;
   amplifiers: number;
-  canvasRef: React.RefObject<HTMLCanvasElement>;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
   width: number;
   height: number;
 };

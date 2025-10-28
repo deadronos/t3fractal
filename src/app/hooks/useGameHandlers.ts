@@ -32,7 +32,7 @@ type GameActions = {
   incrementUpgrade: (key: UpgradeKey) => void;
   pushActivityLog: (message: string) => void;
   setComplexParameter: (changes: Partial<ComplexParameter>) => void;
-  performAscension: (yield: number) => void;
+  performAscension: (yieldAmount: number) => void;
 };
 
 /**
