@@ -2,381 +2,62 @@
 
 import "@/styles/starthere.css";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useState } from "react";
 import type { ReactElement } from "react";
 
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Flex,
-  Grid,
-  Heading,
-  Separator,
-  Slider,
-  Text,
-} from "@radix-ui/themes";
+import { Box, Flex, Grid } from "@radix-ui/themes";
 
-import FractalViewer, { type FractalRendererMode } from "./fractalviewer";
+import { type FractalRendererMode } from "./fractalviewer";
 import StartHereMenu from "./startheremenu";
-import { resolveCosmicEvent } from "./cosmicEvents";
-import { useGameStore, type UpgradeKey, type ComplexParameter } from "@/store/gameStore";
-import { UPGRADE_CONFIG, FRACTAL_ZONES, DIMENSIONAL_TARGET } from "@/data/gameConfig";
-import { formatNumber } from "@/lib/gameplay/formatters";
-import {
-  calculateUpgradeCost,
-  calculateZoomCost,
-  calculateExpeditionCost,
-  calculateExpeditionPreview,
-  calculateStabiliseCost,
-} from "@/lib/gameplay/costFormulas";
-import {
-  calculateProductionMultiplier,
-  calculateParameterEfficiency,
-  calculateBaseProduction,
-  calculatePassiveDepthGain,
-  calculateZoneBonus,
-} from "@/lib/gameplay/productionMath";
+import { useGameState, useGameActions } from "@/app/hooks/useGameState";
+import { useGameCalculations } from "@/app/hooks/useGameCalculations";
+import { useGameHandlers } from "@/app/hooks/useGameHandlers";
+import { useGameEffects } from "@/app/hooks/useGameEffects";
+import FractalCard from "@/app/components/game/FractalCard";
+import CosmicEventCard from "@/app/components/game/CosmicEventCard";
+import ExplorationZonesCard from "@/app/components/game/ExplorationZonesCard";
+import UpgradesCard from "@/app/components/game/UpgradesCard";
+import PrestigeCard from "@/app/components/game/PrestigeCard";
+import ActivityLogCard from "@/app/components/game/ActivityLogCard";
 
 export default function StartHere(): ReactElement {
-  // Get state and actions from Zustand store
-  const fractalData = useGameStore((state) => state.fractalData);
-  const depth = useGameStore((state) => state.depth);
-  const upgrades = useGameStore((state) => state.upgrades);
-  const dimensionalPoints = useGameStore((state) => state.dimensionalPoints);
-  const ascensionLevel = useGameStore((state) => state.ascensionLevel);
-  const amplifiers = useGameStore((state) => state.amplifiers);
-  const resonance = useGameStore((state) => state.resonance);
-  const anomalies = useGameStore((state) => state.anomalies);
-  const expeditionRank = useGameStore((state) => state.expeditionRank);
-  const eventCountdown = useGameStore((state) => state.eventCountdown);
-  const complexParameter = useGameStore((state) => state.complexParameter);
-  const activityLog = useGameStore((state) => state.activityLog);
-  const lastZone = useGameStore((state) => state.lastZone);
-
-  const spendFractalData = useGameStore((state) => state.spendFractalData);
-  const addFractalData = useGameStore((state) => state.addFractalData);
-  const incrementDepth = useGameStore((state) => state.incrementDepth);
-  const spendDimensionalPoints = useGameStore((state) => state.spendDimensionalPoints);
-  const incrementAmplifiers = useGameStore((state) => state.incrementAmplifiers);
-  const addResonance = useGameStore((state) => state.addResonance);
-  const addAnomalies = useGameStore((state) => state.addAnomalies);
-  const incrementExpeditionRank = useGameStore((state) => state.incrementExpeditionRank);
-  const setEventCountdown = useGameStore((state) => state.setEventCountdown);
-  const decrementEventCountdown = useGameStore((state) => state.decrementEventCountdown);
-  const incrementUpgrade = useGameStore((state) => state.incrementUpgrade);
-  const pushActivityLog = useGameStore((state) => state.pushActivityLog);
-  const setLastZone = useGameStore((state) => state.setLastZone);
-  const setComplexParameter = useGameStore((state) => state.setComplexParameter);
-  const performAscension = useGameStore((state) => state.performAscension);
+  const state = useGameState();
+  const actions = useGameActions();
+  const calculations = useGameCalculations(state);
   
-  const latestSnapshotRef = useRef({
-    depth,
-    resonance,
-    anomalies,
-    ascensionLevel,
-    dimensionalPoints,
-    fractalData,
+  const handlers = useGameHandlers(
+    {
+      depth: state.depth,
+      resonance: state.resonance,
+      anomalies: state.anomalies,
+      ascensionLevel: state.ascensionLevel,
+      dimensionalPoints: state.dimensionalPoints,
+      fractalData: state.fractalData,
+      zoomCost: calculations.zoomCost,
+      expeditionCost: calculations.expeditionCost,
+      expeditionPreview: calculations.expeditionPreview,
+      stabiliseCost: calculations.stabiliseCost,
+      upgradeCost: calculations.upgradeCost,
+      ascendReady: calculations.ascendReady,
+      ascensionYield: calculations.ascensionYield,
+      amplifierCost: calculations.amplifierCost,
+    },
+    actions,
+  );
+
+  useGameEffects({
+    effectiveDataPerSecond: calculations.effectiveDataPerSecond,
+    passiveDepthGain: calculations.passiveDepthGain,
+    currentZone: calculations.currentZone,
+    lastZone: state.lastZone,
+    addFractalData: actions.addFractalData,
+    incrementDepth: actions.incrementDepth,
+    pushLog: actions.pushActivityLog,
+    setLastZone: actions.setLastZone,
+    triggerCosmicEvent: handlers.triggerCosmicEvent,
+    decrementEventCountdown: actions.decrementEventCountdown,
+    setEventCountdown: actions.setEventCountdown,
   });
-
-  const pushLog = useCallback((message: string) => {
-    pushActivityLog(message);
-  }, [pushActivityLog]);
-
-  const upgradeCost = useCallback(
-    (key: UpgradeKey) => calculateUpgradeCost(key, upgrades[key]),
-    [upgrades],
-  );
-
-  const nextDepthLevel = Math.floor(depth) + 1;
-  const zoomCost = useMemo(
-    () => calculateZoomCost(nextDepthLevel),
-    [nextDepthLevel],
-  );
-
-  const productionMultiplier = useMemo(
-    () =>
-      calculateProductionMultiplier({
-        ascensionLevel,
-        amplifiers,
-        depth,
-        dimensionalPoints,
-        resonance,
-        anomalies,
-      }),
-    [ascensionLevel, amplifiers, anomalies, depth, dimensionalPoints, resonance],
-  );
-
-  const parameterEfficiency = useMemo(
-    () => calculateParameterEfficiency(complexParameter, DIMENSIONAL_TARGET),
-    [complexParameter],
-  );
-
-  const baseProduction = useMemo(
-    () => calculateBaseProduction(upgrades),
-    [upgrades],
-  );
-
-  const dataPerSecond = useMemo(() => {
-    if (baseProduction <= 0) {
-      return 0;
-    }
-    return baseProduction * productionMultiplier * parameterEfficiency;
-  }, [baseProduction, productionMultiplier, parameterEfficiency]);
-
-  const unlockedZones = useMemo(
-    () => FRACTAL_ZONES.filter((zone) => depth >= zone.requirement),
-    [depth],
-  );
-
-  const currentZone =
-    unlockedZones[unlockedZones.length - 1] ?? FRACTAL_ZONES[0];
-
-  const zoneBonus = currentZone ? calculateZoneBonus(currentZone.bonus) : 1;
-
-  const effectiveDataPerSecond = dataPerSecond * zoneBonus;
-
-  const passiveDepthGain = useMemo(
-    () =>
-      calculatePassiveDepthGain({
-        stabilizerCount: upgrades.stabilizer,
-        resonance,
-        parameterEfficiency,
-      }),
-    [parameterEfficiency, resonance, upgrades.stabilizer],
-  );
-
-  const expeditionCost = useMemo(
-    () => calculateExpeditionCost(depth, ascensionLevel, expeditionRank),
-    [ascensionLevel, depth, expeditionRank],
-  );
-
-  const expeditionPreview = useMemo(
-    () => calculateExpeditionPreview(depth, resonance, ascensionLevel),
-    [ascensionLevel, depth, resonance],
-  );
-
-  const stabiliseCost = useMemo(
-    () => calculateStabiliseCost(anomalies, ascensionLevel),
-    [anomalies, ascensionLevel],
-  );
-
-  useEffect(() => {
-    latestSnapshotRef.current = {
-      depth,
-      resonance,
-      anomalies,
-      ascensionLevel,
-      dimensionalPoints,
-      fractalData,
-    };
-  }, [
-    anomalies,
-    ascensionLevel,
-    depth,
-    dimensionalPoints,
-    fractalData,
-    resonance,
-  ]);
-
-  useEffect(() => {
-    if (effectiveDataPerSecond <= 0 && passiveDepthGain <= 0) {
-      return undefined;
-    }
-
-    const interval = window.setInterval(() => {
-      if (effectiveDataPerSecond > 0) {
-        addFractalData(effectiveDataPerSecond / 2);
-      }
-      if (passiveDepthGain > 0) {
-        incrementDepth(passiveDepthGain / 2);
-      }
-    }, 500);
-
-    return () => window.clearInterval(interval);
-  }, [effectiveDataPerSecond, passiveDepthGain, addFractalData, incrementDepth]);
-
-  useEffect(() => {
-    if (!currentZone || currentZone.name === lastZone) {
-      return;
-    }
-    pushLog(
-      `New region unlocked: ${currentZone.name}. ${currentZone.description}`,
-    );
-    setLastZone(currentZone.name);
-  }, [currentZone, lastZone, pushLog, setLastZone]);
-
-  const triggerCosmicEvent = useCallback(() => {
-    const { event, outcome } = resolveCosmicEvent(latestSnapshotRef.current);
-    const {
-      dataDelta = 0,
-      resonanceDelta = 0,
-      anomaliesDelta = 0,
-      depthDelta = 0,
-      dimensionalPointsDelta = 0,
-    } = outcome;
-
-    if (dataDelta !== 0) {
-      if (dataDelta > 0) {
-        addFractalData(dataDelta);
-      } else {
-        spendFractalData(-dataDelta);
-      }
-    }
-    if (resonanceDelta !== 0) {
-      addResonance(resonanceDelta);
-    }
-    if (anomaliesDelta !== 0) {
-      addAnomalies(anomaliesDelta);
-    }
-    if (depthDelta !== 0) {
-      incrementDepth(depthDelta);
-    }
-    if (dimensionalPointsDelta !== 0) {
-      useGameStore.getState().addDimensionalPoints(dimensionalPointsDelta);
-    }
-    pushLog(`[Event] ${event.name}: ${outcome.log}`);
-  }, [pushLog, addFractalData, spendFractalData, addResonance, addAnomalies, incrementDepth]);
-
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      const newValue = decrementEventCountdown();
-      if (newValue === 0) {
-        triggerCosmicEvent();
-        setEventCountdown(16 + Math.floor(Math.random() * 9));
-      }
-    }, 1000);
-
-    return () => window.clearInterval(interval);
-  }, [triggerCosmicEvent, decrementEventCountdown, setEventCountdown]);
-
-  const handleZoomDeeper = useCallback(() => {
-    const success = spendFractalData(zoomCost);
-    if (success) {
-      incrementDepth(1);
-      pushLog(`Zoomed to depth ${Math.floor(depth + 1)}. Details blossom.`);
-    } else {
-      pushLog("Insufficient Fractal Data to penetrate deeper.");
-    }
-  }, [pushLog, zoomCost, spendFractalData, incrementDepth, depth]);
-
-  const handleZoomOut = useCallback(() => {
-    incrementDepth(-1);
-    pushLog("Stabilised view at a safer zoom.");
-  }, [pushLog, incrementDepth]);
-
-  const handleExpedition = useCallback(() => {
-    const success = spendFractalData(expeditionCost);
-    if (!success) {
-      pushLog("Expedition denied: insufficient Fractal Data for launch.");
-      return;
-    }
-    const variableReward = expeditionPreview + Math.floor(Math.random() * 4);
-    addResonance(variableReward);
-    incrementDepth(0.25);
-    incrementExpeditionRank();
-    if (Math.random() > 0.72) {
-      addAnomalies(1);
-      pushLog(
-        `Expedition reports ${variableReward} resonance shards and an excitable anomaly hitchhiker.`,
-      );
-      return;
-    }
-    pushLog(
-      `Expedition returns triumphantly with ${variableReward} resonance shards.`,
-    );
-  }, [expeditionCost, expeditionPreview, pushLog, spendFractalData, addResonance, incrementDepth, incrementExpeditionRank, addAnomalies]);
-
-  const handleStabiliseAnomaly = useCallback(() => {
-    if (anomalies <= 0) {
-      pushLog("Calibration steady: no anomalies demand stabilisation.");
-      return;
-    }
-    const success = spendFractalData(stabiliseCost);
-    if (!success) {
-      pushLog(
-        "Stabilisation cancelled: gather more Fractal Data for the ritual.",
-      );
-      return;
-    }
-    useGameStore.getState().removeAnomaly();
-    addResonance(2);
-    pushLog("Quantum botanists prune an anomaly garden into calm symmetry.");
-  }, [anomalies, pushLog, stabiliseCost, spendFractalData, addResonance]);
-
-  const handleUpgradePurchase = useCallback(
-    (key: UpgradeKey) => {
-      const cost = upgradeCost(key);
-      const success = spendFractalData(cost);
-      if (!success) {
-        pushLog("The frontier demands more data before that upgrade.");
-        return;
-      }
-      incrementUpgrade(key);
-      pushLog(`Upgrade secured: ${UPGRADE_CONFIG[key].title}.`);
-    },
-    [pushLog, upgradeCost, spendFractalData, incrementUpgrade],
-  );
-
-  const ascendReady = depth >= 6 && fractalData >= 1200;
-  const ascensionYield = useMemo(() => {
-    const depthContribution = Math.floor(Math.max(depth, 0));
-    const dataContribution = Math.floor(fractalData / 400);
-    const total = depthContribution + dataContribution + upgrades.processor;
-    return Math.max(1, Math.floor(total * 0.75));
-  }, [depth, fractalData, upgrades.processor]);
-
-  const handleAscend = useCallback(() => {
-    if (!ascendReady) {
-      pushLog("The fractal resists ascension – reach deeper detail first.");
-      return;
-    }
-    performAscension(ascensionYield);
-    pushLog(
-      `Dimensional Ascension complete. Gained ${ascensionYield} Dimensional Points.`,
-    );
-  }, [ascendReady, ascensionYield, pushLog, performAscension]);
-
-  const amplifierCost = useMemo(
-    () => Math.floor(3 * Math.pow(2.4, amplifiers)),
-    [amplifiers],
-  );
-
-  const handleAmplifierPurchase = useCallback(() => {
-    const success = spendDimensionalPoints(amplifierCost);
-    if (!success) {
-      pushLog("Need more Dimensional Points to stabilise an amplifier.");
-      return;
-    }
-    incrementAmplifiers();
-    pushLog("Dimensional Amplifier anchors permanent insight.");
-  }, [amplifierCost, pushLog, spendDimensionalPoints, incrementAmplifiers]);
-
-  const handleParameterChange = useCallback(
-    (changes: Partial<ComplexParameter>) => {
-      setComplexParameter(changes);
-    },
-    [setComplexParameter],
-  );
-
-  const dimensionalEfficiency = (parameterEfficiency * 100).toFixed(0);
-  const nextEventLabel =
-    eventCountdown <= 0 ? "Imminent" : `${eventCountdown}s`;
-  const currentZoneRequirement = currentZone?.requirement ?? 0;
-
-  const omenMessage = useMemo(() => {
-    if (anomalies >= 4) {
-      return "Council warning: anomaly gardens are blooming; stabilise soon.";
-    }
-    if (resonance >= 18) {
-      return "The Cosmic Choir hums in harmony. Expect generous events.";
-    }
-    if (currentZoneRequirement >= 10) {
-      return "Frontier scouts taste complexity in the air; brace for dazzling storms.";
-    }
-    return "Sensors idle with a gentle purr. Perfect time to chart expeditions.";
-  }, [anomalies, currentZoneRequirement, resonance]);
 
   const [rendererMode, setRendererMode] =
     useState<FractalRendererMode>("webgl");
@@ -384,12 +65,12 @@ export default function StartHere(): ReactElement {
   return (
     <Box className="startherebox">
       <StartHereMenu
-        fractalData={fractalData}
-        depth={depth}
-        dataPerSecond={effectiveDataPerSecond}
-        dimensionalPoints={dimensionalPoints}
-        resonance={resonance}
-        anomalies={anomalies}
+        fractalData={state.fractalData}
+        depth={state.depth}
+        dataPerSecond={calculations.effectiveDataPerSecond}
+        dimensionalPoints={state.dimensionalPoints}
+        resonance={state.resonance}
+        anomalies={state.anomalies}
       />
       <Grid
         className="starthere-grid"
@@ -397,280 +78,48 @@ export default function StartHere(): ReactElement {
         gap="4"
       >
         <Flex direction="column" gap="4">
-          <Card className="fractal-card">
-            <Flex justify="between" align="center" mb="3">
-              <Heading size="4">
-                Fractal Frontier {rendererMode === "webgl" ? "WebGL" : "CPU"}
-              </Heading>
-              <Text size="2" color="mint">
-                Zone bonus: +{Math.round((zoneBonus - 1) * 100)}%
-              </Text>
-            </Flex>
-            <FractalViewer
-              depth={depth}
-              parameter={complexParameter}
-              amplifiers={amplifiers}
-              onRendererChange={setRendererMode}
-            />
-            <Separator my="3" size="4" />
-            <Grid columns={{ initial: "1", sm: "2" }} gap="4">
-              <Card className="control-card">
-                <Heading size="3">Manual Navigation</Heading>
-                <Text color="gray" size="2" mb="3">
-                  Each zoom consumes Fractal Data but reveals exponentially
-                  richer structures.
-                </Text>
-                <Flex gap="3" mb="3" wrap="wrap">
-                  <Button onClick={handleZoomDeeper} color="green">
-                    Zoom Deeper (Cost: {formatNumber(zoomCost)})
-                  </Button>
-                  <Button onClick={handleZoomOut} variant="soft" color="gray">
-                    Ease Out
-                  </Button>
-                </Flex>
-                <Text size="2" color="gray">
-                  Passive stabilisers add {passiveDepthGain.toFixed(2)} depth /
-                  sec when active.
-                </Text>
-              </Card>
-              <Card className="control-card">
-                <Heading size="3">Complex Parameter Tuning</Heading>
-                <Text size="2" color="gray">
-                  Align with the sweet spot (c = -0.75 + 0.11i) to maximise
-                  efficiency.
-                </Text>
-                <Box className="slider-group">
-                  <Text weight="medium">
-                    Real: {complexParameter.real.toFixed(2)}
-                  </Text>
-                  <Slider
-                    min={-2}
-                    max={1}
-                    step={0.01}
-                    value={[complexParameter.real]}
-                    onValueChange={([value]) =>
-                      handleParameterChange({ real: value })
-                    }
-                  />
-                </Box>
-                <Box className="slider-group">
-                  <Text weight="medium">
-                    Imaginary: {complexParameter.imaginary.toFixed(2)}i
-                  </Text>
-                  <Slider
-                    min={-1}
-                    max={1}
-                    step={0.01}
-                    value={[complexParameter.imaginary]}
-                    onValueChange={([value]) =>
-                      handleParameterChange({ imaginary: value })
-                    }
-                  />
-                </Box>
-                <Text size="2" color="mint">
-                  Dimensional efficiency: {dimensionalEfficiency}%
-                </Text>
-              </Card>
-            </Grid>
-          </Card>
-          <Card className="event-card">
-            <Heading size="4">Cosmic Forecast</Heading>
-            <Text size="2" color="gray">
-              The Galactic Cartographers share whimsical predictions about your
-              frontier.
-            </Text>
-            <Separator my="3" size="4" />
-            <Flex justify="between" align="center" mb="3">
-              <Flex direction="column">
-                <Text size="2" color="gray">
-                  Next phenomenon
-                </Text>
-                <Text size="3" weight="bold" color="mint">
-                  {nextEventLabel}
-                </Text>
-              </Flex>
-              <Badge
-                color={anomalies > 0 ? "iris" : "mint"}
-                variant="soft"
-                className="countdown-badge"
-              >
-                {omenMessage}
-              </Badge>
-            </Flex>
-            <Flex direction="column" gap="2" className="cosmic-stat">
-              <Flex justify="between" align="center">
-                <Text size="2">Resonance Flow</Text>
-                <Text size="2" color="mint">
-                  {resonance.toFixed(0)}
-                </Text>
-              </Flex>
-              <Box className="cosmic-meter">
-                <Box
-                  className="cosmic-meter-fill"
-                  style={{ width: `${Math.min(100, resonance * 5)}%` }}
-                />
-              </Box>
-            </Flex>
-            <Flex direction="column" gap="2" className="cosmic-stat">
-              <Flex justify="between" align="center">
-                <Text size="2">Anomaly Bloom</Text>
-                <Text size="2" color={anomalies > 0 ? "iris" : "gray"}>
-                  {anomalies}
-                </Text>
-              </Flex>
-              <Box className="cosmic-meter anomaly">
-                <Box
-                  className="cosmic-meter-fill"
-                  style={{ width: `${Math.min(100, anomalies * 20)}%` }}
-                />
-              </Box>
-            </Flex>
-            <Separator my="3" size="4" />
-            <Flex direction="column" gap="3">
-              <Button onClick={handleExpedition} color="cyan">
-                Dispatch Expedition (Cost: {formatNumber(expeditionCost)})
-              </Button>
-              <Text size="2" color="gray">
-                Expected haul: ~{expeditionPreview} resonance shards plus modest
-                depth insights.
-              </Text>
-              <Button
-                onClick={handleStabiliseAnomaly}
-                variant="soft"
-                color="purple"
-              >
-                Stabilise Anomaly (Cost: {formatNumber(stabiliseCost)})
-              </Button>
-            </Flex>
-          </Card>
-          <Card className="zone-card">
-            <Heading size="4">Exploration Zones</Heading>
-            <Text size="2" color="gray">
-              Deeper zooms reveal new fractal biomes. Each grants a unique
-              production bonus.
-            </Text>
-            <Separator my="3" size="4" />
-            <Flex direction="column" gap="3">
-              {FRACTAL_ZONES.map((zone) => {
-                const unlocked = depth >= zone.requirement;
-                return (
-                  <Card
-                    key={zone.name}
-                    className={`zone-entry ${unlocked ? "zone-unlocked" : "zone-locked"}`}
-                  >
-                    <Flex justify="between" align="center" mb="1">
-                      <Heading size="3">{zone.name}</Heading>
-                      <Text size="2" color={unlocked ? "mint" : "gray"}>
-                        {unlocked ? "Unlocked" : `Depth ${zone.requirement}`}
-                      </Text>
-                    </Flex>
-                    <Text size="2" color="gray">
-                      {zone.description}
-                    </Text>
-                    <Text size="2" color="mint">
-                      Bonus: +{Math.round(zone.bonus * 100)}% production
-                    </Text>
-                  </Card>
-                );
-              })}
-            </Flex>
-          </Card>
+          <FractalCard
+            depth={state.depth}
+            complexParameter={state.complexParameter}
+            amplifiers={state.amplifiers}
+            zoneBonus={calculations.zoneBonus}
+            zoomCost={calculations.zoomCost}
+            passiveDepthGain={calculations.passiveDepthGain}
+            dimensionalEfficiency={calculations.dimensionalEfficiency}
+            rendererMode={rendererMode}
+            onRendererChange={setRendererMode}
+            onZoomDeeper={handlers.handleZoomDeeper}
+            onZoomOut={handlers.handleZoomOut}
+            onParameterChange={handlers.handleParameterChange}
+          />
+          <CosmicEventCard
+            eventCountdown={state.eventCountdown}
+            resonance={state.resonance}
+            anomalies={state.anomalies}
+            expeditionCost={calculations.expeditionCost}
+            expeditionPreview={calculations.expeditionPreview}
+            stabiliseCost={calculations.stabiliseCost}
+            omenMessage={calculations.omenMessage}
+            onExpedition={handlers.handleExpedition}
+            onStabiliseAnomaly={handlers.handleStabiliseAnomaly}
+          />
+          <ExplorationZonesCard depth={state.depth} />
         </Flex>
         <Flex direction="column" gap="4">
-          <Card className="upgrade-card">
-            <Heading size="4" mb="1">
-              Automation Upgrades
-            </Heading>
-            <Text size="2" color="gray">
-              Invest Fractal Data to automate exploration. Each stack compounds
-              with your dimensional bonuses.
-            </Text>
-            <Separator my="3" size="4" />
-            <Flex direction="column" gap="3">
-              {Object.entries(UPGRADE_CONFIG).map(([key, config]) => {
-                const typedKey = key as UpgradeKey;
-                const owned = upgrades[typedKey];
-                const cost = upgradeCost(typedKey);
-                return (
-                  <Card key={key} className="upgrade-row">
-                    <Flex justify="between" align="center" mb="2">
-                      <Heading size="3">{config.title}</Heading>
-                      <Text size="2" color="gray">
-                        Owned: {owned}
-                      </Text>
-                    </Flex>
-                    <Text size="2" color="gray">
-                      {config.description}
-                    </Text>
-                    <Text size="2" color="mint" mb="2">
-                      {config.flavor}
-                    </Text>
-                    <Button onClick={() => handleUpgradePurchase(typedKey)}>
-                      Purchase ({formatNumber(cost)} Data)
-                    </Button>
-                  </Card>
-                );
-              })}
-            </Flex>
-          </Card>
-          <Card className="prestige-card">
-            <Heading size="4" mb="1">
-              Dimensional Ascension
-            </Heading>
-            <Text size="2" color="gray">
-              Collapse the current fractal and start anew with permanent
-              insight. Costs your progress but grants Dimensional Points.
-            </Text>
-            <Separator my="3" size="4" />
-            <Flex align="center" justify="between" mb="3">
-              <Box>
-                <Text size="2">Ascension yield: {ascensionYield} DP</Text>
-                <Text size="2" color={ascendReady ? "mint" : "gray"}>
-                  Status: {ascendReady ? "Ready" : "Not yet"}
-                </Text>
-              </Box>
-              <Button
-                onClick={handleAscend}
-                color={ascendReady ? "purple" : "gray"}
-                variant={ascendReady ? "solid" : "soft"}
-              >
-                Ascend
-              </Button>
-            </Flex>
-            <Box className="prestige-upgrades">
-              <Heading size="3">Dimensional Amplifiers</Heading>
-              <Text size="2" color="gray">
-                Spend Dimensional Points for permanent production boosts that
-                survive resets.
-              </Text>
-              <Flex align="center" justify="between" mt="2">
-                <Text size="2">Amplifiers owned: {amplifiers}</Text>
-                <Button
-                  onClick={handleAmplifierPurchase}
-                  variant="soft"
-                  color="mint"
-                >
-                  Buy ({amplifierCost} DP)
-                </Button>
-              </Flex>
-            </Box>
-          </Card>
-          <Card className="log-card">
-            <Heading size="4" mb="2">
-              Mission Log
-            </Heading>
-            <Flex direction="column" gap="2">
-              {activityLog.map((entry, index) => (
-                <Text
-                  key={`${entry}-${index}`}
-                  size="2"
-                  color={index === 0 ? "mint" : "gray"}
-                >
-                  {entry}
-                </Text>
-              ))}
-            </Flex>
-          </Card>
+          <UpgradesCard
+            upgrades={state.upgrades}
+            upgradeCost={calculations.upgradeCost}
+            onPurchase={handlers.handleUpgradePurchase}
+          />
+          <PrestigeCard
+            ascensionYield={calculations.ascensionYield}
+            ascendReady={calculations.ascendReady}
+            amplifiers={state.amplifiers}
+            amplifierCost={calculations.amplifierCost}
+            onAscend={handlers.handleAscend}
+            onAmplifierPurchase={handlers.handleAmplifierPurchase}
+          />
+          <ActivityLogCard activityLog={state.activityLog} />
         </Flex>
       </Grid>
     </Box>
