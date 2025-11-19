@@ -1,19 +1,23 @@
 import { Canvas } from "@react-three/fiber";
 
 import FractalPlane from "./FractalPlane";
-import type { ComplexParameter } from "@/lib/fractal/fractalMath";
+import type { ComplexParameter, FractalFormula } from "@/lib/fractal/fractalMath";
 import "@/lib/fractal/shaders";
 
 type FractalWebGLSurfaceProps = {
   depth: number;
   parameter: ComplexParameter;
   amplifiers: number;
+  formula?: FractalFormula;
+  juliaConstant?: ComplexParameter;
 };
 
 export default function FractalWebGLSurface({
   depth,
   parameter,
   amplifiers,
+  formula = "mandelbrot",
+  juliaConstant,
 }: FractalWebGLSurfaceProps) {
   return (
     <Canvas
@@ -27,6 +31,8 @@ export default function FractalWebGLSurface({
         depth={depth}
         parameter={parameter}
         amplifiers={amplifiers}
+        formula={formula}
+        juliaConstant={juliaConstant}
       />
     </Canvas>
   );

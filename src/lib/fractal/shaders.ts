@@ -36,6 +36,8 @@ const fragmentShader = /* language=GLSL */ `
   uniform float uMaxIterations;
   uniform float uPaletteShift;
   uniform float uSaturation;
+  uniform int uFormulaType;
+  uniform vec2 uJuliaConstant;
 
   const int ITERATION_CAP = 1000;
 
@@ -62,12 +64,18 @@ const fragmentShader = /* language=GLSL */ `
     float aspect = uResolution.x / uResolution.y;
     uv.x *= aspect;
 
-    vec2 c = vec2(
+    vec2 base = vec2(
       uCenter.x + uv.x / uZoom,
       uCenter.y + uv.y / uZoom
     );
 
+    vec2 c = uJuliaConstant;
     vec2 z = vec2(0.0);
+    if (uFormulaType == 0) {
+      c = base;
+    } else {
+      z = base;
+    }
     float maxIter = clamp(uMaxIterations, 1.0, float(ITERATION_CAP));
     float iter = maxIter;
 
@@ -115,6 +123,8 @@ const defaultUniforms = {
   uMaxIterations: 100,
   uPaletteShift: 0,
   uSaturation: 0.7,
+  uFormulaType: 0,
+  uJuliaConstant: new THREE.Vector2(0, 0),
 };
 
 /**
@@ -139,6 +149,8 @@ export type FractalMaterialUniforms = {
   uMaxIterations: { value: number };
   uPaletteShift: { value: number };
   uSaturation: { value: number };
+  uFormulaType: { value: number };
+  uJuliaConstant: { value: THREE.Vector2 };
 };
 
 /**

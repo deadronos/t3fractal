@@ -2,7 +2,7 @@
 
 import type { ReactElement } from "react";
 
-import type { ComplexParameter } from "@/lib/fractal/fractalMath";
+import type { ComplexParameter, FractalFormula } from "@/lib/fractal/fractalMath";
 import { useFractalRenderer } from "@/lib/fractal/hooks/useFractalRenderer";
 import type { FractalRendererMode } from "@/lib/fractal/hooks/useFractalRenderer";
 
@@ -17,6 +17,8 @@ type FractalViewerProps = {
   parameter: ComplexParameter;
   amplifiers: number;
   onRendererChange?: (mode: FractalRendererMode) => void;
+  formula?: FractalFormula;
+  juliaConstant?: ComplexParameter;
 };
 
 const CANVAS_WIDTH = 360;
@@ -27,6 +29,8 @@ export default function FractalViewer({
   parameter,
   amplifiers,
   onRendererChange,
+  formula = "mandelbrot",
+  juliaConstant,
 }: FractalViewerProps): ReactElement {
   const {
     renderMode,
@@ -41,6 +45,8 @@ export default function FractalViewer({
     defaultHeight: CANVAS_HEIGHT,
   });
 
+  const juliaConstantValue = juliaConstant ?? parameter;
+
   return (
     <div className="fractal-viewer">
       <FractalRendererControls
@@ -54,6 +60,8 @@ export default function FractalViewer({
             depth={depth}
             parameter={parameter}
             amplifiers={amplifiers}
+            formula={formula}
+            juliaConstant={juliaConstantValue}
           />
         ) : (
           <>
@@ -68,6 +76,8 @@ export default function FractalViewer({
               depth={depth}
               parameter={parameter}
               amplifiers={amplifiers}
+              formula={formula}
+              juliaConstant={juliaConstantValue}
               canvasRef={canvasRef}
               width={size.width}
               height={size.height}

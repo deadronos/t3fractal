@@ -5,7 +5,7 @@ import "@/styles/starthere.css";
 import { useState } from "react";
 import type { ReactElement } from "react";
 
-import { Box, Flex, Grid } from "@radix-ui/themes";
+import { Box, Flex, Grid, Tabs } from "@radix-ui/themes";
 
 import { type FractalRendererMode } from "./fractalviewer";
 import StartHereMenu from "./startheremenu";
@@ -19,6 +19,7 @@ import ExplorationZonesCard from "@/app/components/game/ExplorationZonesCard";
 import UpgradesCard from "@/app/components/game/UpgradesCard";
 import PrestigeCard from "@/app/components/game/PrestigeCard";
 import ActivityLogCard from "@/app/components/game/ActivityLogCard";
+import JuliaLabCard from "@/app/components/game/JuliaLabCard";
 
 export default function StartHere(): ReactElement {
   const state = useGameState();
@@ -41,6 +42,12 @@ export default function StartHere(): ReactElement {
       ascendReady: calculations.ascendReady,
       ascensionYield: calculations.ascensionYield,
       amplifierCost: calculations.amplifierCost,
+      transcensionReady: calculations.transcensionReady,
+      transcensionYield: calculations.transcensionYield,
+      harmonicCores: state.harmonicCores,
+      juliaStudyCost: calculations.juliaStudyCost,
+      juliaFluxGain: calculations.juliaFluxGain,
+      juliaDepth: state.juliaDepth,
     },
     actions,
   );
@@ -61,6 +68,11 @@ export default function StartHere(): ReactElement {
 
   const [rendererMode, setRendererMode] =
     useState<FractalRendererMode>("webgl");
+  const [juliaRendererMode, setJuliaRendererMode] =
+    useState<FractalRendererMode>("webgl");
+  const [activeTab, setActiveTab] = useState<"frontier" | "julia">("frontier");
+
+  const juliaUnlocked = state.transcensionLevel > 0;
 
   return (
     <Box className="startherebox">
@@ -71,57 +83,118 @@ export default function StartHere(): ReactElement {
         dimensionalPoints={state.dimensionalPoints}
         resonance={state.resonance}
         anomalies={state.anomalies}
+        harmonicCores={state.harmonicCores}
+        juliaFlux={state.juliaFlux}
+        transcensionLevel={state.transcensionLevel}
+        juliaUnlocked={juliaUnlocked}
       />
-      <Grid
-        className="starthere-grid"
-        columns={{ initial: "1", md: "2" }}
-        gap="4"
+      <Tabs.Root
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as "frontier" | "julia")}
+        className="starthere-tabs"
       >
-        <Flex direction="column" gap="4">
-          <FractalCard
-            depth={state.depth}
-            complexParameter={state.complexParameter}
-            amplifiers={state.amplifiers}
-            zoneBonus={calculations.zoneBonus}
-            zoomCost={calculations.zoomCost}
-            passiveDepthGain={calculations.passiveDepthGain}
-            dimensionalEfficiency={calculations.dimensionalEfficiency}
-            rendererMode={rendererMode}
-            onRendererChange={setRendererMode}
-            onZoomDeeper={handlers.handleZoomDeeper}
-            onZoomOut={handlers.handleZoomOut}
-            onParameterChange={handlers.handleParameterChange}
-          />
-          <CosmicEventCard
-            eventCountdown={state.eventCountdown}
-            resonance={state.resonance}
-            anomalies={state.anomalies}
-            expeditionCost={calculations.expeditionCost}
-            expeditionPreview={calculations.expeditionPreview}
-            stabiliseCost={calculations.stabiliseCost}
-            omenMessage={calculations.omenMessage}
-            onExpedition={handlers.handleExpedition}
-            onStabiliseAnomaly={handlers.handleStabiliseAnomaly}
-          />
-          <ExplorationZonesCard depth={state.depth} />
-        </Flex>
-        <Flex direction="column" gap="4">
-          <UpgradesCard
-            upgrades={state.upgrades}
-            upgradeCost={calculations.upgradeCost}
-            onPurchase={handlers.handleUpgradePurchase}
-          />
-          <PrestigeCard
-            ascensionYield={calculations.ascensionYield}
-            ascendReady={calculations.ascendReady}
-            amplifiers={state.amplifiers}
-            amplifierCost={calculations.amplifierCost}
-            onAscend={handlers.handleAscend}
-            onAmplifierPurchase={handlers.handleAmplifierPurchase}
-          />
-          <ActivityLogCard activityLog={state.activityLog} />
-        </Flex>
-      </Grid>
+        <Tabs.List>
+          <Tabs.Trigger value="frontier">Frontier Core</Tabs.Trigger>
+          <Tabs.Trigger value="julia" disabled={!juliaUnlocked}>
+            Julia Lab {juliaUnlocked ? "" : "(unlock via Transcendence)"}
+          </Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="frontier">
+          <Grid
+            className="starthere-grid"
+            columns={{ initial: "1", md: "2" }}
+            gap="4"
+          >
+            <Flex direction="column" gap="4">
+              <FractalCard
+                depth={state.depth}
+                complexParameter={state.complexParameter}
+                amplifiers={state.amplifiers}
+                zoneBonus={calculations.zoneBonus}
+                zoomCost={calculations.zoomCost}
+                passiveDepthGain={calculations.passiveDepthGain}
+                dimensionalEfficiency={calculations.dimensionalEfficiency}
+                rendererMode={rendererMode}
+                onRendererChange={setRendererMode}
+                onZoomDeeper={handlers.handleZoomDeeper}
+                onZoomOut={handlers.handleZoomOut}
+                onParameterChange={handlers.handleParameterChange}
+              />
+              <CosmicEventCard
+                eventCountdown={state.eventCountdown}
+                resonance={state.resonance}
+                anomalies={state.anomalies}
+                expeditionCost={calculations.expeditionCost}
+                expeditionPreview={calculations.expeditionPreview}
+                stabiliseCost={calculations.stabiliseCost}
+                omenMessage={calculations.omenMessage}
+                onExpedition={handlers.handleExpedition}
+                onStabiliseAnomaly={handlers.handleStabiliseAnomaly}
+              />
+              <ExplorationZonesCard depth={state.depth} />
+            </Flex>
+            <Flex direction="column" gap="4">
+              <UpgradesCard
+                upgrades={state.upgrades}
+                upgradeCost={calculations.upgradeCost}
+                onPurchase={handlers.handleUpgradePurchase}
+              />
+              <PrestigeCard
+                ascensionYield={calculations.ascensionYield}
+                ascendReady={calculations.ascendReady}
+                amplifiers={state.amplifiers}
+                amplifierCost={calculations.amplifierCost}
+                harmonicCores={state.harmonicCores}
+                transcensionLevel={state.transcensionLevel}
+                transcensionReady={calculations.transcensionReady}
+                transcensionYield={calculations.transcensionYield}
+                onAscend={handlers.handleAscend}
+                onAmplifierPurchase={handlers.handleAmplifierPurchase}
+                onTranscend={handlers.handleTranscend}
+              />
+              <ActivityLogCard activityLog={state.activityLog} />
+            </Flex>
+          </Grid>
+        </Tabs.Content>
+        <Tabs.Content value="julia">
+          <Grid
+            className="starthere-grid"
+            columns={{ initial: "1", md: "2" }}
+            gap="4"
+          >
+            <JuliaLabCard
+              juliaDepth={state.juliaDepth}
+              juliaFlux={state.juliaFlux}
+              harmonicCores={state.harmonicCores}
+              transcensionLevel={state.transcensionLevel}
+              juliaStudyCost={calculations.juliaStudyCost}
+              juliaFluxGain={calculations.juliaFluxGain}
+              juliaBonusMultiplier={calculations.juliaBonusMultiplier}
+              juliaConstant={state.juliaConstant}
+              rendererMode={juliaRendererMode}
+              onRendererChange={setJuliaRendererMode}
+              onStudy={handlers.handleJuliaStudy}
+              onConstantChange={handlers.handleJuliaConstantChange}
+            />
+            <Flex direction="column" gap="4">
+              <PrestigeCard
+                ascensionYield={calculations.ascensionYield}
+                ascendReady={calculations.ascendReady}
+                amplifiers={state.amplifiers}
+                amplifierCost={calculations.amplifierCost}
+                harmonicCores={state.harmonicCores}
+                transcensionLevel={state.transcensionLevel}
+                transcensionReady={calculations.transcensionReady}
+                transcensionYield={calculations.transcensionYield}
+                onAscend={handlers.handleAscend}
+                onAmplifierPurchase={handlers.handleAmplifierPurchase}
+                onTranscend={handlers.handleTranscend}
+              />
+              <ActivityLogCard activityLog={state.activityLog} />
+            </Flex>
+          </Grid>
+        </Tabs.Content>
+      </Tabs.Root>
     </Box>
   );
 }

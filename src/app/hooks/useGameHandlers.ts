@@ -18,6 +18,12 @@ type GameHandlerDeps = {
   ascendReady: boolean;
   ascensionYield: number;
   amplifierCost: number;
+  transcensionReady: boolean;
+  transcensionYield: number;
+  harmonicCores: number;
+  juliaStudyCost: number;
+  juliaFluxGain: number;
+  juliaDepth: number;
 };
 
 type GameActions = {
@@ -33,6 +39,10 @@ type GameActions = {
   pushActivityLog: (message: string) => void;
   setComplexParameter: (changes: Partial<ComplexParameter>) => void;
   performAscension: (yieldAmount: number) => void;
+  performTranscendence: (yieldAmount: number) => void;
+  addJuliaFlux: (amount: number) => void;
+  incrementJuliaDepth: (amount: number) => void;
+  setJuliaConstant: (changes: Partial<ComplexParameter>) => void;
 };
 
 /**
@@ -46,6 +56,7 @@ export function useGameHandlers(deps: GameHandlerDeps, actions: GameActions) {
     ascensionLevel: deps.ascensionLevel,
     dimensionalPoints: deps.dimensionalPoints,
     fractalData: deps.fractalData,
+    harmonicCores: deps.harmonicCores,
   });
 
   // Update the ref whenever deps change
@@ -56,6 +67,7 @@ export function useGameHandlers(deps: GameHandlerDeps, actions: GameActions) {
     ascensionLevel: deps.ascensionLevel,
     dimensionalPoints: deps.dimensionalPoints,
     fractalData: deps.fractalData,
+    harmonicCores: deps.harmonicCores,
   };
 
   const pushLog = useCallback(
@@ -161,6 +173,39 @@ export function useGameHandlers(deps: GameHandlerDeps, actions: GameActions) {
     [actions],
   );
 
+  const handleJuliaConstantChange = useCallback(
+    (changes: Partial<ComplexParameter>) => {
+      actions.setJuliaConstant(changes);
+    },
+    [actions],
+  );
+
+  const handleTranscend = useCallback(() => {
+    if (!deps.transcensionReady) {
+      pushLog("Transcendence requires a second ascension-grade run and calibration.");
+      return;
+    }
+    actions.performTranscendence(deps.transcensionYield);
+    pushLog(
+      `Harmonic Transcendence achieved. Banked ${deps.transcensionYield} Harmonic Cores and unlocked the Julia Lab.`,
+    );
+  }, [actions, deps.transcensionReady, deps.transcensionYield, pushLog]);
+
+  const handleJuliaStudy = useCallback(() => {
+    const success = actions.spendFractalData(deps.juliaStudyCost);
+    if (!success) {
+      pushLog("Julia study aborted: gather more Fractal Data for the probes.");
+      return;
+    }
+    actions.addJuliaFlux(deps.juliaFluxGain);
+    actions.incrementJuliaDepth(0.65);
+    pushLog(
+      `Julia filaments mapped: +${deps.juliaFluxGain} flux and lab depth now ${(
+        deps.juliaDepth + 0.65
+      ).toFixed(2)}.`,
+    );
+  }, [actions, deps.juliaDepth, deps.juliaFluxGain, deps.juliaStudyCost, pushLog]);
+
   const triggerCosmicEvent = useCallback(() => {
     const { event, outcome } = resolveCosmicEvent(latestSnapshotRef.current);
     const {
@@ -202,6 +247,9 @@ export function useGameHandlers(deps: GameHandlerDeps, actions: GameActions) {
     handleAscend,
     handleAmplifierPurchase,
     handleParameterChange,
+    handleJuliaConstantChange,
+    handleTranscend,
+    handleJuliaStudy,
     triggerCosmicEvent,
   };
 }

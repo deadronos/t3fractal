@@ -16,6 +16,10 @@ type StartHereMenuProps = {
   dimensionalPoints: number;
   resonance: number;
   anomalies: number;
+  harmonicCores: number;
+  juliaFlux: number;
+  transcensionLevel: number;
+  juliaUnlocked: boolean;
 };
 
 export default function StartHereMenu({
@@ -25,6 +29,10 @@ export default function StartHereMenu({
   dimensionalPoints,
   resonance,
   anomalies,
+  harmonicCores,
+  juliaFlux,
+  transcensionLevel,
+  juliaUnlocked,
 }: StartHereMenuProps): ReactElement {
   return (
     <Flex
@@ -39,7 +47,7 @@ export default function StartHereMenu({
         </Heading>
         <ThemeToggle />
       </Flex>
-      <Grid columns={{ initial: "1", sm: "2", md: "6" }} gap="3" width="auto">
+      <Grid columns={{ initial: "1", sm: "2", md: "8" }} gap="3" width="auto">
         <StatBadge
           label="Fractal Data"
           value={`${formatCompactNumber(fractalData)} units`}
@@ -66,6 +74,25 @@ export default function StartHereMenu({
           value={anomalies.toFixed(0)}
           accent={anomalies > 0 ? "iris" : "gray"}
         />
+        {juliaUnlocked && (
+          <>
+            <StatBadge
+              label="Harmonic Cores"
+              value={harmonicCores.toFixed(0)}
+              accent={harmonicCores > 0 ? "purple" : "gray"}
+            />
+            <StatBadge
+              label="Julia Flux"
+              value={`${formatCompactNumber(juliaFlux)} flux`}
+              accent={juliaFlux > 0 ? "cyan" : "gray"}
+            />
+            <StatBadge
+              label="Transcension"
+              value={`Tier ${Math.max(1, transcensionLevel + 1)} (${transcensionLevel})`}
+              accent="purple"
+            />
+          </>
+        )}
       </Grid>
     </Flex>
   );
