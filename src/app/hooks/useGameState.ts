@@ -13,6 +13,11 @@ export function useGameState() {
   const resonance = useGameStore((state) => state.resonance);
   const anomalies = useGameStore((state) => state.anomalies);
   const expeditionRank = useGameStore((state) => state.expeditionRank);
+  const transcensionLevel = useGameStore((state) => state.transcensionLevel);
+  const harmonicCores = useGameStore((state) => state.harmonicCores);
+  const juliaFlux = useGameStore((state) => state.juliaFlux);
+  const juliaDepth = useGameStore((state) => state.juliaDepth);
+  const juliaConstant = useGameStore((state) => state.juliaConstant);
   const eventCountdown = useGameStore((state) => state.eventCountdown);
   const complexParameter = useGameStore((state) => state.complexParameter);
   const activityLog = useGameStore((state) => state.activityLog);
@@ -28,6 +33,11 @@ export function useGameState() {
     resonance,
     anomalies,
     expeditionRank,
+    transcensionLevel,
+    harmonicCores,
+    juliaFlux,
+    juliaDepth,
+    juliaConstant,
     eventCountdown,
     complexParameter,
     activityLog,
@@ -54,6 +64,10 @@ export function useGameActions() {
   const setLastZone = useGameStore((state) => state.setLastZone);
   const setComplexParameter = useGameStore((state) => state.setComplexParameter);
   const performAscension = useGameStore((state) => state.performAscension);
+  const performTranscendence = useGameStore((state) => state.performTranscendence);
+  const addJuliaFlux = useGameStore((state) => state.addJuliaFlux);
+  const incrementJuliaDepth = useGameStore((state) => state.incrementJuliaDepth);
+  const setJuliaConstant = useGameStore((state) => state.setJuliaConstant);
 
   return {
     spendFractalData,
@@ -71,5 +85,9 @@ export function useGameActions() {
     setLastZone,
     setComplexParameter,
     performAscension,
+    performTranscendence,
+    addJuliaFlux,
+    incrementJuliaDepth,
+    setJuliaConstant,
   };
 }

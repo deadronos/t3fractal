@@ -26,10 +26,17 @@ export interface GameState {
   resonance: number;
   anomalies: number;
   expeditionRank: number;
-  
+  transcensionLevel: number;
+  harmonicCores: number;
+
   // Upgrades
   upgrades: UpgradeState;
-  
+
+  // Julia research
+  juliaFlux: number;
+  juliaDepth: number;
+  juliaConstant: ComplexParameter;
+
   // UI state
   eventCountdown: number;
   activityLog: string[];
@@ -58,14 +65,27 @@ export interface GameState {
   
   setResonance: (amount: number) => void;
   addResonance: (amount: number) => void;
-  
+
   setAnomalies: (count: number) => void;
   addAnomalies: (count: number) => void;
   removeAnomaly: () => void;
-  
+
   setExpeditionRank: (rank: number) => void;
   incrementExpeditionRank: () => void;
-  
+
+  // Actions - Second Prestige / Julia Lab
+  setTranscensionLevel: (level: number) => void;
+  incrementTranscensionLevel: () => void;
+  setHarmonicCores: (amount: number) => void;
+  addHarmonicCores: (amount: number) => void;
+
+  setJuliaFlux: (amount: number) => void;
+  addJuliaFlux: (amount: number) => void;
+  spendJuliaFlux: (amount: number) => boolean;
+  setJuliaDepth: (depth: number) => void;
+  incrementJuliaDepth: (amount: number) => void;
+  setJuliaConstant: (params: Partial<ComplexParameter>) => void;
+
   // Actions - Upgrades
   setUpgradeLevel: (key: UpgradeKey, level: number) => void;
   incrementUpgrade: (key: UpgradeKey) => void;
@@ -83,6 +103,7 @@ export interface GameState {
   // Actions - Game Management
   resetGame: () => void;
   performAscension: (yieldPoints: number) => void;
+  performTranscendence: (yieldCores: number) => void;
 }
 
 const DIMENSIONAL_TARGET: ComplexParameter = { real: -0.75, imaginary: 0.11 };
@@ -102,14 +123,21 @@ const initialState = {
   resonance: 4,
   anomalies: 0,
   expeditionRank: 0,
-  
+  transcensionLevel: 0,
+  harmonicCores: 0,
+
   // Upgrades
   upgrades: {
     probe: 0,
     processor: 0,
     stabilizer: 0,
   } as UpgradeState,
-  
+
+  // Julia research
+  juliaFlux: 0,
+  juliaDepth: 0,
+  juliaConstant: { real: -0.122, imaginary: 0.744 },
+
   // UI state
   eventCountdown: 18,
   activityLog: ["Begin exploration: calibrating renderers…"],
@@ -194,10 +222,49 @@ export const useGameStore = create<GameState>()(
       
       setExpeditionRank: (rank: number) =>
         set({ expeditionRank: Math.max(0, rank) }),
-      
+
       incrementExpeditionRank: () =>
         set((state) => ({ expeditionRank: state.expeditionRank + 1 })),
-      
+
+      // Second prestige / Julia lab actions
+      setTranscensionLevel: (level: number) =>
+        set({ transcensionLevel: Math.max(0, level) }),
+
+      incrementTranscensionLevel: () =>
+        set((state) => ({ transcensionLevel: state.transcensionLevel + 1 })),
+
+      setHarmonicCores: (amount: number) =>
+        set({ harmonicCores: Math.max(0, amount) }),
+
+      addHarmonicCores: (amount: number) =>
+        set((state) => ({ harmonicCores: Math.max(0, state.harmonicCores + amount) })),
+
+      setJuliaFlux: (amount: number) =>
+        set({ juliaFlux: Math.max(0, amount) }),
+
+      addJuliaFlux: (amount: number) =>
+        set((state) => ({ juliaFlux: Math.max(0, state.juliaFlux + amount) })),
+
+      spendJuliaFlux: (amount: number) => {
+        const state = get();
+        if (state.juliaFlux < amount) {
+          return false;
+        }
+        set({ juliaFlux: state.juliaFlux - amount });
+        return true;
+      },
+
+      setJuliaDepth: (depth: number) =>
+        set({ juliaDepth: Math.max(0, depth) }),
+
+      incrementJuliaDepth: (amount: number) =>
+        set((state) => ({ juliaDepth: Math.max(0, state.juliaDepth + amount) })),
+
+      setJuliaConstant: (params: Partial<ComplexParameter>) =>
+        set((state) => ({
+          juliaConstant: { ...state.juliaConstant, ...params },
+        })),
+
       // Upgrade actions
       setUpgradeLevel: (key: UpgradeKey, level: number) =>
         set((state) => ({
@@ -243,7 +310,7 @@ export const useGameStore = create<GameState>()(
       // Game management actions
       resetGame: () =>
         set(initialState),
-      
+
       performAscension: (yieldPoints: number) =>
         set((state) => ({
           dimensionalPoints: state.dimensionalPoints + yieldPoints,
@@ -261,6 +328,34 @@ export const useGameStore = create<GameState>()(
           eventCountdown: 18,
           expeditionRank: 0,
         })),
+
+      performTranscendence: (yieldCores: number) =>
+        set((state) => ({
+          harmonicCores: state.harmonicCores + yieldCores,
+          transcensionLevel: state.transcensionLevel + 1,
+          dimensionalPoints: 0,
+          ascensionLevel: 0,
+          fractalData: 60 + yieldCores * 20,
+          depth: 0,
+          upgrades: {
+            probe: 0,
+            processor: 0,
+            stabilizer: 0,
+          },
+          amplifiers: 0,
+          resonance: Math.max(
+            5,
+            Math.floor(state.resonance * 0.45) + yieldCores * 2,
+          ),
+          anomalies: 0,
+          eventCountdown: 18,
+          expeditionRank: 0,
+          juliaFlux: 0,
+          juliaDepth: 0,
+          complexParameter: { ...DIMENSIONAL_TARGET },
+          juliaConstant: { ...initialState.juliaConstant },
+          lastZone: "Mandelbrot Core",
+        })),
     }),
     {
       name: "fractal-frontier-game-state",
@@ -276,6 +371,11 @@ export const useGameStore = create<GameState>()(
         resonance: state.resonance,
         anomalies: state.anomalies,
         expeditionRank: state.expeditionRank,
+        transcensionLevel: state.transcensionLevel,
+        harmonicCores: state.harmonicCores,
+        juliaFlux: state.juliaFlux,
+        juliaDepth: state.juliaDepth,
+        juliaConstant: state.juliaConstant,
         upgrades: state.upgrades,
         lastZone: state.lastZone,
       }),

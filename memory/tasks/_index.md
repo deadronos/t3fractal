@@ -4,6 +4,7 @@
 
 - [TASK012] Implement tech debt refactors - Phases 1-2 complete (45%), ready for Phase 3
 - [TASK013] Fix test, lint, and typecheck commands - Running scripts, diagnosing failures
+- [TASK014] Add second prestige with Julia tab - Designing unlock flow and UI
 
 ## Pending
 

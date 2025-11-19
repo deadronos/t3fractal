@@ -19,19 +19,27 @@ export const calculateProductionMultiplier = (params: {
   dimensionalPoints: number;
   resonance: number;
   anomalies: number;
+  transcensionLevel: number;
+  harmonicCores: number;
+  juliaFlux: number;
 }): number => {
   const ascensionBonus = 1 + params.ascensionLevel * 0.25 + params.amplifiers * 0.35;
   const depthBonus = 1 + Math.floor(params.depth) * 0.05;
   const dimensionalBonus = 1 + params.dimensionalPoints * 0.02;
   const resonanceBonus = 1 + params.resonance * 0.015;
   const anomalyPenalty = Math.max(0.6, 1 - params.anomalies * 0.03);
-  
+  const transcendenceBonus =
+    1 + params.transcensionLevel * 0.5 + params.harmonicCores * 0.25;
+  const juliaFluxBonus = 1 + params.juliaFlux * 0.04;
+
   return (
     ascensionBonus *
     depthBonus *
     dimensionalBonus *
     resonanceBonus *
-    anomalyPenalty
+    anomalyPenalty *
+    transcendenceBonus *
+    juliaFluxBonus
   );
 };
 

@@ -42,6 +42,28 @@
   margin-top: var(--tf-space-md);
 }
 
+.starthere-tabs {
+  margin-top: var(--tf-space-md);
+}
+
+.starthere-tabs .rt-TabsList {
+  background: var(--tf-bg-menu);
+  padding: var(--tf-space-sm) var(--tf-space-md);
+  border-radius: var(--tf-radius-lg);
+  border: 1px solid var(--tf-border-subtle);
+  box-shadow: var(--tf-shadow-md);
+  margin-bottom: var(--tf-space-md);
+  gap: var(--tf-space-sm);
+}
+
+.starthere-tabs .rt-TabsTrigger {
+  color: var(--gray-12);
+}
+
+.starthere-tabs .rt-TabsTrigger[data-state="active"] {
+  color: var(--mint-9);
+}
+
 .starthere-menu {
   padding: var(--tf-space-md) var(--tf-space-lg);
   background: var(--tf-bg-menu);

@@ -1,12 +1,14 @@
 import { useEffect, useRef } from "react";
 
 import { generateWorkerCode } from "@/lib/fractal/workerCodeGenerator";
-import type { ComplexParameter } from "@/lib/fractal/fractalMath";
+import type { ComplexParameter, FractalFormula } from "@/lib/fractal/fractalMath";
 
 type FractalCPUCanvasProps = {
   depth: number;
   parameter: ComplexParameter;
   amplifiers: number;
+  formula: FractalFormula;
+  juliaConstant: ComplexParameter;
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   width: number;
   height: number;
@@ -16,6 +18,8 @@ export default function FractalCPUCanvas({
   depth,
   parameter,
   amplifiers,
+  formula,
+  juliaConstant,
   canvasRef,
   width,
   height,
@@ -92,6 +96,8 @@ export default function FractalCPUCanvas({
       height: pixelHeight,
       depth,
       parameter,
+      formula,
+      juliaConstant,
       amplifiers,
       tileHeight,
     });
@@ -103,7 +109,7 @@ export default function FractalCPUCanvas({
       }
       URL.revokeObjectURL(objectUrl);
     };
-  }, [amplifiers, canvasRef, depth, parameter, width, height]);
+  }, [amplifiers, canvasRef, depth, formula, height, juliaConstant, parameter, width]);
 
   return null;
 }

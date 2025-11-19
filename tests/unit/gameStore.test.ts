@@ -184,4 +184,32 @@ describe("Game Store", () => {
       expect(newValue).toBe(0);
     });
   });
+
+  describe("Transcendence", () => {
+    it("should perform transcendence correctly", () => {
+      const {
+        setAscensionLevel,
+        addDimensionalPoints,
+        setDepth,
+        addFractalData,
+        performTranscendence,
+      } = useGameStore.getState();
+
+      setAscensionLevel(5);
+      addDimensionalPoints(100);
+      setDepth(20);
+      addFractalData(5000);
+
+      performTranscendence(3);
+
+      const state = useGameStore.getState();
+      expect(state.transcensionLevel).toBe(1);
+      expect(state.harmonicCores).toBe(3);
+      expect(state.dimensionalPoints).toBe(0);
+      expect(state.ascensionLevel).toBe(0);
+      expect(state.depth).toBe(0);
+      expect(state.fractalData).toBe(120); // 60 + 3 * 20
+      expect(state.juliaFlux).toBe(0);
+    });
+  });
 });

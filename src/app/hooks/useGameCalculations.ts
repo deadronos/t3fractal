@@ -28,6 +28,10 @@ type GameState = {
   complexParameter: ComplexParameter;
   expeditionRank: number;
   fractalData: number;
+  transcensionLevel: number;
+  harmonicCores: number;
+  juliaFlux: number;
+  juliaDepth: number;
 };
 
 /**
@@ -50,8 +54,21 @@ export function useGameCalculations(state: GameState) {
         dimensionalPoints: state.dimensionalPoints,
         resonance: state.resonance,
         anomalies: state.anomalies,
+        transcensionLevel: state.transcensionLevel,
+        harmonicCores: state.harmonicCores,
+        juliaFlux: state.juliaFlux,
       }),
-    [state.ascensionLevel, state.amplifiers, state.anomalies, state.depth, state.dimensionalPoints, state.resonance],
+    [
+      state.ascensionLevel,
+      state.amplifiers,
+      state.anomalies,
+      state.depth,
+      state.dimensionalPoints,
+      state.harmonicCores,
+      state.juliaFlux,
+      state.resonance,
+      state.transcensionLevel,
+    ],
   );
 
   const parameterEfficiency = useMemo(
@@ -116,12 +133,38 @@ export function useGameCalculations(state: GameState) {
     return Math.max(1, Math.floor(total * 0.75));
   }, [state.depth, state.fractalData, state.upgrades.processor]);
 
+  const transcensionReady = state.dimensionalPoints >= 25 && ascendReady;
+
+  const transcensionYield = useMemo(() => {
+    const combined = state.ascensionLevel + ascensionYield + state.depth * 0.25;
+    return Math.max(1, Math.floor(combined * 0.6));
+  }, [ascensionYield, state.ascensionLevel, state.depth]);
+
   const amplifierCost = useMemo(
     () => Math.floor(3 * Math.pow(2.4, state.amplifiers)),
     [state.amplifiers],
   );
 
   const dimensionalEfficiency = (parameterEfficiency * 100).toFixed(0);
+
+  const juliaStudyCost = useMemo(
+    () => Math.floor(420 + state.juliaDepth * 140 + state.harmonicCores * 120),
+    [state.harmonicCores, state.juliaDepth],
+  );
+
+  const juliaFluxGain = useMemo(
+    () =>
+      Math.max(
+        1,
+        Math.floor(
+          state.harmonicCores * 2 + state.juliaDepth * 1.25 + state.resonance * 0.6,
+        ),
+      ),
+    [state.harmonicCores, state.juliaDepth, state.resonance],
+  );
+
+  const juliaBonusMultiplier =
+    1 + state.harmonicCores * 0.25 + state.juliaFlux * 0.04 + state.transcensionLevel * 0.15;
 
   const omenMessage = useMemo(() => {
     if (state.anomalies >= 4) {
@@ -153,8 +196,13 @@ export function useGameCalculations(state: GameState) {
     upgradeCost,
     ascendReady,
     ascensionYield,
+    transcensionReady,
+    transcensionYield,
     amplifierCost,
     dimensionalEfficiency,
+    juliaStudyCost,
+    juliaFluxGain,
+    juliaBonusMultiplier,
     omenMessage,
   };
 }
