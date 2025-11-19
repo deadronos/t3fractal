@@ -52,10 +52,15 @@ export function generateWorkerCode(): string {
     }
 
     self.onmessage = function(e) {
-      const { width, height, depth, parameter, amplifiers, tileHeight } = e.data;
+      const { width, height, depth, parameter, amplifiers, tileHeight, formula, juliaConstant } = e.data;
       const maxIterations = calculateMaxIterations(depth, amplifiers);
       const zoom = calculateZoom(depth, amplifiers);
       const paletteShift = calculatePaletteShift(depth, amplifiers);
+      const mode = formula || "mandelbrot";
+      const centerReal = (parameter && parameter.real) || 0;
+      const centerImag = (parameter && parameter.imaginary) || 0;
+      const juliaReal = (juliaConstant && juliaConstant.real) || centerReal;
+      const juliaImag = (juliaConstant && juliaConstant.imaginary) || centerImag;
 
       for (let y0 = 0; y0 < height; y0 += tileHeight) {
         const h = Math.min(tileHeight, height - y0);
@@ -63,13 +68,17 @@ export function generateWorkerCode(): string {
         let di = 0;
 
         for (let py = y0; py < y0 + h; py++) {
-          const imaginaryComponent = (py - height/2) / (0.5 * zoom * height) + parameter.imaginary;
+          const imaginaryComponent = (py - height/2) / (0.5 * zoom * height) + centerImag;
           for (let px = 0; px < width; px++) {
-            const realComponent = (px - width/2) / (0.5 * zoom * width) + parameter.real;
-            let x = 0, y = 0, iter = 0;
+            const realComponent = (px - width/2) / (0.5 * zoom * width) + centerReal;
+            let x = mode === "julia" ? realComponent : 0;
+            let y = mode === "julia" ? imaginaryComponent : 0;
+            let iter = 0;
+            const cReal = mode === "julia" ? juliaReal : realComponent;
+            const cImag = mode === "julia" ? juliaImag : imaginaryComponent;
             while (x*x + y*y <= 4 && iter < maxIterations) {
-              const xt = x*x - y*y + realComponent;
-              y = 2 * x * y + imaginaryComponent;
+              const xt = x*x - y*y + cReal;
+              y = 2 * x * y + cImag;
               x = xt;
               iter++;
             }

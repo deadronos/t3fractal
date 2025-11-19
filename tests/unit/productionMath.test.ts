@@ -9,8 +9,15 @@ import {
 
 describe("productionMath", () => {
   describe("calculateProductionMultiplier", () => {
+    const baseParams = {
+      transcensionLevel: 0,
+      harmonicCores: 0,
+      juliaFlux: 0,
+    };
+
     it("calculates multiplier with no bonuses", () => {
       const result = calculateProductionMultiplier({
+        ...baseParams,
         ascensionLevel: 0,
         amplifiers: 0,
         depth: 0,
@@ -23,6 +30,7 @@ describe("productionMath", () => {
 
     it("includes ascension and amplifier bonuses", () => {
       const result = calculateProductionMultiplier({
+        ...baseParams,
         ascensionLevel: 2,
         amplifiers: 3,
         depth: 0,
@@ -36,6 +44,7 @@ describe("productionMath", () => {
 
     it("applies depth bonus", () => {
       const result = calculateProductionMultiplier({
+        ...baseParams,
         ascensionLevel: 0,
         amplifiers: 0,
         depth: 10,
@@ -49,6 +58,7 @@ describe("productionMath", () => {
 
     it("applies anomaly penalty", () => {
       const result = calculateProductionMultiplier({
+        ...baseParams,
         ascensionLevel: 0,
         amplifiers: 0,
         depth: 0,
@@ -62,6 +72,7 @@ describe("productionMath", () => {
 
     it("limits anomaly penalty to minimum 0.6", () => {
       const result = calculateProductionMultiplier({
+        ...baseParams,
         ascensionLevel: 0,
         amplifiers: 0,
         depth: 0,

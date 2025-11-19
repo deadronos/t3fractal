@@ -3,6 +3,7 @@
  */
 
 export type ComplexParameter = { real: number; imaginary: number };
+export type FractalFormula = "mandelbrot" | "julia";
 
 /**
  * Calculate maximum iterations based on depth and amplifiers
