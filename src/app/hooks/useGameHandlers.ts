@@ -182,7 +182,7 @@ export function useGameHandlers(deps: GameHandlerDeps, actions: GameActions) {
 
   const handleTranscend = useCallback(() => {
     if (!deps.transcensionReady) {
-      pushLog("Transcendence requires a second ascension-grade run and calibration.");
+      pushLog("Transcendence requires 25 Dimensional Points and a stable fractal configuration.");
       return;
     }
     actions.performTranscendence(deps.transcensionYield);

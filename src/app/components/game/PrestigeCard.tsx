@@ -81,7 +81,7 @@ export default function PrestigeCard({
           <Box>
             <Text size="2">Cores banked: {harmonicCores}</Text>
             <Text size="2" color={transcensionReady ? "mint" : "gray"}>
-              Status: {transcensionReady ? "Ready" : "Requires second prestige"}
+              Status: {transcensionReady ? "Ready" : "Requires 25 Dimensional Points"}
             </Text>
             <Text size="2" color="gray">
               Current tier: {transcensionLevel + 1}

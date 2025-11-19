@@ -133,7 +133,7 @@ export function useGameCalculations(state: GameState) {
     return Math.max(1, Math.floor(total * 0.75));
   }, [state.depth, state.fractalData, state.upgrades.processor]);
 
-  const transcensionReady = state.ascensionLevel >= 2 && ascendReady;
+  const transcensionReady = state.dimensionalPoints >= 25 && ascendReady;
 
   const transcensionYield = useMemo(() => {
     const combined = state.ascensionLevel + ascensionYield + state.depth * 0.25;
