@@ -1,3 +1,8 @@
+/**
+ * Unit tests for the Zustand game store.
+ * Verifies actions, state updates, resource management, and prestige mechanics.
+ */
+
 import { describe, it, expect, beforeEach } from "vitest";
 import { useGameStore } from "@/store/gameStore";
 

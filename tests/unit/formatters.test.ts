@@ -1,3 +1,8 @@
+/**
+ * Unit tests for number formatting utilities.
+ * Verifies compact notation (K, M, B) for various magnitudes.
+ */
+
 import { describe, it, expect } from "vitest";
 import { formatNumber } from "@/lib/gameplay/formatters";
 

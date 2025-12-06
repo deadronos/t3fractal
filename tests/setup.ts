@@ -1,4 +1,8 @@
-// Vitest setup: polyfills for browser APIs missing in jsdom
+/**
+ * Vitest setup file for configuring the test environment.
+ * Includes polyfills for browser APIs (ResizeObserver, matchMedia) not present in jsdom.
+ */
+
 // Provide a basic ResizeObserver implementation used by some libraries (Radix use-size)
 class SimpleRO {
   observers: Set<Element> = new Set();

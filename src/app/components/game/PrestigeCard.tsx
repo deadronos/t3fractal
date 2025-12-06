@@ -1,20 +1,40 @@
 import type { ReactElement } from "react";
 import { Box, Button, Card, Flex, Heading, Separator, Text } from "@radix-ui/themes";
 
+/**
+ * Props for the PrestigeCard component.
+ */
 type PrestigeCardProps = {
+  /** Potential dimensional points yield. */
   ascensionYield: number;
+  /** Whether ascension is available. */
   ascendReady: boolean;
+  /** Amplifiers owned. */
   amplifiers: number;
+  /** Cost of next amplifier. */
   amplifierCost: number;
+  /** Handler to ascend. */
   onAscend: () => void;
+  /** Handler to buy amplifier. */
   onAmplifierPurchase: () => void;
+  /** Harmonic cores owned. */
   harmonicCores: number;
+  /** Transcension level. */
   transcensionLevel: number;
+  /** Whether transcension is available. */
   transcensionReady: boolean;
+  /** Potential harmonic cores yield. */
   transcensionYield: number;
+  /** Handler to transcend. */
   onTranscend: () => void;
 };
 
+/**
+ * Card handling Prestige mechanics (Ascension and Transcendence).
+ *
+ * @param props - Component props.
+ * @returns The card component.
+ */
 export default function PrestigeCard({
   ascensionYield,
   ascendReady,

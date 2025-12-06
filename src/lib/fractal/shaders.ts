@@ -1,6 +1,6 @@
 /**
- * WebGL shader materials for fractal rendering
- * Handles GPU-based Mandelbrot set computation with smooth coloring
+ * WebGL shader materials for fractal rendering.
+ * Handles GPU-based Mandelbrot set computation with smooth coloring.
  */
 
 import { shaderMaterial } from "@react-three/drei";
@@ -9,8 +9,8 @@ import type { ThreeElement } from "@react-three/fiber";
 import * as THREE from "three";
 
 /**
- * Vertex shader for fractal rendering
- * Passes UV coordinates to fragment shader
+ * Vertex shader for fractal rendering.
+ * Passes UV coordinates to fragment shader.
  */
 const vertexShader = /* language=GLSL */ `
   varying vec2 vUv;
@@ -22,8 +22,8 @@ const vertexShader = /* language=GLSL */ `
 `;
 
 /**
- * Fragment shader for Mandelbrot set rendering
- * Performs iteration-based computation with smooth coloring
+ * Fragment shader for Mandelbrot set rendering.
+ * Performs iteration-based computation with smooth coloring.
  */
 const fragmentShader = /* language=GLSL */ `
   precision highp float;
@@ -114,7 +114,7 @@ const fragmentShader = /* language=GLSL */ `
 `;
 
 /**
- * Default uniforms for the fractal shader material
+ * Default uniforms for the fractal shader material.
  */
 const defaultUniforms = {
   uResolution: new THREE.Vector2(1, 1),
@@ -128,7 +128,7 @@ const defaultUniforms = {
 };
 
 /**
- * Create and register the fractal shader material
+ * Create and register the fractal shader material.
  */
 export const FractalMaterial = shaderMaterial(
   defaultUniforms,
@@ -140,28 +140,36 @@ export const FractalMaterial = shaderMaterial(
 extend({ FractalMaterial });
 
 /**
- * Type definitions for fractal material uniforms
+ * Type definitions for fractal material uniforms.
  */
 export type FractalMaterialUniforms = {
+  /** Resolution of the render target. */
   uResolution: { value: THREE.Vector2 };
+  /** Center coordinates of the view. */
   uCenter: { value: THREE.Vector2 };
+  /** Zoom level. */
   uZoom: { value: number };
+  /** Maximum iterations for Mandelbrot set. */
   uMaxIterations: { value: number };
+  /** Color palette shift. */
   uPaletteShift: { value: number };
+  /** Color saturation. */
   uSaturation: { value: number };
+  /** Formula type (0 = Mandelbrot, 1 = Julia). */
   uFormulaType: { value: number };
+  /** Constant for Julia set. */
   uJuliaConstant: { value: THREE.Vector2 };
 };
 
 /**
- * Type for fractal material instance with uniforms
+ * Type for fractal material instance with uniforms.
  */
 export type FractalMaterialInstance = InstanceType<typeof FractalMaterial> & {
   uniforms: FractalMaterialUniforms;
 };
 
 /**
- * Module augmentation for react-three-fiber to include our custom material
+ * Module augmentation for react-three-fiber to include our custom material.
  */
 declare module "@react-three/fiber" {
   interface ThreeElements {

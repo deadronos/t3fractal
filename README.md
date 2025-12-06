@@ -96,11 +96,19 @@ This project is built with the T3 Stack:
 
 ### Project Structure
 
-- `src/app/`: Next.js app router pages and components.
-- `src/components/`: Reusable React components.
-- `src/providers/`: Context providers for state management.
-- `src/styles/`: Global styles and CSS files.
-- `tests/`: Unit and end-to-end tests.
+The project follows a standard Next.js App Router structure:
+
+- `src/app/` — Application pages, layouts, and global providers.
+  - `components/` — React components (UI, Game specific, Fractal rendering).
+  - `hooks/` — Custom React hooks for game logic.
+  - `pages/` — Page components.
+- `src/data/` — Static game configuration and event definitions.
+- `src/lib/` — Core game logic and utilities.
+  - `fractal/` — Math and shader logic for fractal generation.
+  - `gameplay/` — Mechanics formulas (production, costs, events).
+- `src/store/` — Global state management (Zustand).
+- `src/workers/` — Web Workers for CPU-intensive tasks.
+- `tests/` — Test suites (Unit and E2E).
 
 ### Environment Variables
 
@@ -111,6 +119,10 @@ Create a `.env.local` file in the root directory with:
 ```
 
 Note: The app uses `@t3-oss/env-nextjs` for runtime environment validation.
+
+## Documentation
+
+The codebase is fully documented with JSDoc comments. You can hover over any function, component, or type in your IDE to see detailed usage information, parameter descriptions, and return values.
 
 ## Contributing
 

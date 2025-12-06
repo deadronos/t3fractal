@@ -1,108 +1,305 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-// Type definitions
+/**
+ * Valid keys for purchasable upgrades.
+ */
 export type UpgradeKey = "probe" | "processor" | "stabilizer";
 
+/**
+ * Represents a complex number parameter (real and imaginary parts).
+ */
 export type ComplexParameter = {
+  /** The real component of the complex number. */
   real: number;
+  /** The imaginary component of the complex number. */
   imaginary: number;
 };
 
+/**
+ * State object tracking the level of each upgrade.
+ */
 export type UpgradeState = Record<UpgradeKey, number>;
 
+/**
+ * The main interface for the Game State.
+ *
+ * This interface defines all reactive state and actions available in the global store.
+ */
 export interface GameState {
   // Core resources
+  /** Current amount of Fractal Data currency. */
   fractalData: number;
+  /** Current amount of Dimensional Points (prestige currency). */
   dimensionalPoints: number;
   
   // Exploration state
+  /** Current exploration depth (zoom level). */
   depth: number;
+  /** Current center coordinates in the complex plane. */
   complexParameter: ComplexParameter;
   
   // Progression state
+  /** Current ascension level (first prestige tier). */
   ascensionLevel: number;
+  /** Number of amplifiers owned. */
   amplifiers: number;
+  /** Current resonance value affecting production. */
   resonance: number;
+  /** Number of active anomalies. */
   anomalies: number;
+  /** Current rank in the expedition. */
   expeditionRank: number;
+  /** Current transcension level (second prestige tier). */
   transcensionLevel: number;
+  /** Amount of harmonic cores owned. */
   harmonicCores: number;
 
   // Upgrades
+  /** Current levels for all upgrades. */
   upgrades: UpgradeState;
 
   // Julia research
+  /** Current flux resource for Julia sets. */
   juliaFlux: number;
+  /** Current exploration depth in Julia set. */
   juliaDepth: number;
+  /** Constant parameter defining the current Julia set. */
   juliaConstant: ComplexParameter;
 
   // UI state
+  /** Countdown timer for the next random event. */
   eventCountdown: number;
+  /** Log of recent game activities and events. */
   activityLog: string[];
+  /** Name of the last visited fractal zone. */
   lastZone: string;
   
   // Actions - Resources
+  /**
+   * Adds fractal data to the player's balance.
+   * @param amount - The amount to add.
+   */
   addFractalData: (amount: number) => void;
+  /**
+   * Attempts to spend fractal data.
+   * @param amount - The amount to spend.
+   * @returns True if the transaction was successful, false if insufficient funds.
+   */
   spendFractalData: (amount: number) => boolean;
+  /**
+   * Sets the fractal data balance directly.
+   * @param amount - The new balance.
+   */
   setFractalData: (amount: number) => void;
   
+  /**
+   * Adds dimensional points to the player's balance.
+   * @param amount - The amount to add.
+   */
   addDimensionalPoints: (amount: number) => void;
+  /**
+   * Attempts to spend dimensional points.
+   * @param amount - The amount to spend.
+   * @returns True if successful, false otherwise.
+   */
   spendDimensionalPoints: (amount: number) => boolean;
+  /**
+   * Sets the dimensional points balance directly.
+   * @param amount - The new balance.
+   */
   setDimensionalPoints: (amount: number) => void;
   
   // Actions - Exploration
+  /**
+   * Sets the current zoom depth.
+   * @param depth - The new depth value.
+   */
   setDepth: (depth: number) => void;
+  /**
+   * Increments the zoom depth by a given amount.
+   * @param amount - The amount to increase depth by.
+   */
   incrementDepth: (amount: number) => void;
+  /**
+   * Updates the complex plane coordinates.
+   * @param params - Partial complex parameter to update (real or imaginary or both).
+   */
   setComplexParameter: (params: Partial<ComplexParameter>) => void;
   
   // Actions - Progression
+  /**
+   * Sets the ascension level.
+   * @param level - The new level.
+   */
   setAscensionLevel: (level: number) => void;
+  /**
+   * Increments the ascension level by 1.
+   */
   incrementAscensionLevel: () => void;
   
+  /**
+   * Sets the number of amplifiers.
+   * @param count - The new count.
+   */
   setAmplifiers: (count: number) => void;
+  /**
+   * Increments the number of amplifiers by 1.
+   */
   incrementAmplifiers: () => void;
   
+  /**
+   * Sets the resonance value.
+   * @param amount - The new value.
+   */
   setResonance: (amount: number) => void;
+  /**
+   * Adds to the current resonance value.
+   * @param amount - The amount to add.
+   */
   addResonance: (amount: number) => void;
 
+  /**
+   * Sets the number of anomalies.
+   * @param count - The new count.
+   */
   setAnomalies: (count: number) => void;
+  /**
+   * Adds to the anomaly count.
+   * @param count - The amount to add.
+   */
   addAnomalies: (count: number) => void;
+  /**
+   * Removes one anomaly.
+   */
   removeAnomaly: () => void;
 
+  /**
+   * Sets the expedition rank.
+   * @param rank - The new rank.
+   */
   setExpeditionRank: (rank: number) => void;
+  /**
+   * Increments the expedition rank by 1.
+   */
   incrementExpeditionRank: () => void;
 
   // Actions - Second Prestige / Julia Lab
+  /**
+   * Sets the transcension level.
+   * @param level - The new level.
+   */
   setTranscensionLevel: (level: number) => void;
+  /**
+   * Increments the transcension level by 1.
+   */
   incrementTranscensionLevel: () => void;
+  /**
+   * Sets the number of harmonic cores.
+   * @param amount - The new amount.
+   */
   setHarmonicCores: (amount: number) => void;
+  /**
+   * Adds harmonic cores.
+   * @param amount - The amount to add.
+   */
   addHarmonicCores: (amount: number) => void;
 
+  /**
+   * Sets the Julia flux amount.
+   * @param amount - The new amount.
+   */
   setJuliaFlux: (amount: number) => void;
+  /**
+   * Adds Julia flux.
+   * @param amount - The amount to add.
+   */
   addJuliaFlux: (amount: number) => void;
+  /**
+   * Attempts to spend Julia flux.
+   * @param amount - The amount to spend.
+   * @returns True if successful, false otherwise.
+   */
   spendJuliaFlux: (amount: number) => boolean;
+  /**
+   * Sets the Julia set exploration depth.
+   * @param depth - The new depth.
+   */
   setJuliaDepth: (depth: number) => void;
+  /**
+   * Increments the Julia set depth.
+   * @param amount - The amount to add.
+   */
   incrementJuliaDepth: (amount: number) => void;
+  /**
+   * Updates the Julia constant parameter.
+   * @param params - Partial complex parameter to update.
+   */
   setJuliaConstant: (params: Partial<ComplexParameter>) => void;
 
   // Actions - Upgrades
+  /**
+   * Sets the level of a specific upgrade.
+   * @param key - The upgrade key.
+   * @param level - The new level.
+   */
   setUpgradeLevel: (key: UpgradeKey, level: number) => void;
+  /**
+   * Increments an upgrade level by 1.
+   * @param key - The upgrade key.
+   */
   incrementUpgrade: (key: UpgradeKey) => void;
+  /**
+   * Resets all upgrades to level 0.
+   */
   resetUpgrades: () => void;
   
   // Actions - UI
+  /**
+   * Sets the event countdown timer.
+   * @param seconds - Seconds remaining.
+   */
   setEventCountdown: (seconds: number) => void;
+  /**
+   * Decrements the event countdown by 1.
+   * @returns The new countdown value.
+   */
   decrementEventCountdown: () => number;
   
+  /**
+   * Adds a message to the activity log.
+   * @param message - The message to log.
+   */
   pushActivityLog: (message: string) => void;
+  /**
+   * Clears the activity log.
+   */
   clearActivityLog: () => void;
   
+  /**
+   * Sets the name of the last visited zone.
+   * @param zoneName - The zone name.
+   */
   setLastZone: (zoneName: string) => void;
   
   // Actions - Game Management
+  /**
+   * Resets the entire game to initial state.
+   */
   resetGame: () => void;
+  /**
+   * Performs the Ascension prestige reset.
+   *
+   * Resets exploration and basic resources, grants dimensional points.
+   * @param yieldPoints - The amount of Dimensional Points to grant.
+   */
   performAscension: (yieldPoints: number) => void;
+  /**
+   * Performs the Transcendence prestige reset.
+   *
+   * Resets Ascension progress, grants Harmonic Cores.
+   * @param yieldCores - The amount of Harmonic Cores to grant.
+   */
   performTranscendence: (yieldCores: number) => void;
 }
 
@@ -144,6 +341,11 @@ const initialState = {
   lastZone: "Mandelbrot Core",
 };
 
+/**
+ * Zustand store hook for managing global game state.
+ *
+ * Persists data to localStorage using 'fractal-frontier-game-state' key.
+ */
 export const useGameStore = create<GameState>()(
   persist(
     (set, get) => ({

@@ -3,10 +3,21 @@
 import type { ReactElement } from "react";
 import React, { useEffect, useState } from "react";
 
+/**
+ * Props for the ThemeToggle component.
+ */
 type ThemeToggleProps = {
+  /** Optional class name for styling. */
   className?: string;
 };
 
+/**
+ * A button component to toggle between light and dark themes.
+ * Uses local state to track theme and updates the document class.
+ *
+ * @param props - Component props.
+ * @returns The toggle button.
+ */
 export default function ThemeToggle({ className }: ThemeToggleProps): ReactElement {
   const [isDark, setIsDark] = useState<boolean>(true);
 

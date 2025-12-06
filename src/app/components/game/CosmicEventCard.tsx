@@ -3,18 +3,36 @@ import { Badge, Box, Button, Card, Flex, Heading, Separator, Text } from "@radix
 
 import { formatNumber } from "@/lib/gameplay/formatters";
 
+/**
+ * Props for the CosmicEventCard component.
+ */
 type CosmicEventCardProps = {
+  /** Seconds until next event. */
   eventCountdown: number;
+  /** Current resonance value. */
   resonance: number;
+  /** Current anomaly count. */
   anomalies: number;
+  /** Cost to launch an expedition. */
   expeditionCost: number;
+  /** Predicted resonance yield. */
   expeditionPreview: number;
+  /** Cost to stabilize an anomaly. */
   stabiliseCost: number;
+  /** Flavor text message. */
   omenMessage: string;
+  /** Handler for expedition launch. */
   onExpedition: () => void;
+  /** Handler for anomaly stabilization. */
   onStabiliseAnomaly: () => void;
 };
 
+/**
+ * Card displaying cosmic event status and actions (Expeditions/Stabilization).
+ *
+ * @param props - Component props.
+ * @returns The card component.
+ */
 export default function CosmicEventCard({
   eventCountdown,
   resonance,

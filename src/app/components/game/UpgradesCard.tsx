@@ -5,12 +5,24 @@ import { UPGRADE_CONFIG } from "@/data/gameConfig";
 import type { UpgradeKey } from "@/store/gameStore";
 import { formatNumber } from "@/lib/gameplay/formatters";
 
+/**
+ * Props for the UpgradesCard component.
+ */
 type UpgradesCardProps = {
+  /** Current upgrade levels. */
   upgrades: Record<UpgradeKey, number>;
+  /** Function to calculate cost for a key. */
   upgradeCost: (key: UpgradeKey) => number;
+  /** Handler to purchase upgrade. */
   onPurchase: (key: UpgradeKey) => void;
 };
 
+/**
+ * Card displaying available automation upgrades.
+ *
+ * @param props - Component props.
+ * @returns The card component.
+ */
 export default function UpgradesCard({
   upgrades,
   upgradeCost,

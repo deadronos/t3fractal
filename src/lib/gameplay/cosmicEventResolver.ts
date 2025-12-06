@@ -10,12 +10,19 @@ import { COSMIC_EVENTS, type CosmicEvent, type CosmicSnapshot, type CosmicEventO
 /**
  * Clamp event weight to a minimum value to prevent division by zero
  * and ensure reasonable probability distribution.
+ *
+ * @param value - The weight to clamp.
+ * @returns The clamped weight (minimum 0.5).
  */
 export const clampWeight = (value: number): number => (value > 0 ? value : 0.5);
 
 /**
  * Check if an event meets its depth and resonance requirements
  * given the current game state.
+ *
+ * @param snapshot - The current game state snapshot.
+ * @param event - The event to check.
+ * @returns True if requirements are met, false otherwise.
  */
 export const meetsRequirement = (
   snapshot: CosmicSnapshot,
@@ -36,10 +43,10 @@ export const meetsRequirement = (
 /**
  * Resolve a cosmic event using weighted random selection.
  * 
- * @param snapshot - Current game state
- * @param random - Random number generator (injectable for testing)
- * @returns Selected event and its outcome
- * @throws Error if no events are defined in the catalog
+ * @param snapshot - Current game state.
+ * @param random - Random number generator (injectable for testing).
+ * @returns Selected event and its outcome.
+ * @throws Error if no events are defined in the catalog.
  */
 export const resolveCosmicEvent = (
   snapshot: CosmicSnapshot,

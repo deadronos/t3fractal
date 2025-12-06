@@ -9,19 +9,38 @@ import ThemeToggle from "@/app/components/ThemeToggle";
 import StatBadge from "@/app/components/StatBadge";
 import { formatCompactNumber } from "@/lib/utils/formatters";
 
+/**
+ * Props for the StartHereMenu component.
+ */
 type StartHereMenuProps = {
+  /** Current fractal data. */
   fractalData: number;
+  /** Current depth. */
   depth: number;
+  /** Data production rate. */
   dataPerSecond: number;
+  /** Dimensional points balance. */
   dimensionalPoints: number;
+  /** Resonance level. */
   resonance: number;
+  /** Anomaly count. */
   anomalies: number;
+  /** Harmonic cores balance. */
   harmonicCores: number;
+  /** Julia flux balance. */
   juliaFlux: number;
+  /** Transcension level. */
   transcensionLevel: number;
+  /** Whether Julia Lab is unlocked. */
   juliaUnlocked: boolean;
 };
 
+/**
+ * Top menu bar displaying global stats and theme toggle.
+ *
+ * @param props - Component props.
+ * @returns The menu component.
+ */
 export default function StartHereMenu({
   fractalData,
   depth,

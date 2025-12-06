@@ -5,30 +5,61 @@
  * Events are randomly triggered during gameplay based on player state.
  */
 
+/**
+ * A snapshot of the player's current game state, used to evaluate event conditions.
+ */
 export type CosmicSnapshot = {
+  /** Current zoom depth. */
   depth: number;
+  /** Current resonance level. */
   resonance: number;
+  /** Number of active anomalies. */
   anomalies: number;
+  /** Current ascension level. */
   ascensionLevel: number;
+  /** Current dimensional points. */
   dimensionalPoints: number;
 };
 
+/**
+ * The outcome of a cosmic event, detailing changes to resources and a log message.
+ */
 export type CosmicEventOutcome = {
+  /** The message to display in the activity log. */
   log: string;
+  /** Change in fractal data (positive or negative). */
   dataDelta?: number;
+  /** Change in resonance. */
   resonanceDelta?: number;
+  /** Change in anomaly count. */
   anomaliesDelta?: number;
+  /** Change in depth. */
   depthDelta?: number;
+  /** Change in dimensional points. */
   dimensionalPointsDelta?: number;
 };
 
+/**
+ * Definition of a random cosmic event.
+ */
 export type CosmicEvent = {
+  /** Unique identifier for the event. */
   id: string;
+  /** Display name of the event. */
   name: string;
+  /** Flavor text description. */
   description: string;
+  /** Minimum depth required for this event to trigger. */
   minDepth?: number;
+  /** Minimum resonance required for this event to trigger. */
   minResonance?: number;
+  /** Relative weight of this event (probability of occurrence). */
   weight: number;
+  /**
+   * Function to apply the event's effects.
+   * @param snapshot - The current game state snapshot.
+   * @returns The outcome of the event.
+   */
   apply: (snapshot: CosmicSnapshot) => CosmicEventOutcome;
 };
 

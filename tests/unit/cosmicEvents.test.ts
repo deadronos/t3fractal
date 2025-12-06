@@ -1,3 +1,8 @@
+/**
+ * Unit tests for Cosmic Event resolution logic.
+ * Verifies random selection, eligibility checks, and outcome generation.
+ */
+
 import { describe, expect, it } from "vitest";
 
 import { COSMIC_EVENTS, resolveCosmicEvent } from "@/app/pages/cosmicEvents";

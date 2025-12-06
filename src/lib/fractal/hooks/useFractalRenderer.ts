@@ -1,29 +1,51 @@
 /**
- * Custom hook for managing fractal renderer state and canvas sizing
+ * Custom hook for managing fractal renderer state and canvas sizing.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+/**
+ * Supported rendering modes (CPU or WebGL).
+ */
 export type FractalRendererMode = "cpu" | "webgl";
 
+/**
+ * Options for the useFractalRenderer hook.
+ */
 export interface UseFractalRendererOptions {
+  /** Callback fired when the renderer mode changes. */
   onRendererChange?: (mode: FractalRendererMode) => void;
+  /** Initial renderer mode. Defaults to "webgl". */
   defaultMode?: FractalRendererMode;
+  /** Initial width of the canvas. Defaults to 360. */
   defaultWidth?: number;
+  /** Initial height of the canvas. Defaults to 260. */
   defaultHeight?: number;
 }
 
+/**
+ * Return value of the useFractalRenderer hook.
+ */
 export interface UseFractalRendererResult {
+  /** Current active rendering mode. */
   renderMode: FractalRendererMode;
+  /** Whether WebGL is supported by the browser. Null while checking. */
   webglSupported: boolean | null;
+  /** Current size of the container/canvas. */
   size: { width: number; height: number };
+  /** Ref to the container element for resizing. */
   containerRef: React.RefObject<HTMLDivElement | null>;
+  /** Ref to the canvas element. */
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  /** Function to manually update the renderer mode. */
   updateRendererMode: (mode: FractalRendererMode) => void;
 }
 
 /**
- * Hook to manage fractal renderer mode, WebGL support detection, and canvas sizing
+ * Hook to manage fractal renderer mode, WebGL support detection, and canvas sizing.
+ *
+ * @param options - Configuration options.
+ * @returns State and refs for the fractal renderer.
  */
 export function useFractalRenderer(
   options: UseFractalRendererOptions = {},

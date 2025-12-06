@@ -17,6 +17,14 @@ const geist = Geist({
   variable: "--font-geist-sans",
 });
 
+/**
+ * Root layout component for the Next.js application.
+ * Wraps the application with global styles and analytics.
+ *
+ * @param props - Component props.
+ * @param props.children - The child pages to render.
+ * @returns The root HTML structure.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {

@@ -5,21 +5,42 @@ import FractalViewer, { type FractalRendererMode } from "@/app/pages/fractalview
 import type { ComplexParameter } from "@/store/gameStore";
 import { formatNumber } from "@/lib/gameplay/formatters";
 
+/**
+ * Props for the FractalCard component.
+ */
 type FractalCardProps = {
+  /** Current depth. */
   depth: number;
+  /** Complex parameters. */
   complexParameter: ComplexParameter;
+  /** Amplifier count. */
   amplifiers: number;
+  /** Current zone production bonus. */
   zoneBonus: number;
+  /** Cost to zoom deeper. */
   zoomCost: number;
+  /** Passive depth gain rate. */
   passiveDepthGain: number;
+  /** Formatted dimensional efficiency percentage. */
   dimensionalEfficiency: string;
+  /** Active renderer mode. */
   rendererMode: FractalRendererMode;
+  /** Callback to change renderer mode. */
   onRendererChange: (mode: FractalRendererMode) => void;
+  /** Handler to zoom deeper. */
   onZoomDeeper: () => void;
+  /** Handler to zoom out. */
   onZoomOut: () => void;
+  /** Handler to change complex parameters. */
   onParameterChange: (changes: Partial<ComplexParameter>) => void;
 };
 
+/**
+ * Main game card containing the fractal viewer and navigation controls.
+ *
+ * @param props - Component props.
+ * @returns The card component.
+ */
 export default function FractalCard({
   depth,
   complexParameter,
