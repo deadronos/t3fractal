@@ -1,7 +1,9 @@
 import { useGameStore } from "@/store/gameStore";
 
 /**
- * Hook to access all game state from the store
+ * Hook to access all game state from the store.
+ *
+ * @returns Object containing all state values.
  */
 export function useGameState() {
   const fractalData = useGameStore((state) => state.fractalData);
@@ -46,7 +48,9 @@ export function useGameState() {
 }
 
 /**
- * Hook to access all game actions from the store
+ * Hook to access all game actions from the store.
+ *
+ * @returns Object containing all action functions.
  */
 export function useGameActions() {
   const spendFractalData = useGameStore((state) => state.spendFractalData);

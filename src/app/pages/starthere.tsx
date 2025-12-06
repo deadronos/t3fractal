@@ -21,6 +21,12 @@ import PrestigeCard from "@/app/components/game/PrestigeCard";
 import ActivityLogCard from "@/app/components/game/ActivityLogCard";
 import JuliaLabCard from "@/app/components/game/JuliaLabCard";
 
+/**
+ * The main game page/container.
+ * Manages game state, loops, and layout of game cards.
+ *
+ * @returns The Start Here page component.
+ */
 export default function StartHere(): ReactElement {
   const state = useGameState();
   const actions = useGameActions();

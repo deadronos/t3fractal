@@ -3,10 +3,20 @@ import { Card, Flex, Heading, Separator, Text } from "@radix-ui/themes";
 
 import { FRACTAL_ZONES } from "@/data/gameConfig";
 
+/**
+ * Props for the ExplorationZonesCard component.
+ */
 type ExplorationZonesCardProps = {
+  /** Current depth. */
   depth: number;
 };
 
+/**
+ * Displays a list of fractal zones and their unlock status/bonuses.
+ *
+ * @param props - Component props.
+ * @returns The card component.
+ */
 export default function ExplorationZonesCard({
   depth,
 }: ExplorationZonesCardProps): ReactElement {

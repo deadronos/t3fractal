@@ -1,3 +1,8 @@
+/**
+ * Unit tests for resource production logic.
+ * Verifies multiplier stacking, parameter efficiency, and upgrade yields.
+ */
+
 import { describe, it, expect } from "vitest";
 import {
   calculateProductionMultiplier,

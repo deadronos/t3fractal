@@ -35,7 +35,11 @@ type GameState = {
 };
 
 /**
- * Hook to calculate all derived game values
+ * Hook to calculate all derived game values.
+ * Computes costs, production rates, yields, and other dependent values.
+ *
+ * @param state - The current game state.
+ * @returns An object containing calculated values.
  */
 export function useGameCalculations(state: GameState) {
   const nextDepthLevel = Math.floor(state.depth) + 1;

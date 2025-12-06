@@ -3,6 +3,12 @@ import {GlobalProvider} from "@/app/providers/provider"
 import StartHere from "@/app/pages/starthere"
 import {Theme} from "@radix-ui/themes"
 
+/**
+ * The home page of the application.
+ * Renders the game wrapper with themes and providers.
+ *
+ * @returns The home page component.
+ */
 export default function HomePage() {
   return (
     <GlobalProvider>

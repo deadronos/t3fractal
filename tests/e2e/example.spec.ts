@@ -1,3 +1,8 @@
+/**
+ * E2E tests for the application.
+ * Currently serves as a placeholder/example using Playwright.
+ */
+
 import { test, expect } from '@playwright/test';
 
 test('has title', async ({ page }) => {

@@ -7,8 +7,8 @@
 /**
  * Format a number with appropriate magnitude suffix (K, M, B).
  * 
- * @param value - The number to format
- * @returns Formatted string with suffix
+ * @param value - The number to format.
+ * @returns Formatted string with suffix.
  * 
  * @example
  * formatNumber(1234) // "1.23K"

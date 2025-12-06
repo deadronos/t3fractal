@@ -3,17 +3,35 @@ import { useEffect, useRef } from "react";
 import { generateWorkerCode } from "@/lib/fractal/workerCodeGenerator";
 import type { ComplexParameter, FractalFormula } from "@/lib/fractal/fractalMath";
 
+/**
+ * Props for the FractalCPUCanvas component.
+ */
 type FractalCPUCanvasProps = {
+  /** Current zoom depth. */
   depth: number;
+  /** Center coordinates. */
   parameter: ComplexParameter;
+  /** Number of amplifiers (affects max iterations). */
   amplifiers: number;
+  /** Formula type (mandelbrot/julia). */
   formula: FractalFormula;
+  /** Constant for Julia set. */
   juliaConstant: ComplexParameter;
+  /** Ref to the canvas element. */
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  /** Canvas width. */
   width: number;
+  /** Canvas height. */
   height: number;
 };
 
+/**
+ * A component that manages CPU-based fractal rendering using a web worker.
+ * Handles canvas resizing and worker communication.
+ *
+ * @param props - Component props.
+ * @returns Null (it only manages the canvas ref passed to it).
+ */
 export default function FractalCPUCanvas({
   depth,
   parameter,

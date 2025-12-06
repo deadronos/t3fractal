@@ -46,7 +46,12 @@ type GameActions = {
 };
 
 /**
- * Hook for all game event handlers
+ * Hook for all game event handlers.
+ * Wraps logic for zooming, buying upgrades, prestiging, etc.
+ *
+ * @param deps - Calculated values and state dependencies.
+ * @param actions - Store actions to modify state.
+ * @returns Object containing all event handler functions.
  */
 export function useGameHandlers(deps: GameHandlerDeps, actions: GameActions) {
   const latestSnapshotRef = useRef({

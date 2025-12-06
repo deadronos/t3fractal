@@ -1,6 +1,6 @@
 /**
- * CPU-based Mandelbrot fractal renderer worker
- * Performs tile-based rendering to avoid blocking the main thread
+ * CPU-based Mandelbrot fractal renderer worker.
+ * Performs tile-based rendering to avoid blocking the main thread.
  */
 
 import {
@@ -12,42 +12,70 @@ import {
 
 export type { ComplexParameter };
 
+/**
+ * Message payload sent to the worker to initiate rendering.
+ */
 export type WorkerRequest = {
+  /** Width of the full canvas. */
   width: number;
+  /** Height of the full canvas. */
   height: number;
+  /** Current fractal depth. */
   depth: number;
+  /** Center coordinates. */
   parameter: ComplexParameter;
+  /** Number of amplifiers (affects max iterations). */
   amplifiers: number;
+  /** Height of each rendering tile. */
   tileHeight: number;
 };
 
+/**
+ * Message payload sent from the worker containing a rendered tile.
+ */
 export type TileMessage = {
+  /** Message type discriminator. */
   type: "tile";
+  /** Y-coordinate of the tile start. */
   y: number;
+  /** Height of the tile. */
   height: number;
+  /** Width of the tile. */
   width: number;
+  /** Raw pixel buffer (RGBA). */
   buffer: ArrayBuffer;
 };
 
+/**
+ * Message payload sent from the worker indicating completion.
+ */
 export type DoneMessage = {
+  /** Message type discriminator. */
   type: "done";
 };
 
+/**
+ * Union type for all possible worker responses.
+ */
 export type WorkerResponse = TileMessage | DoneMessage;
 
 /**
- * Clamp a value between lower and upper bounds
+ * Clamp a value between lower and upper bounds.
+ * @param v - Value to clamp.
+ * @param l - Lower bound.
+ * @param u - Upper bound.
+ * @returns The clamped value.
  */
 function clamp(v: number, l: number, u: number): number {
   return Math.max(l, Math.min(v, u));
 }
 
 /**
- * Convert HSL color to RGB
- * @param h - Hue (0-1)
- * @param s - Saturation (0-1)
- * @param l - Lightness (0-1)
- * @returns RGB array [r, g, b] with values 0-255
+ * Convert HSL color to RGB.
+ * @param h - Hue (0-1).
+ * @param s - Saturation (0-1).
+ * @param l - Lightness (0-1).
+ * @returns RGB array [r, g, b] with values 0-255.
  */
 function hslToRgb(h: number, s: number, l: number): [number, number, number] {
   if (s === 0) {
@@ -73,7 +101,9 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
 }
 
 /**
- * Worker message handler
+ * Worker message handler.
+ * Receives rendering requests and processes them in tiles.
+ * @param e - The message event containing the request.
  */
 self.onmessage = function (e: MessageEvent<WorkerRequest>) {
   const { width, height, depth, parameter, amplifiers, tileHeight } = e.data;

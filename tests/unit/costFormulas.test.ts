@@ -1,3 +1,8 @@
+/**
+ * Unit tests for game cost calculation formulas.
+ * Verifies upgrade costs, zoom costs, and expedition costs scaling.
+ */
+
 import { describe, it, expect } from "vitest";
 import {
   calculateUpgradeCost,

@@ -6,21 +6,42 @@ import FractalViewer, { type FractalRendererMode } from "@/app/pages/fractalview
 import type { ComplexParameter } from "@/store/gameStore";
 import { formatNumber } from "@/lib/gameplay/formatters";
 
+/**
+ * Props for the JuliaLabCard component.
+ */
 export type JuliaLabCardProps = {
+  /** Current Julia set depth. */
   juliaDepth: number;
+  /** Current flux amount. */
   juliaFlux: number;
+  /** Harmonic cores count. */
   harmonicCores: number;
+  /** Transcension level. */
   transcensionLevel: number;
+  /** Cost to study Julia set. */
   juliaStudyCost: number;
+  /** Expected flux gain. */
   juliaFluxGain: number;
+  /** Current bonus multiplier from flux. */
   juliaBonusMultiplier: number;
+  /** Current Julia constant. */
   juliaConstant: ComplexParameter;
+  /** Active renderer mode. */
   rendererMode: FractalRendererMode;
+  /** Callback to change renderer mode. */
   onRendererChange: (mode: FractalRendererMode) => void;
+  /** Handler to conduct study. */
   onStudy: () => void;
+  /** Handler to change Julia constant. */
   onConstantChange: (changes: Partial<ComplexParameter>) => void;
 };
 
+/**
+ * Card for managing Julia set research and upgrades (Endgame feature).
+ *
+ * @param props - Component props.
+ * @returns The card component.
+ */
 export default function JuliaLabCard({
   juliaDepth,
   juliaFlux,

@@ -9,8 +9,8 @@ import type { ComplexParameter } from "@/store/gameStore";
 /**
  * Calculate the production multiplier based on various game state factors.
  * 
- * @param params - Production calculation parameters
- * @returns Combined production multiplier
+ * @param params - Production calculation parameters.
+ * @returns Combined production multiplier.
  */
 export const calculateProductionMultiplier = (params: {
   ascensionLevel: number;
@@ -46,9 +46,9 @@ export const calculateProductionMultiplier = (params: {
 /**
  * Calculate parameter efficiency based on distance from target.
  * 
- * @param current - Current complex parameter
- * @param target - Target complex parameter
- * @returns Efficiency multiplier (0.65 to ~1.45)
+ * @param current - Current complex parameter.
+ * @param target - Target complex parameter.
+ * @returns Efficiency multiplier (0.65 to ~1.45).
  */
 export const calculateParameterEfficiency = (
   current: ComplexParameter,
@@ -64,8 +64,8 @@ export const calculateParameterEfficiency = (
 /**
  * Calculate base production from upgrade levels.
  * 
- * @param upgrades - Current upgrade counts
- * @returns Base production value
+ * @param upgrades - Current upgrade counts.
+ * @returns Base production value.
  */
 export const calculateBaseProduction = (upgrades: {
   probe: number;
@@ -81,8 +81,8 @@ export const calculateBaseProduction = (upgrades: {
 /**
  * Calculate passive depth gain rate.
  * 
- * @param params - Depth gain calculation parameters
- * @returns Depth gain per interval
+ * @param params - Depth gain calculation parameters.
+ * @returns Depth gain per interval.
  */
 export const calculatePassiveDepthGain = (params: {
   stabilizerCount: number;
@@ -103,8 +103,8 @@ export const calculatePassiveDepthGain = (params: {
 /**
  * Calculate zone bonus multiplier.
  * 
- * @param zoneBonus - The zone's bonus value
- * @returns Multiplier (1 + bonus)
+ * @param zoneBonus - The zone's bonus value.
+ * @returns Multiplier (1 + bonus).
  */
 export const calculateZoneBonus = (zoneBonus: number): number => {
   return 1 + zoneBonus;

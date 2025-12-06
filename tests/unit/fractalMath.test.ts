@@ -1,3 +1,8 @@
+/**
+ * Unit tests for core fractal mathematics.
+ * Verifies iteration limits, zoom scaling, and color palette calculations.
+ */
+
 import { describe, it, expect } from "vitest";
 import {
   calculateMaxIterations,

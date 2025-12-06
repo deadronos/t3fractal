@@ -5,14 +5,29 @@ import { calculateFractalParameters } from "@/lib/fractal/fractalMath";
 import type { ComplexParameter, FractalFormula } from "@/lib/fractal/fractalMath";
 import type { FractalMaterialInstance } from "@/lib/fractal/shaders";
 
+/**
+ * Props for the FractalPlane component.
+ */
 type FractalPlaneProps = {
+  /** Current zoom depth. */
   depth: number;
+  /** Center coordinates. */
   parameter: ComplexParameter;
+  /** Number of amplifiers. */
   amplifiers: number;
+  /** Formula type. */
   formula: FractalFormula;
+  /** Constant for Julia set (optional). */
   juliaConstant?: ComplexParameter;
 };
 
+/**
+ * A Three.js plane mesh that renders the fractal shader.
+ * Updates shader uniforms based on props.
+ *
+ * @param props - Component props.
+ * @returns The mesh element.
+ */
 export default function FractalPlane({
   depth,
   parameter,
