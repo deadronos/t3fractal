@@ -123,7 +123,7 @@ self.onmessage = function (e: MessageEvent<WorkerRequest>) {
 
       for (let px = 0; px < width; px++) {
         const realComponent =
-          (px - width / 2) / (0.5 * zoom * width) + parameter.real;
+          (px - width / 2) / (0.5 * zoom * height) + parameter.real;
         let x = 0,
           y = 0,
           iter = 0;
