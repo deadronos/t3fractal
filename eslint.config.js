@@ -1,5 +1,4 @@
 import tseslint from "typescript-eslint";
-// @ts-expect-error - eslint-config-next is not typed yet
 import nextConfig from "eslint-config-next";
 
 export default tseslint.config(
