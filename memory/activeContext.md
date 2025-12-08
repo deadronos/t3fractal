@@ -34,6 +34,10 @@
 
 ## Recent Changes
 
+### 2025-10-26
+
+- ✅ Fixed aspect ratio distortion in CPU fractal renderer (TASK015)
+
 ### 2025-10-15
 
 - ✅ Implemented GPU fractal shader renderer and wire UI toggle (TASK010)
