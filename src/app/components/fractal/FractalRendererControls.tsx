@@ -5,12 +5,25 @@ import { Button, Flex, Text } from "@radix-ui/themes";
 
 import type { FractalRendererMode } from "@/lib/fractal/hooks/useFractalRenderer";
 
+/**
+ * Props for the FractalRendererControls component.
+ */
 type FractalRendererControlsProps = {
+  /** Current renderer mode (cpu/webgl). */
   renderMode: FractalRendererMode;
+  /** Whether WebGL is supported. */
   webglSupported: boolean | null;
+  /** Callback to change the renderer mode. */
   onModeChange: (mode: FractalRendererMode) => void;
 };
 
+/**
+ * Controls to switch between CPU and WebGL rendering modes.
+ * Displays a warning if WebGL is unsupported.
+ *
+ * @param props - Component props.
+ * @returns The controls UI.
+ */
 export default function FractalRendererControls({
   renderMode,
   webglSupported,

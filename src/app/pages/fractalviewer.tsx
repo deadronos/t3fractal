@@ -12,18 +12,34 @@ import FractalRendererControls from "@/app/components/fractal/FractalRendererCon
 
 export type { FractalRendererMode };
 
+/**
+ * Props for the FractalViewer component.
+ */
 type FractalViewerProps = {
+  /** Current zoom depth. */
   depth: number;
+  /** Center coordinates. */
   parameter: ComplexParameter;
+  /** Number of amplifiers. */
   amplifiers: number;
+  /** Callback to change renderer mode. */
   onRendererChange?: (mode: FractalRendererMode) => void;
+  /** Formula type (optional, default mandelbrot). */
   formula?: FractalFormula;
+  /** Julia constant (optional). */
   juliaConstant?: ComplexParameter;
 };
 
 const CANVAS_WIDTH = 360;
 const CANVAS_HEIGHT = 260;
 
+/**
+ * A composite component that renders the fractal visualization.
+ * It manages switching between WebGL and CPU rendering and handles controls.
+ *
+ * @param props - Component props.
+ * @returns The fractal viewer UI.
+ */
 export default function FractalViewer({
   depth,
   parameter,

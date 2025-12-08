@@ -8,18 +8,23 @@
 import type { UpgradeKey, ComplexParameter } from "@/store/gameStore";
 
 /**
- * Configuration for a single upgrade type
+ * Configuration for a single upgrade type.
  */
 export type UpgradeConfig = {
+  /** Display title of the upgrade. */
   title: string;
+  /** Description of what the upgrade does. */
   description: string;
+  /** Initial cost of the upgrade. */
   baseCost: number;
+  /** Cost scaling factor per level. */
   growth: number;
+  /** Flavor text for the upgrade. */
   flavor: string;
 };
 
 /**
- * Configuration for all available upgrades
+ * Configuration for all available upgrades.
  */
 export const UPGRADE_CONFIG: Record<UpgradeKey, UpgradeConfig> = {
   probe: {
@@ -49,17 +54,21 @@ export const UPGRADE_CONFIG: Record<UpgradeKey, UpgradeConfig> = {
 };
 
 /**
- * Fractal zone definition
+ * Fractal zone definition.
  */
 export type FractalZone = {
+  /** Name of the zone. */
   name: string;
+  /** Depth requirement to unlock or enter the zone. */
   requirement: number;
+  /** Production bonus provided by this zone. */
   bonus: number;
+  /** Description of the zone. */
   description: string;
 };
 
 /**
- * Available fractal zones with unlock requirements and bonuses
+ * Available fractal zones with unlock requirements and bonuses.
  */
 export const FRACTAL_ZONES: FractalZone[] = [
   {
@@ -99,6 +108,6 @@ export const FRACTAL_ZONES: FractalZone[] = [
 ];
 
 /**
- * Target coordinates for dimensional exploration
+ * Target coordinates for dimensional exploration.
  */
 export const DIMENSIONAL_TARGET: ComplexParameter = { real: -0.75, imaginary: 0.11 };

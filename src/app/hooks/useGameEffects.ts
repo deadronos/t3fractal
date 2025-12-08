@@ -22,7 +22,10 @@ type UseGameEffectsProps = {
 };
 
 /**
- * Hook for managing game effects (intervals, zone detection)
+ * Hook for managing game effects (intervals, zone detection).
+ * Handles production intervals, zone unlock notifications, and cosmic event countdowns.
+ *
+ * @param props - Dependencies and actions required for effects.
  */
 export function useGameEffects({
   effectiveDataPerSecond,

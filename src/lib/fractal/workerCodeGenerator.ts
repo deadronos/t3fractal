@@ -1,6 +1,6 @@
 /**
- * Generate worker code string for environments that need Blob URL workers
- * This is a compatibility layer for Next.js which doesn't support module workers well
+ * Generate worker code string for environments that need Blob URL workers.
+ * This is a compatibility layer for Next.js which doesn't support module workers well.
  */
 
 import {
@@ -10,9 +10,11 @@ import {
 } from "@/lib/fractal/fractalMath";
 
 /**
- * Generate the worker code as a string for Blob URL creation
+ * Generate the worker code as a string for Blob URL creation.
  * This allows us to maintain the worker logic in TypeScript while
- * still supporting environments that need inline worker code
+ * still supporting environments that need inline worker code.
+ *
+ * @returns The complete source code of the worker as a string.
  */
 export function generateWorkerCode(): string {
   // Inline the calculation functions into the worker code
@@ -70,7 +72,7 @@ export function generateWorkerCode(): string {
         for (let py = y0; py < y0 + h; py++) {
           const imaginaryComponent = (py - height/2) / (0.5 * zoom * height) + centerImag;
           for (let px = 0; px < width; px++) {
-            const realComponent = (px - width/2) / (0.5 * zoom * width) + centerReal;
+            const realComponent = (px - width/2) / (0.5 * zoom * height) + centerReal;
             let x = mode === "julia" ? realComponent : 0;
             let y = mode === "julia" ? imaginaryComponent : 0;
             let iter = 0;

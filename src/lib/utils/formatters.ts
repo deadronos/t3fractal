@@ -1,5 +1,8 @@
 /**
- * Format a number in compact notation (K, M, B)
+ * Format a number in compact notation (K, M, B).
+ *
+ * @param value - The number to format.
+ * @returns Formatted string (e.g., "1.50K").
  */
 export function formatCompactNumber(value: number): string {
   if (value >= 1e9) {

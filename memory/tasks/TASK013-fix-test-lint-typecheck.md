@@ -41,3 +41,13 @@ User request: "check and fix npm run test / npm run lint / and npm run typecheck
 - Captured baseline: unit tests and typecheck were already green; ESLint warned about a missing dependency in `FractalViewer` and unused setters in `StartHere`.
 - Added `canvasRef` to the CPU renderer effect dependencies and removed unused `setDepth`, `setResonance`, and `setAnomalies` selectors to silence lint.
 - Re-ran `npm run test`, `npm run lint`, and `npm run typecheck`; all pass (Vitest still logs jsdom canvas warnings, which are expected without mocking `getContext`).
+
+### 2025-12-08
+
+- Re-visited task due to user request to fix tests/lint/typecheck.
+- Fixed `tests/unit/workerCodeGenerator.test.ts` which was malformed.
+- Fixed casing issue in imports in `src/app/pages/fractalviewer.tsx` causing typecheck errors.
+- Fixed `eslint.config.js` to use `eslint-config-next` flat config directly (removing `FlatCompat`) to resolve circular dependency error with ESLint 9.
+- Updated `package.json` to use `eslint .` instead of `next lint` (which was failing with "Invalid project directory").
+- Fixed lint errors in `tests/setup.ts`, `src/app/hooks/useGameHandlers.ts`, and `src/lib/fractal/hooks/useFractalRenderer.ts`.
+- Verified `npm run test`, `npm run lint`, and `npm run typecheck` all pass.

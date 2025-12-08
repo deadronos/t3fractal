@@ -1,6 +1,6 @@
 /**
- * Factory for creating and managing fractal CPU worker instances
- * Handles worker lifecycle, message typing, and cleanup
+ * Factory for creating and managing fractal CPU worker instances.
+ * Handles worker lifecycle, message typing, and cleanup.
  */
 
 import type {
@@ -8,25 +8,53 @@ import type {
   WorkerResponse,
 } from "@/workers/fractalCpu.worker";
 
+/**
+ * Callback function type for receiving rendered tiles.
+ */
 export type TileCallback = (tile: {
+  /** Y-coordinate of the tile. */
   y: number;
+  /** Height of the tile. */
   height: number;
+  /** Width of the tile. */
   width: number;
+  /** Raw pixel buffer. */
   buffer: ArrayBuffer;
 }) => void;
 
+/**
+ * Callback function type for worker completion.
+ */
 export type DoneCallback = () => void;
 
+/**
+ * Interface for the fractal worker wrapper.
+ */
 export interface FractalWorkerInstance {
+  /**
+   * Post a request to the worker.
+   * @param request - The work request.
+   */
   postMessage: (request: WorkerRequest) => void;
+  /**
+   * Register a callback for tile messages.
+   * @param callback - The function to call when a tile is received.
+   */
   onTile: (callback: TileCallback) => void;
+  /**
+   * Register a callback for completion.
+   * @param callback - The function to call when work is done.
+   */
   onDone: (callback: DoneCallback) => void;
+  /**
+   * Terminate the worker instance.
+   */
   terminate: () => void;
 }
 
 /**
- * Create a new fractal CPU worker with typed message interfaces
- * @returns Worker instance with typed API
+ * Create a new fractal CPU worker with typed message interfaces.
+ * @returns Worker instance with typed API.
  */
 export function createFractalWorker(): FractalWorkerInstance {
   // Create worker using Vite's worker import syntax
@@ -82,9 +110,9 @@ export function createFractalWorker(): FractalWorkerInstance {
 
 /**
  * Fallback worker creation using Blob URL for environments
- * that don't support module workers
- * @param workerCode - Worker code as string
- * @returns Object with worker and cleanup function
+ * that don't support module workers.
+ * @param workerCode - Worker code as string.
+ * @returns Object with worker and cleanup function.
  */
 export function createFractalWorkerFromBlob(
   workerCode: string,

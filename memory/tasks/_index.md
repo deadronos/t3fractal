@@ -24,6 +24,7 @@
 - [TASK010] Implement GPU fractal renderer toggle - Completed on October 15, 2025
 - [TASK011] Identify refactor targets for modularization - Completed on October 26, 2025
 - [TASK012] Implement tech debt refactors - Phases 1-2 completed on October 26, 2025 (45% complete)
+- [TASK015] Fix CPU Renderer Aspect Ratio Bug - Completed on October 26, 2025
 
 ## Abandoned
 
