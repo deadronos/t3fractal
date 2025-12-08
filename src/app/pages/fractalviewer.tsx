@@ -6,9 +6,9 @@ import type { ComplexParameter, FractalFormula } from "@/lib/fractal/fractalMath
 import { useFractalRenderer } from "@/lib/fractal/hooks/useFractalRenderer";
 import type { FractalRendererMode } from "@/lib/fractal/hooks/useFractalRenderer";
 
-import FractalWebGLSurface from "@/app/components/Fractal/FractalWebGLSurface";
-import FractalCPUCanvas from "@/app/components/Fractal/FractalCPUCanvas";
-import FractalRendererControls from "@/app/components/Fractal/FractalRendererControls";
+import FractalWebGLSurface from "@/app/components/fractal/FractalWebGLSurface";
+import FractalCPUCanvas from "@/app/components/fractal/FractalCPUCanvas";
+import FractalRendererControls from "@/app/components/fractal/FractalRendererControls";
 
 export type { FractalRendererMode };
 
