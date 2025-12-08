@@ -1,7 +1,12 @@
+/**
+ * Unit tests for the Home Page.
+ * Checks basic rendering of the main application entry point.
+ */
+
 import { expect, test } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import HomePage from '@/app/page'
- 
+
 test('HomePage renders a main heading', () => {
   render(<HomePage />)
   // Ensure the page renders at least one top-level heading

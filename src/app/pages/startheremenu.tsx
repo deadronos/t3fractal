@@ -1,32 +1,46 @@
 "use client";
 
 import type { ReactElement } from "react";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-import { Badge, Flex, Grid, Heading, Text } from "@radix-ui/themes";
+import { Flex, Grid, Heading } from "@radix-ui/themes";
 
+import ThemeToggle from "@/app/components/ThemeToggle";
+import StatBadge from "@/app/components/StatBadge";
+import { formatCompactNumber } from "@/lib/utils/formatters";
+
+/**
+ * Props for the StartHereMenu component.
+ */
 type StartHereMenuProps = {
+  /** Current fractal data. */
   fractalData: number;
+  /** Current depth. */
   depth: number;
+  /** Data production rate. */
   dataPerSecond: number;
+  /** Dimensional points balance. */
   dimensionalPoints: number;
+  /** Resonance level. */
   resonance: number;
+  /** Anomaly count. */
   anomalies: number;
+  /** Harmonic cores balance. */
+  harmonicCores: number;
+  /** Julia flux balance. */
+  juliaFlux: number;
+  /** Transcension level. */
+  transcensionLevel: number;
+  /** Whether Julia Lab is unlocked. */
+  juliaUnlocked: boolean;
 };
 
-const formatCompactNumber = (value: number): string => {
-  if (value >= 1e9) {
-    return `${(value / 1e9).toFixed(2)}B`;
-  }
-  if (value >= 1e6) {
-    return `${(value / 1e6).toFixed(2)}M`;
-  }
-  if (value >= 1e3) {
-    return `${(value / 1e3).toFixed(2)}K`;
-  }
-  return value.toFixed(0);
-};
-
+/**
+ * Top menu bar displaying global stats and theme toggle.
+ *
+ * @param props - Component props.
+ * @returns The menu component.
+ */
 export default function StartHereMenu({
   fractalData,
   depth,
@@ -34,17 +48,11 @@ export default function StartHereMenu({
   dimensionalPoints,
   resonance,
   anomalies,
+  harmonicCores,
+  juliaFlux,
+  transcensionLevel,
+  juliaUnlocked,
 }: StartHereMenuProps): ReactElement {
-  const [isDark, setIsDark] = useState<boolean>(true);
-
-  useEffect(() => {
-    try {
-      document.documentElement.classList.toggle("dark", isDark);
-    } catch {
-      /* noop */
-    }
-  }, [isDark]);
-
   return (
     <Flex
       className="starthere-menu"
@@ -56,45 +64,9 @@ export default function StartHereMenu({
         <Heading size="5" className="menu-title">
           Fractal Frontier Control Deck
         </Heading>
-        <button
-          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-          onClick={() => setIsDark((v) => !v)}
-          className="rounded-full bg-white/5 p-2 hover:bg-white/10"
-          title={isDark ? "Light mode" : "Dark mode"}
-        >
-          {isDark ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="4" />
-              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-            </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-            </svg>
-          )}
-        </button>
+        <ThemeToggle />
       </Flex>
-      <Grid columns={{ initial: "1", sm: "2", md: "6" }} gap="3" width="auto">
+      <Grid columns={{ initial: "1", sm: "2", md: "8" }} gap="3" width="auto">
         <StatBadge
           label="Fractal Data"
           value={`${formatCompactNumber(fractalData)} units`}
@@ -121,26 +93,26 @@ export default function StartHereMenu({
           value={anomalies.toFixed(0)}
           accent={anomalies > 0 ? "iris" : "gray"}
         />
+        {juliaUnlocked && (
+          <>
+            <StatBadge
+              label="Harmonic Cores"
+              value={harmonicCores.toFixed(0)}
+              accent={harmonicCores > 0 ? "purple" : "gray"}
+            />
+            <StatBadge
+              label="Julia Flux"
+              value={`${formatCompactNumber(juliaFlux)} flux`}
+              accent={juliaFlux > 0 ? "cyan" : "gray"}
+            />
+            <StatBadge
+              label="Transcension"
+              value={`Tier ${Math.max(1, transcensionLevel + 1)} (${transcensionLevel})`}
+              accent="purple"
+            />
+          </>
+        )}
       </Grid>
-    </Flex>
-  );
-}
-
-type StatBadgeProps = {
-  label: string;
-  value: string;
-  accent: "mint" | "cyan" | "iris" | "purple" | "gray";
-};
-
-function StatBadge({ label, value, accent }: StatBadgeProps): ReactElement {
-  return (
-    <Flex direction="column" gap="1">
-      <Text size="1" color="gray">
-        {label}
-      </Text>
-      <Badge color={accent} size="3">
-        {value}
-      </Badge>
     </Flex>
   );
 }

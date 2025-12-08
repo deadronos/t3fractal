@@ -1,6 +1,12 @@
 import type {ReactElement} from "react";
 import Link from "next/link";
 
+/**
+ * A starter page component from the T3 stack template.
+ * Preserved for reference or fallback.
+ *
+ * @returns The starter page UI.
+ */
 export default function T3StarterPage(): ReactElement {
 
   return (

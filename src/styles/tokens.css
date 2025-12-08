@@ -1,0 +1,126 @@
+/**
+ * Design tokens for T3 Fractal application
+ * Shared color palette, spacing, and animation variables
+ */
+
+@import "tailwindcss";
+
+:root {
+  /* Color Palette - Primary Colors */
+  --tf-primary-teal: rgba(45, 212, 191, 1);
+  --tf-primary-teal-alpha-12: rgba(45, 212, 191, 0.12);
+  --tf-primary-purple: rgba(99, 102, 241, 1);
+  --tf-primary-purple-alpha-08: rgba(99, 102, 241, 0.08);
+  --tf-primary-sky: rgba(56, 189, 248, 1);
+  --tf-primary-sky-alpha-06: rgba(56, 189, 248, 0.06);
+
+  /* Background Colors */
+  --tf-bg-dark: #050510;
+  --tf-bg-card: rgba(12, 12, 28, 0.85);
+  --tf-bg-menu: linear-gradient(90deg, rgba(41, 37, 82, 0.8), rgba(15, 118, 110, 0.55));
+  
+  /* Border Colors */
+  --tf-border-subtle: rgba(120, 119, 198, 0.15);
+  --tf-border-accent: rgba(120, 119, 198, 0.4);
+
+  /* Shadow Values */
+  --tf-shadow-sm: 0 8px 16px rgba(9, 9, 26, 0.3);
+  --tf-shadow-md: 0 12px 30px rgba(5, 5, 40, 0.45);
+  --tf-shadow-lg: 0 16px 30px rgba(9, 9, 26, 0.35);
+
+  /* Border Radius */
+  --tf-radius-sm: 12px;
+  --tf-radius-md: 18px;
+  --tf-radius-lg: 20px;
+
+  /* Spacing */
+  --tf-space-xs: 0.5rem;
+  --tf-space-sm: 1rem;
+  --tf-space-md: 1.5rem;
+  --tf-space-lg: 2rem;
+  --tf-space-xl: 3rem;
+
+  /* Typography */
+  --tf-font-weight-normal: 400;
+  --tf-font-weight-medium: 500;
+  --tf-font-weight-bold: 700;
+  --tf-letter-spacing-wide: 0.05em;
+
+  /* Z-Index Layers */
+  --tf-z-base: 1;
+  --tf-z-overlay: 10;
+  --tf-z-modal: 100;
+
+  /* Transitions */
+  --tf-transition-fast: 0.15s ease;
+  --tf-transition-normal: 0.3s ease;
+  --tf-transition-slow: 0.5s ease;
+}
+
+/* Shared Animations */
+@keyframes auroraFlow {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1.1);
+  }
+  33% {
+    transform: rotate(120deg) scale(1.2);
+  }
+  66% {
+    transform: rotate(240deg) scale(1.1);
+  }
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Utility Classes */
+.tf-card {
+  background: var(--tf-bg-card);
+  border-radius: var(--tf-radius-md);
+  border: 1px solid var(--tf-border-subtle);
+  box-shadow: var(--tf-shadow-lg);
+}
+
+.tf-button-glow {
+  transition: all var(--tf-transition-normal);
+}
+
+.tf-button-glow:hover {
+  box-shadow: 0 0 20px rgba(45, 212, 191, 0.4);
+  transform: translateY(-1px);
+}
+
+.tf-text-gradient {
+  background: linear-gradient(135deg, var(--tf-primary-teal), var(--tf-primary-purple));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

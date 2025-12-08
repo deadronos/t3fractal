@@ -1,3 +1,8 @@
+/**
+ * Environment variable schema definition and validation.
+ * Uses @t3-oss/env-nextjs to ensure type-safe environment variables.
+ */
+
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 

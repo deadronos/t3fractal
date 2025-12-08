@@ -1,14 +1,15 @@
 @import "tailwindcss";
+@import "./tokens.css";
 
 .startherebox {
   position: relative;
   overflow: hidden;
   min-height: 100vh;
-  padding: 2rem 1.5rem 3rem;
+  padding: var(--tf-space-lg) var(--tf-space-md) var(--tf-space-xl);
   background: radial-gradient(circle at top, rgba(64, 224, 208, 0.08), transparent 55%),
     radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.08), transparent 45%),
-    radial-gradient(circle at bottom left, rgba(56, 189, 248, 0.06), transparent 40%),
-    #050510;
+    radial-gradient(circle at bottom left, var(--tf-primary-sky-alpha-06), transparent 40%),
+    var(--tf-bg-dark);
   color: var(--gray-12);
 }
 
@@ -20,9 +21,9 @@
   pointer-events: none;
   background: conic-gradient(
     from 180deg,
-    rgba(45, 212, 191, 0.12),
-    rgba(99, 102, 241, 0.08),
-    rgba(45, 212, 191, 0.12)
+    var(--tf-primary-teal-alpha-12),
+    var(--tf-primary-purple-alpha-08),
+    var(--tf-primary-teal-alpha-12)
   );
   filter: blur(40px);
   opacity: 0.75;
@@ -38,23 +39,45 @@
 
 .starthere-grid {
   width: 100%;
-  margin-top: 1.5rem;
+  margin-top: var(--tf-space-md);
+}
+
+.starthere-tabs {
+  margin-top: var(--tf-space-md);
+}
+
+.starthere-tabs .rt-TabsList {
+  background: var(--tf-bg-menu);
+  padding: var(--tf-space-sm) var(--tf-space-md);
+  border-radius: var(--tf-radius-lg);
+  border: 1px solid var(--tf-border-subtle);
+  box-shadow: var(--tf-shadow-md);
+  margin-bottom: var(--tf-space-md);
+  gap: var(--tf-space-sm);
+}
+
+.starthere-tabs .rt-TabsTrigger {
+  color: var(--gray-12);
+}
+
+.starthere-tabs .rt-TabsTrigger[data-state="active"] {
+  color: var(--mint-9);
 }
 
 .starthere-menu {
-  padding: 1.5rem 2rem;
-  background: linear-gradient(90deg, rgba(41, 37, 82, 0.8), rgba(15, 118, 110, 0.55));
-  border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(5, 5, 40, 0.45);
-  gap: 1.5rem;
+  padding: var(--tf-space-md) var(--tf-space-lg);
+  background: var(--tf-bg-menu);
+  border-radius: var(--tf-radius-lg);
+  box-shadow: var(--tf-shadow-md);
+  gap: var(--tf-space-md);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .starthere-menu .menu-title {
-  font-weight: 700;
-  letter-spacing: 0.05em;
+  font-weight: var(--tf-font-weight-bold);
+  letter-spacing: var(--tf-letter-spacing-wide);
   color: var(--mint-9);
 }
 
@@ -67,10 +90,10 @@
 .zone-entry,
 .upgrade-row,
 .event-card {
-  background: rgba(12, 12, 28, 0.85);
-  border-radius: 18px;
-  border: 1px solid rgba(120, 119, 198, 0.15);
-  box-shadow: 0 16px 30px rgba(9, 9, 26, 0.35);
+  background: var(--tf-bg-card);
+  border-radius: var(--tf-radius-md);
+  border: 1px solid var(--tf-border-subtle);
+  box-shadow: var(--tf-shadow-lg);
 }
 
 .fractal-card {
@@ -245,18 +268,6 @@
   .prestige-card,
   .log-card {
     padding: 1.25rem;
-  }
-}
-
-@keyframes auroraFlow {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  50% {
-    transform: rotate(180deg) scale(1.05);
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
   }
 }
 
