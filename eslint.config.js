@@ -1,15 +1,12 @@
-import { FlatCompat } from "@eslint/eslintrc";
 import tseslint from "typescript-eslint";
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-});
+// @ts-expect-error - eslint-config-next is not typed yet
+import nextConfig from "eslint-config-next";
 
 export default tseslint.config(
   {
-    ignores: [".next"],
+    ignores: [".next", ".triplex"],
   },
-  ...compat.extends("next/core-web-vitals"),
+  ...nextConfig,
   {
     files: ["**/*.ts", "**/*.tsx"],
     extends: [

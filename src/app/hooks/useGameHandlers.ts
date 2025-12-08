@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useEffect } from "react";
 
 import { useGameStore, type UpgradeKey, type ComplexParameter } from "@/store/gameStore";
 import { resolveCosmicEvent } from "@/app/pages/cosmicEvents";
@@ -65,15 +65,25 @@ export function useGameHandlers(deps: GameHandlerDeps, actions: GameActions) {
   });
 
   // Update the ref whenever deps change
-  latestSnapshotRef.current = {
-    depth: deps.depth,
-    resonance: deps.resonance,
-    anomalies: deps.anomalies,
-    ascensionLevel: deps.ascensionLevel,
-    dimensionalPoints: deps.dimensionalPoints,
-    fractalData: deps.fractalData,
-    harmonicCores: deps.harmonicCores,
-  };
+  useEffect(() => {
+    latestSnapshotRef.current = {
+      depth: deps.depth,
+      resonance: deps.resonance,
+      anomalies: deps.anomalies,
+      ascensionLevel: deps.ascensionLevel,
+      dimensionalPoints: deps.dimensionalPoints,
+      fractalData: deps.fractalData,
+      harmonicCores: deps.harmonicCores,
+    };
+  }, [
+    deps.depth,
+    deps.resonance,
+    deps.anomalies,
+    deps.ascensionLevel,
+    deps.dimensionalPoints,
+    deps.fractalData,
+    deps.harmonicCores,
+  ]);
 
   const pushLog = useCallback(
     (message: string) => {

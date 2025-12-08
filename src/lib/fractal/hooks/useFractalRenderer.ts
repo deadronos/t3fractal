@@ -83,6 +83,7 @@ export function useFractalRenderer(
     const support = Boolean(
       canvas.getContext("webgl2") ?? canvas.getContext("webgl"),
     );
+    // eslint-disable-next-line
     setWebglSupported(support);
     if (!support) {
       updateRendererMode("cpu");
