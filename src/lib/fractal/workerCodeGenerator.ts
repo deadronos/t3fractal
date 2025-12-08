@@ -72,7 +72,7 @@ export function generateWorkerCode(): string {
         for (let py = y0; py < y0 + h; py++) {
           const imaginaryComponent = (py - height/2) / (0.5 * zoom * height) + centerImag;
           for (let px = 0; px < width; px++) {
-            const realComponent = (px - width/2) / (0.5 * zoom * width) + centerReal;
+            const realComponent = (px - width/2) / (0.5 * zoom * height) + centerReal;
             let x = mode === "julia" ? realComponent : 0;
             let y = mode === "julia" ? imaginaryComponent : 0;
             let iter = 0;
