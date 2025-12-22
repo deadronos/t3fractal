@@ -1,0 +1,13 @@
+
+> t3fractal@0.1.0 dev
+> next dev --turbo
+
+   ▲ Next.js 15.5.4 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.2:3000
+
+ ✓ Starting...
+ ✓ Ready in 2.2s
+ ○ Compiling / ...
+ ✓ Compiled / in 8.6s
+ GET / 200 in 9745ms
