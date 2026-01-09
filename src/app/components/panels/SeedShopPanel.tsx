@@ -1,7 +1,7 @@
 "use client";
 
 import { useGameStore } from "@/store/gameStore";
-import { GEOMETRY_OPTIONS, SEED_UPGRADES, type GeometryType } from "@/lib/gameData";
+import { GEOMETRY_OPTIONS, SEED_UPGRADES } from "@/lib/gameData";
 import { formatNumber } from "@/lib/format";
 
 export default function SeedShopPanel() {
@@ -54,7 +54,7 @@ export default function SeedShopPanel() {
       <div className="panel__subtitle">Branch Geometry</div>
       <div className="geometry-grid">
         {GEOMETRY_OPTIONS.map((option) => {
-          const unlocked = geometryUnlocks[option.id as GeometryType];
+          const unlocked = geometryUnlocks[option.id];
           const selected = selectedGeometry === option.id;
           return (
             <button

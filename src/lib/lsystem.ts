@@ -57,9 +57,8 @@ export function generateSentence(
   let sentence = axiom;
   for (let i = 0; i < iterations; i += 1) {
     let next = "";
-    for (let j = 0; j < sentence.length; j += 1) {
-      const char = sentence[j];
-      const replacement = rules[char ?? ""];
+    for (const char of sentence) {
+      const replacement = rules[char];
       next += replacement ?? char;
       if (next.length >= maxLength) {
         break;
@@ -91,8 +90,7 @@ export function interpretSentence(
   let depth = 0;
   let moved = false;
 
-  for (let i = 0; i < sentence.length; i += 1) {
-    const char = sentence[i];
+  for (const char of sentence) {
     if (char === "F") {
       const direction = UP.clone().applyQuaternion(rotation).normalize();
       const next = position.clone().addScaledVector(direction, config.step);

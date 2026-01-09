@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 import { generateSentence, interpretSentence, type Leaf, type Segment } from "@/lib/lsystem";
 
 export type LSystemStats = {
