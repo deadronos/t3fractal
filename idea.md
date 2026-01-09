@@ -1,34 +1,134 @@
-Here is a comprehensive design document for The L-System Arboretum, fleshing out the mechanics, the technical implementation in React Three Fiber (R3F), and the incremental progression systems.1. The Core Mechanic: "Genetic" L-SystemsInstead of buying abstract upgrades (e.g., "Production x2"), the player edits the Axiom and Rules of the L-System.The MathematicsThe tree is defined by a standard L-System tuple: $(V, \omega, P)$, where $P$ are the production rules.Axiom ($\omega$): The starting state (e.g., X).Rules ($P$): The DNA you unlock.Starter Rule: X $\rightarrow$ F[+X][-X] (Simple bifurcation).Advanced Rule: X $\rightarrow$ F-[[X]+X]+F[+FX]-X (Complex fern-like structure).Variables:$d$ (Distance): Length of a branch segment.$\delta$ (Angle): The angle of rotation for + and -.$w$ (Width): The thickness of the branch.The Gameplay LoopIterate: You buy an "Iteration" upgrade. The system runs the rules one more time. The tree physically grows deeper.Mutate: You buy a "Mutation." This randomly changes a symbol in the rule set, potentially creating chaos or massive efficiency gains.Optimize: You manually tweak sliders for Angle ($\delta$) and Taper (how much $w$ shrinks per node) to maximize leaf exposure.2. Resources & EconomyThe economy is dual-currency, encouraging players to balance the tree's height (structure) with its foliage (surface area).ResourceSourceMath LogicUsagePhotosynthesis (Energy)Leaves (Terminators)Calculated by raycasting "Sun" vector against Leaf Normals. Occluded leaves generate 0.Purchasing new Rules, increasing Iterations ($N$), changing Angles.Sap (Nutrients)Wood (Branches)Calculated by total volume of Cylinder meshes $\times$ Root Depth.Purchasing structural strength (Width), Speed (Tick Rate), and Fruit.Seeds (Prestige)Fruit (Rare Spawns)Generated when a specific complexity threshold is met.Resetting the game with permanent buffs (Global Multipliers).3. Technical Implementation (R3F)Rendering a fractal tree node-by-node (recursive components) will kill the browser after Iteration 5. You must use Instanced Rendering.The "Generator" HookDo not render in the loop. Use a useMemo hook to generate the data arrays.JavaScript// Pseudo-code logic for the Generator
-const { positions, rotations, scales } = useMemo(() => {
-  let sentence = axiom;
-  // 1. Generate String
-  for(let i=0; i<iterations; i++) {
-     sentence = applyRules(sentence);
-  }
-  
-  // 2. Turtle Graphics Interpretation
-  const tempObject = new THREE.Object3D();
-  const data = []; // Array to store matrix data
-  
-  // ... Loop through sentence characters
-  // 'F': Move forward, push transformation matrix to data array
-  // '+': Rotate Z axis positive
-  // '[': Push state to stack
-  
-  return data;
-}, [axiom, rules, iterations, angle]);
-The Rendering ComponentUse drei's <Instances> or raw THREE.InstancedMesh.JavaScript<Instances range={10000}>
-  <cylinderGeometry args={[0.1, 0.1, 1, 8]} />
-  <meshStandardMaterial color="saddlebrown" />
-  
-  {/* The generated data maps to these instances */}
-  {segments.map((data, i) => (
-    <Instance 
-      key={i} 
-      position={data.pos} 
-      rotation={data.rot} 
-      scale={data.scale} 
-    />
-  ))}
-</Instances>
-Visual Polish (Juice)Wind Shader: Pass a uTime uniform to the vertex shader of the branches. Apply a sin wave based on the Y-height of the instance. The top of the tree sways; the bottom stays rigid.Growth Animation: When the user upgrades "Iterations," don't snap the new branches into existence. Animate the scale of the new instances from 0 to 1 over 500ms using react-spring.4. UI/UX: The "Genome Editor"The UI should feel scientific but tactile.The Angle Dial: A circular UI element (like a clock) that the user drags to change the branching angle. As they drag it, the 3D tree updates in real-time.The String Viewer: A display showing the current L-System string (e.g., F[+F]...), but truncated because it gets massive.Feature: Highlight active "mutations" in different colors (e.g., red parts of the string are generating 2x Sap).Heatmap Mode: A toggle button that switches the tree's texture to a heatmap shader, showing exactly which branches are receiving the most light (generating Energy) and which are shaded (parasitic).5. Progression & Prestige (The "Seasons")The game is played in Seasons.Spring/Summer: Active growth. You optimize the tree for maximum size.Autumn (Soft Reset): You stop growing and spend resources to spawn "Fruits" at the tips of the branches.Winter (Prestige): The tree withers (visual effect: leaves fall, wood turns grey). You click "Harvest."The tree is destroyed.You gain Seeds.Seed Shop:Unlock 3D Rules: Move from 2D branching to Pitch/Yaw/Roll branching (3D space filling).Alien Flora: Unlock rules that use geometry other than cylinders (e.g., Cubes for a digital tree, Spheres for a bubble tree).
+# Game Design Document: The L-System Arboretum
+
+**Platform:** Web (React / React Three Fiber)  
+**Genre:** Incremental / Idle / Simulation  
+**Core Tech:** Three.js, InstancedMesh, L-System Mathematics  
+**Version:** 1.0  
+
+---
+
+## 1. Executive Summary
+**The L-System Arboretum** is a web-based idle game where players cultivate a single, procedurally generated tree. Unlike standard idle games where upgrades are abstract (e.g., "Level 2 Mine"), upgrades here physically alter the genetic code (L-System rules) of the tree.
+
+Players must balance **structural integrity** (roots/wood) with **energy production** (leaves/light) to evolve their tree from a simple twig into a massive, screen-filling fractal structure.
+
+---
+
+## 2. Core Gameplay Loop
+
+### A. The Cycle
+1.  **Grow:** The tree generates resources automatically.
+2.  **Mutate:** Spend resources to edit the L-System "DNA" (Axiom and Rules).
+3.  **Visualize:** The 3D tree updates in real-time to reflect the new geometry.
+4.  **Prestige:** Trigger "Winter" to harvest the tree for Seeds.
+
+### B. Resources & Economy
+
+| Resource | Source | Generation Logic | Usage |
+| :--- | :--- | :--- | :--- |
+| **Photosynthesis** | Leaves (Terminators) | `Total Leaf Area` × `Light Exposure`. Raycasting determines if a leaf is occluded by branches above it. | Buying new **Rules**, increasing **Iterations**, optimizing Angles. |
+| **Sap** | Wood (Branches) | `Total Cylinder Volume` × `Root Depth`. | Increasing **Width** (girth), **Tick Rate**, and growing **Fruit**. |
+| **Seeds** | Fruit (Prestige) | Earned upon resetting via "Winter." | Global multipliers, unlocking 3D geometries, unlocking non-cylinder meshes. |
+
+---
+
+## 3. The Mathematics: L-Systems (Genetics)
+
+The tree is defined by the tuple `(V, ω, P)`. The player does not buy "production buildings"; they buy complex math rules.
+
+### Variables (The DNA)
+* **Axiom (ω):** The starting seed string (e.g., `X`).
+* **Rules (P):** The production logic.
+    * *Level 1:* `X` → `F[+X][-X]` (Simple split).
+    * *Level 10:* `X` → `F-[[X]+X]+F[+FX]-X` (Complex Fern).
+* **Constants:**
+    * **δ (Angle):** The rotation angle (gameplay slider).
+    * **d (Step):** Length of branch segments.
+
+### The "Turtle" Interpreter
+The string is parsed to generate 3D transforms:
+* `F`: Move forward (Draw Branch).
+* `[`: Save current position/rotation (Push Stack).
+* `]`: Restore previous position/rotation (Pop Stack).
+* `+` / `-`: Rotate around Z-axis.
+* `&` / `^`: Rotate around X-axis (Pitch - Unlockable).
+* `/` / `\`: Rotate around Y-axis (Roll - Unlockable).
+
+---
+
+## 4. Technical Architecture (React Three Fiber)
+
+### The Rendering Bottleneck
+Rendering a recursive component tree (e.g., `<Branch><Branch /></Branch>`) is fatal for performance beyond 5 iterations. We must use **Instanced Rendering**.
+
+### Implementation Strategy
+
+**1. The Generator Hook (`useLSystem`)**
+Calculates the matrices off the main render loop.
+
+    const { positions, rotations, scales } = useMemo(() => {
+      let sentence = axiom;
+      // 1. String Generation
+      for(let i=0; i<iterations; i++) {
+         sentence = applyRules(sentence);
+      }
+      
+      // 2. Turtle Interpretation
+      const tempObject = new THREE.Object3D();
+      const data = []; 
+      
+      // ... Iterate through string chars
+      // ... Calculate matrices based on Turtle rules
+      
+      return data;
+    }, [axiom, rules, iterations, angle]);
+
+**2. The Renderer (`<TreeRenderer />`)**
+Uses `drei` or native InstancedMesh to draw 10,000+ branches in a single draw call.
+
+    <Instances range={maxCapacity}>
+      <cylinderGeometry args={[0.1, 0.1, 1, 8]} />
+      <meshStandardMaterial />
+      
+      {segments.map((data, i) => (
+        <Instance 
+          key={i} 
+          position={data.pos} 
+          rotation={data.rot} 
+          scale={data.scale} 
+        />
+      ))}
+    </Instances>
+
+### Shaders & Juice
+* **Wind Shader:** A custom vertex shader applied to the branches. It accepts a `uTime` uniform. It applies a `sin` wave displacement based on the Y-position of the instance (higher branches sway more).
+* **Growth Animation:** When `Iterations` increases, use `react-spring` to animate the `scale` of new instances from `0` to `1` so the tree appears to bloom rather than snap.
+
+---
+
+## 5. UI/UX Design
+
+### 1. The Genome Editor
+A scientific control panel overlay.
+* **String Viewer:** Shows the current logic (e.g., `F[+F]...`). Active mutations highlight in **Red**.
+* **Angle Dial:** A radial knob. Dragging it changes the branch angle from 0° to 90° in real-time.
+
+### 2. Analysis Mode (Heatmaps)
+A toggle that swaps the wood texture for a gradient shader.
+* **Green:** Branch is receiving 100% light.
+* **Black:** Branch is fully occluded (wasted energy).
+* *Player Action:* Use this mode to tweak the Angle Dial until the tree is mostly Green.
+
+---
+
+## 6. Progression: The Seasons
+
+1.  **Spring (Expansion):** Low cost for Iterations. Rapid vertical growth.
+2.  **Summer (Optimization):** Resource costs spike. Gameplay shifts to optimizing angles and width to maximize Photosynthesis.
+3.  **Autumn (Fruiting):** Growth halts. Resources are dumped into "Fruit Spawns" (Prestige currency points).
+4.  **Winter (Reset):** Visuals turn cold/grey. Clicking "Harvest" destroys the tree and awards **Seeds**.
+
+**Seed Shop (Meta-Progression):**
+* **New Geometry:** Unlock Cones, Cubes, or Tetrahedrons for branches.
+* **Dimensionality:** Unlock 3D rotation rules (Pitch/Yaw) to stop the tree from being flat.
+* **Automation:** Auto-tuner upgrade that slowly adjusts Angles to the perfect optimal degree.
