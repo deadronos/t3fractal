@@ -152,6 +152,11 @@ export function interpretSentence(
       moved = false;
       continue;
     }
+    if (char === "X") {
+      leaves.push({ position: position.clone(), exposure: 1, size: config.width * 3.2 });
+      continue;
+    }
+
     if (char === "]") {
       if (moved) {
         leaves.push({ position: position.clone(), exposure: 1, size: config.width * 3.2 });
