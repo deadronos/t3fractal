@@ -2,7 +2,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { Tree } from "@/app/components/Tree";
+import { Tree } from "@/app/components/tree/Tree";
 import { SEASONS, type GeometryType, type SeasonId } from "@/lib/gameData";
 import type { Leaf, Segment } from "@/lib/lsystem";
 
