@@ -1,5 +1,6 @@
 "use client";
 
+import CollapsiblePanel from "@/app/components/CollapsiblePanel";
 import { useGameStore } from "@/store/gameStore";
 import { SEASON_ORDER, SEASONS, getSeedYield } from "@/lib/gameData";
 import { formatNumber } from "@/lib/format";
@@ -18,13 +19,7 @@ export default function SeasonPanel() {
   const seedPreview = getSeedYield(photosynthesis, sap, fruit);
 
   return (
-    <section className="panel season-panel">
-      <div className="panel__header">
-        <div>
-          <div className="panel__title">Season Cycle</div>
-          <div className="panel__subtitle">{seasonData.description}</div>
-        </div>
-      </div>
+    <CollapsiblePanel title="Season Cycle" subtitle={seasonData.description} className="season-panel">
       <div className="season-grid">
         {SEASON_ORDER.map((entry) => (
           <div
@@ -46,7 +41,6 @@ export default function SeasonPanel() {
           </button>
         ) : null}
       </div>
-    </section>
+    </CollapsiblePanel>
   );
 }
-

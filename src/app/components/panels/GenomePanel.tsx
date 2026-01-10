@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import CollapsiblePanel from "@/app/components/CollapsiblePanel";
 import { RULE_LIBRARY, getAxiomCost } from "@/lib/gameData";
 import { formatNumber } from "@/lib/format";
 import { useGameStore } from "@/store/gameStore";
@@ -101,13 +102,12 @@ export default function GenomePanel({ sentence }: GenomePanelProps) {
     });
 
   return (
-    <section className="panel genome-panel">
-      <div className="panel__header">
-        <div>
-          <div className="panel__title">Genome Editor</div>
-          <div className="panel__subtitle">Mutate axiom and production rules.</div>
-        </div>
-      </div>
+    <CollapsiblePanel
+      title="Genome Editor"
+      subtitle="Mutate axiom and production rules."
+      className="genome-panel"
+      defaultCollapsed={false}
+    >
       <div className="axiom-editor">
         <label htmlFor="axiom" className="axiom-editor__label">
           Axiom (omega)
@@ -156,7 +156,6 @@ export default function GenomePanel({ sentence }: GenomePanelProps) {
           ))}
         </div>
       </div>
-    </section>
+    </CollapsiblePanel>
   );
 }
-

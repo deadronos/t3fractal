@@ -1,5 +1,6 @@
 "use client";
 
+import CollapsiblePanel from "@/app/components/CollapsiblePanel";
 import { useGameStore } from "@/store/gameStore";
 import { formatNumber, formatRate } from "@/lib/format";
 import { SEASONS } from "@/lib/gameData";
@@ -18,16 +19,16 @@ export default function ResourcePanel({ rates }: ResourcePanelProps) {
   const seasonData = SEASONS[season];
 
   return (
-    <section className="panel resource-panel">
-      <div className="panel__header">
-        <div>
-          <div className="panel__title">Energy Ledger</div>
-          <div className="panel__subtitle">{seasonData.tagline}</div>
-        </div>
+    <CollapsiblePanel
+      title="Energy Ledger"
+      subtitle={seasonData.tagline}
+      className="resource-panel"
+      badge={
         <span className="badge" style={{ background: seasonData.palette.accent }}>
           {seasonData.name}
         </span>
-      </div>
+      }
+    >
       <div className="resource-list">
         <div className="resource">
           <div>
@@ -58,6 +59,6 @@ export default function ResourcePanel({ rates }: ResourcePanelProps) {
           <div className="resource__rate">Autumn harvest</div>
         </div>
       </div>
-    </section>
+    </CollapsiblePanel>
   );
 }

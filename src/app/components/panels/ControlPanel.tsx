@@ -1,5 +1,6 @@
 "use client";
 
+import CollapsiblePanel from "@/app/components/CollapsiblePanel";
 import AngleDial from "@/app/components/AngleDial";
 import { useGameStore } from "@/store/gameStore";
 
@@ -15,13 +16,11 @@ export default function ControlPanel({ suggestedAngle }: ControlPanelProps) {
   const toggleAnalysis = useGameStore((state) => state.toggleAnalysis);
 
   return (
-    <section className="panel control-panel">
-      <div className="panel__header">
-        <div>
-          <div className="panel__title">Angle Dial</div>
-          <div className="panel__subtitle">Adjust delta for optimal light.</div>
-        </div>
-      </div>
+    <CollapsiblePanel
+      title="Angle Dial"
+      subtitle="Adjust delta for optimal light."
+      className="control-panel"
+    >
       <div className="control-layout">
         <AngleDial value={angle} onChange={setAngle} />
         <div className="control-actions">
@@ -36,6 +35,6 @@ export default function ControlPanel({ suggestedAngle }: ControlPanelProps) {
           ) : null}
         </div>
       </div>
-    </section>
+    </CollapsiblePanel>
   );
 }

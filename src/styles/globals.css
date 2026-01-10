@@ -120,6 +120,9 @@ input {
   box-shadow: var(--shadow);
   backdrop-filter: blur(16px);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
 }
 
 .panel__header {
@@ -128,6 +131,26 @@ input {
   align-items: flex-start;
   gap: 1rem;
   margin-bottom: 0.8rem;
+  flex-shrink: 0;
+}
+
+.panel__header--clickable {
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease;
+  margin: -1.1rem -1.2rem 0.8rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: 20px 20px 0 0;
+}
+
+.panel__header--clickable:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.panel__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .panel__title {
@@ -136,10 +159,51 @@ input {
   letter-spacing: 0.01em;
 }
 
+.panel__toggle {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  transition: color 0.2s ease;
+  line-height: 1;
+}
+
+.panel__toggle:hover {
+  color: var(--ink);
+}
+
 .panel__subtitle {
   font-size: 0.82rem;
   color: var(--ink-soft);
   margin-top: 0.2rem;
+}
+
+.panel__content {
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;
+  padding-right: 0.2rem;
+}
+
+.panel__content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel__content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.panel__content::-webkit-scrollbar-thumb {
+  background: rgba(42, 37, 31, 0.3);
+  border-radius: 3px;
+}
+
+.panel__content::-webkit-scrollbar-thumb:hover {
+  background: rgba(42, 37, 31, 0.5);
 }
 
 .panel__divider {
@@ -604,6 +668,12 @@ input {
 
   .panel {
     padding: 0.9rem 1rem;
+    max-height: 70vh;
+  }
+
+  .panel__header--clickable {
+    margin: -0.9rem -1rem 0.8rem;
+    padding: 0.9rem 1rem;
   }
 
   .panel__title {
@@ -649,6 +719,12 @@ input {
   .panel {
     padding: 0.8rem;
     border-radius: 16px;
+    max-height: 60vh;
+  }
+
+  .panel__header--clickable {
+    margin: -0.8rem -0.8rem 0.6rem;
+    padding: 0.8rem 0.8rem;
   }
 
   .panel__title {

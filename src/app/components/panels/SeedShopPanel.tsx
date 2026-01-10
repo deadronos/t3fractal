@@ -1,5 +1,6 @@
 "use client";
 
+import CollapsiblePanel from "@/app/components/CollapsiblePanel";
 import { useGameStore } from "@/store/gameStore";
 import { GEOMETRY_OPTIONS, SEED_UPGRADES } from "@/lib/gameData";
 import { formatNumber } from "@/lib/format";
@@ -23,14 +24,12 @@ export default function SeedShopPanel() {
   };
 
   return (
-    <section className="panel seed-panel">
-      <div className="panel__header">
-        <div>
-          <div className="panel__title">Seed Shop</div>
-          <div className="panel__subtitle">Meta-progression unlocks.</div>
-        </div>
-        <div className="seed-balance">{formatNumber(seeds)} Seeds</div>
-      </div>
+    <CollapsiblePanel
+      title="Seed Shop"
+      subtitle="Meta-progression unlocks."
+      className="seed-panel"
+      badge={<div className="seed-balance">{formatNumber(seeds)} Seeds</div>}
+    >
       <div className="seed-grid">
         {SEED_UPGRADES.map((upgrade) => {
           const owned = isUpgradePurchased(upgrade.id);
@@ -71,6 +70,6 @@ export default function SeedShopPanel() {
           );
         })}
       </div>
-    </section>
+    </CollapsiblePanel>
   );
 }
