@@ -8,7 +8,7 @@
 
 **What's left / Next milestones:**
 
-- TASK002: Add unit tests for `src/lib/lsystem.ts` (generate/interpret) and `src/lib/gameData.ts` (cost/yield functions) — task created.
+- TASK002: Add unit tests for `src/lib/lsystem.ts` (generate/interpret) and `src/lib/gameData.ts` (cost/yield functions) — **Completed: tests added and passing locally**.
 - TASK003: Add Playwright scenarios for critical flows (seed purchase, iteration, harvest) — task created.
 - TASK004: Add CI to run unit tests and e2e tests on pull requests — task created.
 - [ ] Add design docs for any non-trivial new mechanics or changes to grammar rules.
