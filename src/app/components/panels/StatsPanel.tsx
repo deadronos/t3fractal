@@ -1,5 +1,6 @@
 "use client";
 
+import CollapsiblePanel from "@/app/components/CollapsiblePanel";
 import { formatNumber } from "@/lib/format";
 import type { LSystemStats } from "@/app/hooks/useLSystem";
 
@@ -9,13 +10,11 @@ export type StatsPanelProps = {
 
 export default function StatsPanel({ stats }: StatsPanelProps) {
   return (
-    <section className="panel stats-panel">
-      <div className="panel__header">
-        <div>
-          <div className="panel__title">Analysis Readout</div>
-          <div className="panel__subtitle">Structural telemetry.</div>
-        </div>
-      </div>
+    <CollapsiblePanel
+      title="Analysis Readout"
+      subtitle="Structural telemetry."
+      className="stats-panel"
+    >
       <div className="stats-grid">
         <div>
           <div className="stats-label">Segments</div>
@@ -42,6 +41,6 @@ export default function StatsPanel({ stats }: StatsPanelProps) {
           <div className="stats-value">{formatNumber(stats.maxHeight)}</div>
         </div>
       </div>
-    </section>
+    </CollapsiblePanel>
   );
 }

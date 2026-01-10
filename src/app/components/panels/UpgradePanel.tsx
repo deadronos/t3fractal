@@ -1,5 +1,6 @@
 "use client";
 
+import CollapsiblePanel from "@/app/components/CollapsiblePanel";
 import { useGameStore } from "@/store/gameStore";
 import {
   MAX_ITERATIONS,
@@ -31,13 +32,11 @@ export default function UpgradePanel() {
   const fruitCost = getFruitCost(fruit, season);
 
   return (
-    <section className="panel upgrade-panel">
-      <div className="panel__header">
-        <div>
-          <div className="panel__title">Growth Upgrades</div>
-          <div className="panel__subtitle">Balance structure and yield.</div>
-        </div>
-      </div>
+    <CollapsiblePanel
+      title="Growth Upgrades"
+      subtitle="Balance structure and yield."
+      className="upgrade-panel"
+    >
       <div className="upgrade-list">
         <div className="upgrade">
           <div>
@@ -88,6 +87,6 @@ export default function UpgradePanel() {
           </button>
         </div>
       </div>
-    </section>
+    </CollapsiblePanel>
   );
 }

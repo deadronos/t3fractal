@@ -119,6 +119,10 @@ input {
   padding: 1.1rem 1.2rem 1.2rem;
   box-shadow: var(--shadow);
   backdrop-filter: blur(16px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
 }
 
 .panel__header {
@@ -127,6 +131,26 @@ input {
   align-items: flex-start;
   gap: 1rem;
   margin-bottom: 0.8rem;
+  flex-shrink: 0;
+}
+
+.panel__header--clickable {
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease;
+  margin: -1.1rem -1.2rem 0.8rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: 20px 20px 0 0;
+}
+
+.panel__header--clickable:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.panel__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .panel__title {
@@ -135,10 +159,51 @@ input {
   letter-spacing: 0.01em;
 }
 
+.panel__toggle {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  transition: color 0.2s ease;
+  line-height: 1;
+}
+
+.panel__toggle:hover {
+  color: var(--ink);
+}
+
 .panel__subtitle {
   font-size: 0.82rem;
   color: var(--ink-soft);
   margin-top: 0.2rem;
+}
+
+.panel__content {
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;
+  padding-right: 0.2rem;
+}
+
+.panel__content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel__content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.panel__content::-webkit-scrollbar-thumb {
+  background: rgba(42, 37, 31, 0.3);
+  border-radius: 3px;
+}
+
+.panel__content::-webkit-scrollbar-thumb:hover {
+  background: rgba(42, 37, 31, 0.5);
 }
 
 .panel__divider {
@@ -198,6 +263,9 @@ input {
   background: rgba(42, 37, 31, 0.1);
   color: var(--ink);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .btn:hover:not(:disabled) {
@@ -244,7 +312,7 @@ input {
 .rule-grid {
   display: grid;
   gap: 0.9rem;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 .rule-section__title {
@@ -302,6 +370,7 @@ input {
   font-family: "IBM Plex Mono", "Cascadia Mono", monospace;
   font-size: 0.8rem;
   margin: 0.5rem 0 0.6rem;
+  word-break: break-all;
 }
 
 .rule-card__actions {
@@ -329,7 +398,8 @@ input {
   border-radius: 12px;
   line-height: 1.4;
   max-height: 110px;
-  overflow: hidden;
+  overflow: auto;
+  word-break: break-all;
 }
 
 .string-viewer__highlight {
@@ -388,10 +458,11 @@ input {
 .upgrade__desc {
   font-size: 0.75rem;
   color: var(--ink-soft);
+  word-break: break-word;
 }
 
 .seed-panel .seed-grid {
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
 .seed-card {
@@ -424,7 +495,7 @@ input {
 
 .geometry-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 0.6rem;
 }
 
@@ -568,6 +639,10 @@ input {
   .stats-panel .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .rule-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 720px) {
@@ -582,10 +657,187 @@ input {
 
   .hud {
     position: relative;
+    padding: 0.8rem;
+    gap: 0.8rem;
   }
 
   .canvas-wrap {
     position: fixed;
     inset: 0;
+  }
+
+  .panel {
+    padding: 0.9rem 1rem;
+    max-height: 70vh;
+  }
+
+  .panel__header--clickable {
+    margin: -0.9rem -1rem 0.8rem;
+    padding: 0.9rem 1rem;
+  }
+
+  .panel__title {
+    font-size: 1.1rem;
+  }
+
+  .btn {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .rule-card {
+    padding: 0.6rem 0.7rem;
+  }
+
+  .upgrade {
+    padding: 0.6rem 0.7rem;
+  }
+
+  .seed-card {
+    padding: 0.6rem 0.7rem;
+  }
+
+  .axiom-editor__controls {
+    flex-direction: column;
+  }
+
+  .axiom-editor__controls .btn {
+    width: 100%;
+  }
+
+  .input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .hud {
+    padding: 0.6rem;
+    gap: 0.6rem;
+  }
+
+  .panel {
+    padding: 0.8rem;
+    border-radius: 16px;
+    max-height: 60vh;
+  }
+
+  .panel__header--clickable {
+    margin: -0.8rem -0.8rem 0.6rem;
+    padding: 0.8rem 0.8rem;
+  }
+
+  .panel__title {
+    font-size: 1rem;
+  }
+
+  .panel__subtitle {
+    font-size: 0.78rem;
+  }
+
+  .btn {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.65rem;
+  }
+
+  .resource {
+    padding: 0.5rem 0.65rem;
+  }
+
+  .resource__label,
+  .resource__rate {
+    font-size: 0.72rem;
+  }
+
+  .resource__value {
+    font-size: 0.95rem;
+  }
+
+  .rule-grid {
+    gap: 0.7rem;
+  }
+
+  .rule-card {
+    padding: 0.5rem 0.6rem;
+  }
+
+  .rule-card__title {
+    font-size: 0.9rem;
+  }
+
+  .rule-card__desc,
+  .rule-card__string {
+    font-size: 0.7rem;
+  }
+
+  .upgrade {
+    padding: 0.5rem 0.6rem;
+    gap: 0.5rem;
+  }
+
+  .upgrade__title {
+    font-size: 0.9rem;
+  }
+
+  .upgrade__desc {
+    font-size: 0.7rem;
+  }
+
+  .seed-card {
+    padding: 0.5rem 0.6rem;
+  }
+
+  .seed-card__title {
+    font-size: 0.9rem;
+  }
+
+  .seed-card__desc {
+    font-size: 0.7rem;
+  }
+
+  .stats-panel .stats-grid {
+    gap: 0.5rem;
+  }
+
+  .stats-label {
+    font-size: 0.65rem;
+  }
+
+  .stats-value {
+    font-size: 0.9rem;
+  }
+
+  .season-grid {
+    gap: 0.3rem;
+  }
+
+  .season-card {
+    padding: 0.35rem 0.25rem;
+    font-size: 0.62rem;
+  }
+
+  .dial {
+    width: 100px;
+    height: 100px;
+  }
+
+  .dial__handle {
+    width: 8px;
+    height: 30px;
+    transform: translateY(-28px);
+  }
+
+  .dial__label {
+    font-size: 0.65rem;
+  }
+
+  .dial__value {
+    font-size: 1rem;
+  }
+
+  .string-viewer__text {
+    font-size: 0.7rem;
+    padding: 0.5rem;
+    max-height: 90px;
   }
 }
