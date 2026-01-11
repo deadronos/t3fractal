@@ -1,13 +1,18 @@
 import tseslint from "typescript-eslint";
 import nextPlugin from "@next/eslint-plugin-next";
 
-const { flatConfig: nextFlatConfig } = nextPlugin;
-
 export default tseslint.config(
   {
     ignores: [".next", ".triplex"],
   },
-  nextFlatConfig.coreWebVitals,
+  {
+    plugins: {
+      "@next/next": nextPlugin,
+    },
+    rules: {
+      ...nextPlugin.configs["core-web-vitals"].rules,
+    },
+  },
   {
     files: ["**/*.ts", "**/*.tsx"],
     extends: [
