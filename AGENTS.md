@@ -1,69 +1,42 @@
-# Agents and Project Structure Guide
+# Agents — t3fractal
 
-This repository uses an explicit Memory Bank to store ongoing decisions, designs, and task tracking for AI agents. Please read this document before contributing or asking an agent to make changes.
+This short guide tells automated agents (Copilot, Claude, etc.) how to behave in this repository. Read this first, then follow the referenced instruction files.
 
-## Important: Memory Bank (use early)
+## Read first 📚
 
-- Agents MUST use the `/memory` folder to store and consult project context.
+- **Primary project guide:** `.github/copilot-instructions.md` (required reading)
+- **Policy & workflow files:** `.github/instructions/*` (notable files)
+  - `spec-driven-workflow-v1.instructions.md` — design→implement→validate loop
+  - `memory-bank.instructions.md` — where and how to update project context and tasks
+  - `playwright-typescript.instructions.md` — e2e test style & conventions
+  - `self-explanatory-code-commenting.instructions.md` — comment style rules
+  - `markdown.instructions.md` — docs/PR content guidelines
 
-- Key subfolders to use:
-  - `/memory/tasks` — create and update task files for each work item (use unique TASKIDs and update `_index.md`).
-  - `/memory/designs` — store design docs and architecture diagrams (use unique design IDs and archive completed designs under `/memory/designs/COMPLETED`).
+## Quick agent checklist ✅
 
-Refer to the repository instruction file `#file:memory-bank.instructions.md` for the full Memory Bank guidance and conventions.
+1. Read `.github/copilot-instructions.md` and any relevant `.github/instructions/*.md` for the feature area.
+2. Run tests & linters locally before proposing changes:
+   - `npm run test` (Vitest)  
+   - `npm run lint`  
+   - `npm run format:write` (Prettier)  
+   - `npm run e2e` (Playwright) for UI changes
+3. Make small, test-backed commits. Prefer pure logic changes in `src/lib/*` and put UI in `src/app/components/*`.
+4. Respect project constraints: use `@/*` import alias, `"use client"` in client components, and **guard the L-system** (use `maxSegments`/`maxSentenceLength`).
+5. Update the Memory Bank when adding features or making design decisions (`/memory/tasks/` and `memory/progress.md`) per `memory-bank.instructions.md`.
+6. Create PRs with: short exec summary, changed files, tests added, and a validation checklist (see `spec-driven-workflow-v1.instructions.md`).
 
-Also see `#file:copilot-instructions.md` for quick repo-specific guidance for AI agents (run/test commands, patterns, and gotchas).
+## When to ask a human 🆘
 
-## App structure (high level)
+- Ambiguous UX decisions (game balance, visuals, or copy).  
+- Breaking or wide surface-area refactors without tests.  
+- When adding a runtime dependency — ask for justification before committing.
 
-- `src/app/` — Next.js app router components and pages (app-level layout, pages, and components)
-  - `src/app/layout.tsx` — global layout and providers
-  - `src/app/page.tsx` — homepage
-  - `src/app/t3starterpage.tsx` — starter example page
-  - `src/app/components/` — shared React components
-  - `src/app/pages/` — additional pages (e.g., `fractalviewer.tsx`, `starthere.tsx`, `startheremenu.tsx`)
-  - `src/app/providers/` — React providers used by the app
+## PR Expectations & quick template ✍️
 
-- `src/env.js` — runtime environment validation using `@t3-oss/env-nextjs`
-
-- `src/styles/` — global stylesheets (e.g., `globals.css`, `starthere.css`)
-
-## Tests
-
-- `tests/unit/` — Vitest unit tests (jsdom)
-
-- `tests/e2e/` — Playwright end-to-end tests
-
-## Tooling and config
-
-- `package.json` — scripts and dependency manifest
-
-- `vitest.config.mts` — unit test config
-
-- `playwright.config.ts` — Playwright config for e2e tests
-
-- `tsconfig.json`, `next.config.js`, `postcss.config.js` — project configs
-
-## Contributing and Agent Workflow
-
-1. Before making changes, consult `/memory/activeContext.md` and tasks in `/memory/tasks/_index.md`.
-
-2. Create a new task file in `/memory/tasks/` for non-trivial changes. Follow the Memory Bank task template.
-
-3. When implemented, add validation notes and move tasks to `/memory/tasks/COMPLETED` as appropriate.
-
-## Where to find more guidance
-
-- See `#file:memory-bank.instructions.md` for the canonical Memory Bank rules and templates.
-
-- See `.github/copilot-instructions.md` for repository-specific guidance for AI agents.
+- Title: `Feature: short description` or `Fix: short description`  
+- Body (3 lines): 1) Goal: one-liner. 2) Key changes: files/functions. 3) Validation: tests/commands run.  
+- Include performance notes if change affects `useLSystem` or L-system generation.
 
 ---
 
-Short checklist for agents:
-
-- [ ] Read `/memory/activeContext.md` before starting.
-
-- [ ] Create or update a task in `/memory/tasks/` for work items.
-
-- [ ] Add a design doc to `/memory/designs/` when adding architecture or non-trivial changes.
+If you want this shortened into a one-line checklist or extended with a PR checklist template and unit-test snippets, tell me which and I will update it.

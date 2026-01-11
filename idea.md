@@ -1,40 +1,134 @@
-# Idea 3: Fractal Frontier
+# Game Design Document: The L-System Arboretum
 
-Description: Explore the infinite complexity of a fractal universe. This idle game is both entertaining and educational in abstract math – it visualizes a fractal (like a Mandelbrot set or a Sierpinski triangle) as an “universe” that you explore deeper and deeper. The player starts at a coarse level and can invest in going deeper into the fractal, revealing more detail and yielding resources. The theme blends space exploration with pure mathematics: each “zoom” into the fractal is like venturing into a strange new world. It’s abstract – instead of planets and stars, you have fractal patterns and dimensions – but can be presented in a space-y way (e.g. the fractal could represent a galaxy cluster in a sci-fi narrative).
+**Platform:** Web (React / React Three Fiber)  
+**Genre:** Incremental / Idle / Simulation  
+**Core Tech:** Three.js, InstancedMesh, L-System Mathematics  
+**Version:** 1.0  
 
-## Core Loop
+---
 
-Explore/Zoom: The primary action is “zooming” into the fractal. Each zoom level or exploration yields Fractal Data (primary resource). At first, you can only go a few levels deep because it’s slow and costly to compute/render deeper layers.
+## 1. Executive Summary
+**The L-System Arboretum** is a web-based idle game where players cultivate a single, procedurally generated tree. Unlike standard idle games where upgrades are abstract (e.g., "Level 2 Mine"), upgrades here physically alter the genetic code (L-System rules) of the tree.
 
-## Resource Investment
+Players must balance **structural integrity** (roots/wood) with **energy production** (leaves/light) to evolve their tree from a simple twig into a massive, screen-filling fractal structure.
 
-Spend Fractal Data to build tools or algorithms that automate exploration – for example, fractal probes or dimension algorithms that continuously gather data from a certain depth. (Automation could be imagined as deploying exploration drones into the fractal.) These generators produce Fractal Data per second, even while you’re not actively zooming, representing automated math processes mapping the fractal.
+---
 
-## Unlock New Areas
+## 2. Core Gameplay Loop
 
-The fractal could have different “zones” or patterns (akin to regions in space). For instance, in a Mandelbrot set there are minibrot sets and various features – reaching them could require specific upgrades. The game loop might include unlocking new formulas or fractal functions (Julia sets, different parameters) which act like new worlds to idle in. Each new fractal pattern might produce a secondary resource or bonus (e.g. a Chaos Token from exploring a new fractal, which could boost all data production).
+### A. The Cycle
+1.  **Grow:** The tree generates resources automatically.
+2.  **Mutate:** Spend resources to edit the L-System "DNA" (Axiom and Rules).
+3.  **Visualize:** The 3D tree updates in real-time to reflect the new geometry.
+4.  **Prestige:** Trigger "Winter" to harvest the tree for Seeds.
 
-## Deepening Complexit
+### B. Resources & Economy
 
-As you progress, deeper zoom levels yield exponentially more data but also take exponentially longer to explore without upgrades. This creates the classic idle trade-off: push a bit further now, or reset and gain permanent bonuses to go even further later.
+| Resource | Source | Generation Logic | Usage |
+| :--- | :--- | :--- | :--- |
+| **Photosynthesis** | Leaves (Terminators) | `Total Leaf Area` × `Light Exposure`. Raycasting determines if a leaf is occluded by branches above it. | Buying new **Rules**, increasing **Iterations**, optimizing Angles. |
+| **Sap** | Wood (Branches) | `Total Cylinder Volume` × `Root Depth`. | Increasing **Width** (girth), **Tick Rate**, and growing **Fruit**. |
+| **Seeds** | Fruit (Prestige) | Earned upon resetting via "Winter." | Global multipliers, unlocking 3D geometries, unlocking non-cylinder meshes. |
 
-## Prestige Mechanics
+---
 
-The prestige theme can be “Dimensional Ascension.” When progress slows down, you perform an ascension that resets your current fractal exploration but grants Dimensional Points (prestige currency). In narrative, this could be discovering a new higher dimension or a meta-fractal. These Dimensional Points could permanently unlock new math tools or increase the efficiency of all exploration (e.g. +50% data yield forever, or start at a deeper zoom by default because your understanding of the fractal carries over). Another spin on prestige: you might “collapse the fractal and start a new one,” implying each prestige is diving into a fresh fractal formula with a starting advantage. This gives replayability and a sense of progressing through different mathematical universes. Prestige in this context is very analogous to an uber-reset in idle games (where you gain a new currency to boost the next run
-primusmath.com), but framed as moving to a new dimension of reality.
+## 3. The Mathematics: L-Systems (Genetics)
 
-## Unique Math/Logic Twist
+The tree is defined by the tuple `(V, ω, P)`. The player does not buy "production buildings"; they buy complex math rules.
 
-Fractals and dimensionality are the core math concepts here. The game can illustrate the idea of fractal dimension – e.g., how a coastline can be “1.3 dimensional.” Perhaps the efficiency of exploration upgrades diminishes according to a fractal dimension formula, subtly teaching that deeper levels require exponentially more effort (this mirrors how fractal detail increases exponentially with depth). Another twist: incorporate complex numbers or formulas as part of gameplay. For instance, the player might adjust two parameters (real and imaginary parts) to “aim” the exploration at different parts of the fractal, essentially interacting with the formula z = z^2 + c. This adds a logic puzzle element – finding fruitful regions of the fractal yields more resources, so the player is incentivized to learn patterns (e.g. “seahorse valley” in the Mandelbrot set produces more Chaos Tokens). The math twist makes the game educational: players get an intuitive feel for fractals, limits, and perhaps chaos theory, all while playing. From the developer side, implementing fractal calculations or using a library for it could be a great learning experience (in TypeScript, handling complex numbers or large coordinates might be involved). Because the depth can grow huge, you’d once again use big numbers (to represent extremely deep zoom levels or enormous data quantities – possibly using scientific notation like 1e100 etc.). The logic of exploring might also incorporate recursion (a fractal is recursive by nature), which could reflect in the code architecture or algorithms – a nice challenge for a solo dev to implement efficiently.
+### Variables (The DNA)
+* **Axiom (ω):** The starting seed string (e.g., `X`).
+* **Rules (P):** The production logic.
+    * *Level 1:* `X` → `F[+X][-X]` (Simple split).
+    * *Level 10:* `X` → `F-[[X]+X]+F[+FX]-X` (Complex Fern).
+* **Constants:**
+    * **δ (Angle):** The rotation angle (gameplay slider).
+    * **d (Step):** Length of branch segments.
 
-UI Patterns (React): This game’s UI can be visually engaging:
+### The "Turtle" Interpreter
+The string is parsed to generate 3D transforms:
+* `F`: Move forward (Draw Branch).
+* `[`: Save current position/rotation (Push Stack).
+* `]`: Restore previous position/rotation (Pop Stack).
+* `+` / `-`: Rotate around Z-axis.
+* `&` / `^`: Rotate around X-axis (Pitch - Unlockable).
+* `/` / `\`: Rotate around Y-axis (Roll - Unlockable).
 
-A central fractal display area: using a <canvas> or WebGL in a React component to render a portion of the fractal. It could update as you zoom in further (perhaps not real-time high-res rendering, but maybe an image that updates every few zooms to show progress). Even a static image per depth level is motivating. Managing a canvas in React can teach about interacting with the DOM outside of pure React (using refs to draw on canvas).
+---
 
-Resource and Upgrade panels: Similar to other ideas, have a panel showing “Fractal Data” collected, maybe “Zoom Depth: n” and how much data per second your probes provide. Upgrades like “Buy 1 Probe (cost X data)” can be listed here. A twist: since this is abstract, upgrades could be whimsical – e.g. “Install Quantum Processor to calculate deeper fractals” – but functionally it’s just increasing automation. These can be basic lists or cards in React.
+## 4. Technical Architecture (React Three Fiber)
 
-Navigation controls: Buttons like “Zoom In” and “Zoom Out” could be present to manually dive or retreat one level. Though primarily automatic, giving the player a button to push satisfies the clicker aspect. These buttons would trigger state updates (e.g. increment depth if you have capacity). They should also reflect state (disabled if you can’t zoom further, etc.). A developer can practice updating UI based on state conditions here.
+### The Rendering Bottleneck
+Rendering a recursive component tree (e.g., `<Branch><Branch /></Branch>`) is fatal for performance beyond 5 iterations. We must use **Instanced Rendering**.
 
-Prestige overlay: When ready to ascend, perhaps a flashy animation or at least a modal pops up: “Ascend to a higher dimension?” with details of what you gain. Implementing this in React involves using a modal component or conditional rendering at high level – good practice for state-driven UI changes.
+### Implementation Strategy
 
-Theming and styling: A fractal game UI could use a neon/space aesthetic with fractal art. React’s component model will help encapsulate styles for, say, the fractal viewer versus the control panels. One might use CSS-in-JS or Tailwind to make styling modular. TypeScript can be useful in defining prop types for a FractalRenderer component (e.g. props could include the formula, zoom level, color scheme, etc.), ensuring the visualization always matches the current state.
+**1. The Generator Hook (`useLSystem`)**
+Calculates the matrices off the main render loop.
+
+    const { positions, rotations, scales } = useMemo(() => {
+      let sentence = axiom;
+      // 1. String Generation
+      for(let i=0; i<iterations; i++) {
+         sentence = applyRules(sentence);
+      }
+      
+      // 2. Turtle Interpretation
+      const tempObject = new THREE.Object3D();
+      const data = []; 
+      
+      // ... Iterate through string chars
+      // ... Calculate matrices based on Turtle rules
+      
+      return data;
+    }, [axiom, rules, iterations, angle]);
+
+**2. The Renderer (`<TreeRenderer />`)**
+Uses `drei` or native InstancedMesh to draw 10,000+ branches in a single draw call.
+
+    <Instances range={maxCapacity}>
+      <cylinderGeometry args={[0.1, 0.1, 1, 8]} />
+      <meshStandardMaterial />
+      
+      {segments.map((data, i) => (
+        <Instance 
+          key={i} 
+          position={data.pos} 
+          rotation={data.rot} 
+          scale={data.scale} 
+        />
+      ))}
+    </Instances>
+
+### Shaders & Juice
+* **Wind Shader:** A custom vertex shader applied to the branches. It accepts a `uTime` uniform. It applies a `sin` wave displacement based on the Y-position of the instance (higher branches sway more).
+* **Growth Animation:** When `Iterations` increases, use `react-spring` to animate the `scale` of new instances from `0` to `1` so the tree appears to bloom rather than snap.
+
+---
+
+## 5. UI/UX Design
+
+### 1. The Genome Editor
+A scientific control panel overlay.
+* **String Viewer:** Shows the current logic (e.g., `F[+F]...`). Active mutations highlight in **Red**.
+* **Angle Dial:** A radial knob. Dragging it changes the branch angle from 0° to 90° in real-time.
+
+### 2. Analysis Mode (Heatmaps)
+A toggle that swaps the wood texture for a gradient shader.
+* **Green:** Branch is receiving 100% light.
+* **Black:** Branch is fully occluded (wasted energy).
+* *Player Action:* Use this mode to tweak the Angle Dial until the tree is mostly Green.
+
+---
+
+## 6. Progression: The Seasons
+
+1.  **Spring (Expansion):** Low cost for Iterations. Rapid vertical growth.
+2.  **Summer (Optimization):** Resource costs spike. Gameplay shifts to optimizing angles and width to maximize Photosynthesis.
+3.  **Autumn (Fruiting):** Growth halts. Resources are dumped into "Fruit Spawns" (Prestige currency points).
+4.  **Winter (Reset):** Visuals turn cold/grey. Clicking "Harvest" destroys the tree and awards **Seeds**.
+
+**Seed Shop (Meta-Progression):**
+* **New Geometry:** Unlock Cones, Cubes, or Tetrahedrons for branches.
+* **Dimensionality:** Unlock 3D rotation rules (Pitch/Yaw) to stop the tree from being flat.
+* **Automation:** Auto-tuner upgrade that slowly adjusts Angles to the perfect optimal degree.
