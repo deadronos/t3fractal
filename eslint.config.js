@@ -1,11 +1,18 @@
 import tseslint from "typescript-eslint";
-import nextConfig from "eslint-config-next";
+import nextPlugin from "@next/eslint-plugin-next";
 
 export default tseslint.config(
   {
     ignores: [".next", ".triplex"],
   },
-  ...nextConfig,
+  {
+    plugins: {
+      "@next/next": nextPlugin,
+    },
+    rules: {
+      ...nextPlugin.configs["core-web-vitals"].rules,
+    },
+  },
   {
     files: ["**/*.ts", "**/*.tsx"],
     extends: [
@@ -39,6 +46,12 @@ export default tseslint.config(
       parserOptions: {
         projectService: true,
       },
+    },
+  },
+  {
+    files: ["**/*.d.ts"],
+    rules: {
+      "@typescript-eslint/triple-slash-reference": "off",
     },
   },
 );
