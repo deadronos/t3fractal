@@ -60,8 +60,8 @@ export default function Game() {
   useGameLoop(rates);
 
   return (
-    <main className="game-root">
-      <div className="canvas-wrap">
+    <main className="game-root relative w-full h-full overflow-hidden bg-background text-foreground">
+      <div className="canvas-wrap absolute inset-0 z-0">
         <TreeScene
           segments={segments}
           leaves={leaves}
@@ -73,23 +73,46 @@ export default function Game() {
           center={stats.center}
         />
       </div>
-      <div className="hud">
-        <div className="hud-top">
-          <ResourcePanel rates={rates} />
-          <SeasonPanel />
+      
+      {/* HUD Container */}
+      <div className="absolute inset-0 z-10 pointer-events-none p-4 md:p-6 flex flex-col gap-4 overflow-hidden">
+        
+        {/* Top Bar */}
+        <div className="flex flex-col md:flex-row justify-between items-start gap-4 pointer-events-none">
+          <div className="pointer-events-auto w-full md:w-96">
+            <ResourcePanel rates={rates} />
+          </div>
+          <div className="pointer-events-auto w-full md:w-96">
+            <SeasonPanel />
+          </div>
         </div>
-        <div className="hud-columns">
-          <GenomePanel sentence={sentence} />
-          <div className="hud-right">
+
+        {/* Middle Section - Columns */}
+        <div className="flex-1 min-h-0 flex flex-col md:flex-row justify-between gap-4 pointer-events-none">
+          {/* Left Column */}
+          <div className="pointer-events-auto w-full md:w-80 lg:w-96 flex flex-col gap-4 overflow-y-auto max-h-full scrollbar-none">
+            <GenomePanel sentence={sentence} />
+          </div>
+
+          {/* Right Column */}
+          <div className="pointer-events-auto w-full md:w-80 lg:w-96 flex flex-col gap-4 overflow-y-auto max-h-full scrollbar-none">
             <UpgradePanel />
             <SeedShopPanel />
           </div>
         </div>
-        <div className="hud-bottom">
-          <ControlPanel suggestedAngle={stats.suggestedAngle} />
-          <StatsPanel stats={stats} />
+
+        {/* Bottom Bar */}
+        <div className="flex flex-col md:flex-row justify-between items-end gap-4 pointer-events-none">
+          <div className="pointer-events-auto w-full md:w-96">
+            <ControlPanel suggestedAngle={stats.suggestedAngle} />
+          </div>
+          <div className="pointer-events-auto w-full md:w-96">
+            <StatsPanel stats={stats} />
+          </div>
         </div>
+
       </div>
     </main>
   );
 }
+

@@ -12,6 +12,8 @@ import {
 } from "@/lib/gameData";
 import { formatNumber } from "@/lib/format";
 
+import { Button } from "@/app/components/ui/button";
+
 export default function UpgradePanel() {
   const season = useGameStore((state) => state.season);
   const photosynthesis = useGameStore((state) => state.photosynthesis);
@@ -37,54 +39,55 @@ export default function UpgradePanel() {
       subtitle="Balance structure and yield."
       className="upgrade-panel"
     >
-      <div className="upgrade-list">
-        <div className="upgrade">
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between items-center bg-background/40 rounded-lg p-3 border border-primary/5">
           <div>
-            <div className="upgrade__title">Iterations</div>
-            <div className="upgrade__desc">Depth of recursion ({iterations}/{MAX_ITERATIONS}).</div>
+            <div className="font-semibold text-sm">Iterations</div>
+            <div className="text-xs text-muted-foreground">Depth of recursion ({iterations}/{MAX_ITERATIONS}).</div>
           </div>
-          <button
-            className="btn btn--primary"
+          <Button
+            size="sm"
             onClick={buyIteration}
             disabled={photosynthesis < iterationCost || iterations >= MAX_ITERATIONS}
           >
             {iterations >= MAX_ITERATIONS ? "Maxed" : `Grow (${formatNumber(iterationCost)})`}
-          </button>
+          </Button>
         </div>
-        <div className="upgrade">
+        <div className="flex justify-between items-center bg-background/40 rounded-lg p-3 border border-primary/5">
           <div>
-            <div className="upgrade__title">Girth</div>
-            <div className="upgrade__desc">Branch radius ({getWidth(widthLevel).toFixed(2)}).</div>
+            <div className="font-semibold text-sm">Girth</div>
+            <div className="text-xs text-muted-foreground">Branch radius ({getWidth(widthLevel).toFixed(2)}).</div>
           </div>
-          <button
-            className="btn btn--primary"
+          <Button
+            size="sm"
             onClick={buyWidth}
             disabled={sap < widthCost}
           >
             Thicken ({formatNumber(widthCost)})
-          </button>
+          </Button>
         </div>
-        <div className="upgrade">
+        <div className="flex justify-between items-center bg-background/40 rounded-lg p-3 border border-primary/5">
           <div>
-            <div className="upgrade__title">Tick Rate</div>
-            <div className="upgrade__desc">Resource pulse speed (Lv {tickLevel}).</div>
+            <div className="font-semibold text-sm">Tick Rate</div>
+            <div className="text-xs text-muted-foreground">Resource pulse speed (Lv {tickLevel}).</div>
           </div>
-          <button className="btn btn--primary" onClick={buyTickRate} disabled={sap < tickCost}>
+          <Button size="sm" onClick={buyTickRate} disabled={sap < tickCost}>
             Accelerate ({formatNumber(tickCost)})
-          </button>
+          </Button>
         </div>
-        <div className="upgrade">
+        <div className="flex justify-between items-center bg-background/40 rounded-lg p-3 border border-primary/5">
           <div>
-            <div className="upgrade__title">Fruit Spawns</div>
-            <div className="upgrade__desc">Prestige boosters (Autumn only).</div>
+            <div className="font-semibold text-sm">Fruit Spawns</div>
+            <div className="text-xs text-muted-foreground">Prestige boosters (Autumn only).</div>
           </div>
-          <button
-            className="btn"
+          <Button
+            size="sm"
+            variant={season !== "autumn" ? "ghost" : "default"}
             onClick={buyFruit}
             disabled={sap < fruitCost || season !== "autumn"}
           >
             {season !== "autumn" ? "Await Autumn" : `Cultivate (${formatNumber(fruitCost)})`}
-          </button>
+          </Button>
         </div>
       </div>
     </CollapsiblePanel>

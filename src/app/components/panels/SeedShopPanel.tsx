@@ -5,6 +5,9 @@ import { useGameStore } from "@/store/gameStore";
 import { GEOMETRY_OPTIONS, SEED_UPGRADES } from "@/lib/gameData";
 import { formatNumber } from "@/lib/format";
 
+import { Button } from "@/app/components/ui/button";
+import { cn } from "@/lib/utils";
+
 export default function SeedShopPanel() {
   const seeds = useGameStore((state) => state.seeds);
   const unlocks = useGameStore((state) => state.unlocks);
@@ -28,42 +31,50 @@ export default function SeedShopPanel() {
       title="Seed Shop"
       subtitle="Meta-progression unlocks."
       className="seed-panel"
-      badge={<div className="seed-balance">{formatNumber(seeds)} Seeds</div>}
+      badge={<div className="font-mono text-accent-strong font-bold">{formatNumber(seeds)} Seeds</div>}
     >
-      <div className="seed-grid">
+      <div className="flex flex-col gap-2">
         {SEED_UPGRADES.map((upgrade) => {
           const owned = isUpgradePurchased(upgrade.id);
           const canAfford = seeds >= upgrade.cost;
           return (
-            <div key={upgrade.id} className={`seed-card ${owned ? "seed-card--owned" : ""}`}>
-              <div className="seed-card__title">{upgrade.name}</div>
-              <div className="seed-card__desc">{upgrade.description}</div>
-              <button
-                className={`btn ${owned ? "btn--ghost" : "btn--primary"}`}
+            <div key={upgrade.id} className={cn("rounded-lg p-3 border transition-colors flex justify-between items-center", owned ? "bg-accent/5 border-accent/20" : "bg-background/40 border-primary/5")}>
+              <div>
+                <div className="font-semibold text-sm">{upgrade.name}</div>
+                <div className="text-xs text-muted-foreground">{upgrade.description}</div>
+              </div>
+              <Button
+                size="sm"
+                variant={owned ? "ghost" : "default"}
                 onClick={() => buySeedUpgrade(upgrade.id)}
                 disabled={owned || !canAfford}
+                className={cn("h-8 text-xs", owned && "text-muted-foreground")}
               >
                 {owned ? "Unlocked" : `Buy (${formatNumber(upgrade.cost)})`}
-              </button>
+              </Button>
             </div>
           );
         })}
       </div>
-      <div className="panel__divider" />
-      <div className="panel__subtitle">Branch Geometry</div>
-      <div className="geometry-grid">
+      <div className="h-px bg-border my-4" />
+      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Branch Geometry</div>
+      <div className="grid grid-cols-2 gap-2">
         {GEOMETRY_OPTIONS.map((option) => {
           const unlocked = geometryUnlocks[option.id];
           const selected = selectedGeometry === option.id;
           return (
             <button
               key={option.id}
-              className={`geometry-card ${selected ? "geometry-card--active" : ""}`}
+              className={cn(
+                "p-3 rounded-xl border text-left transition-all",
+                selected ? "border-accent bg-accent/10 shadow-sm" : "border-primary/10 bg-background/40 hover:bg-background/60",
+                !unlocked && "opacity-50 cursor-not-allowed"
+              )}
               onClick={() => selectGeometry(option.id)}
               disabled={!unlocked}
             >
-              <div className="geometry-card__title">{option.name}</div>
-              <div className="geometry-card__desc">
+              <div className="font-semibold text-sm">{option.name}</div>
+              <div className="text-[10px] text-muted-foreground mt-0.5">
                 {unlocked ? option.description : "Locked"}
               </div>
             </button>

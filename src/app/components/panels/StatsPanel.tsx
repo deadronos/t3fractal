@@ -15,30 +15,30 @@ export default function StatsPanel({ stats }: StatsPanelProps) {
       subtitle="Structural telemetry."
       className="stats-panel"
     >
-      <div className="stats-grid">
-        <div>
-          <div className="stats-label">Segments</div>
-          <div className="stats-value">{formatNumber(stats.segmentCount)}</div>
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+        <div className="bg-background/40 p-2 rounded-lg border border-primary/5">
+          <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Segments</div>
+          <div className="font-semibold text-sm tabular-nums">{formatNumber(stats.segmentCount)}</div>
         </div>
-        <div>
-          <div className="stats-label">Leaves</div>
-          <div className="stats-value">{formatNumber(stats.leafCount)}</div>
+        <div className="bg-background/40 p-2 rounded-lg border border-primary/5">
+          <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Leaves</div>
+          <div className="font-semibold text-sm tabular-nums">{formatNumber(stats.leafCount)}</div>
         </div>
-        <div>
-          <div className="stats-label">Exposure</div>
-          <div className="stats-value">{(stats.avgExposure * 100).toFixed(0)}%</div>
+        <div className="bg-background/40 p-2 rounded-lg border border-primary/5">
+          <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Exposure</div>
+          <div className="font-semibold text-sm tabular-nums">{(stats.avgExposure * 100).toFixed(0)}%</div>
         </div>
-        <div>
-          <div className="stats-label">Volume</div>
-          <div className="stats-value">{formatNumber(stats.totalVolume)}</div>
+        <div className="bg-background/40 p-2 rounded-lg border border-primary/5">
+          <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Volume</div>
+          <div className="font-semibold text-sm tabular-nums">{formatNumber(stats.totalVolume)}</div>
         </div>
-        <div>
-          <div className="stats-label">Sentence</div>
-          <div className="stats-value">{formatNumber(stats.sentenceLength)}</div>
+        <div className="bg-background/40 p-2 rounded-lg border border-primary/5">
+          <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Sentence</div>
+          <div className="font-semibold text-sm tabular-nums">{formatNumber(stats.sentenceLength)}</div>
         </div>
-        <div>
-          <div className="stats-label">Height</div>
-          <div className="stats-value">{formatNumber(stats.maxHeight)}</div>
+        <div className="bg-background/40 p-2 rounded-lg border border-primary/5">
+          <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Height</div>
+          <div className="font-semibold text-sm tabular-nums">{formatNumber(stats.maxHeight)}</div>
         </div>
       </div>
     </CollapsiblePanel>

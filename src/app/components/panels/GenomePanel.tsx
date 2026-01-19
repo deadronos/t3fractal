@@ -6,6 +6,9 @@ import { RULE_LIBRARY, getAxiomCost } from "@/lib/gameData";
 import { formatNumber } from "@/lib/format";
 import { useGameStore } from "@/store/gameStore";
 import { RuleCard } from "./genome/RuleCard";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
 
 export type GenomePanelProps = {
   sentence: string;
@@ -46,52 +49,53 @@ export default function GenomePanel({ sentence }: GenomePanelProps) {
       className="genome-panel"
       defaultCollapsed={false}
     >
-      <div className="axiom-editor">
-        <label htmlFor="axiom" className="axiom-editor__label">
-          Axiom (omega)
-        </label>
-        <div className="axiom-editor__controls">
-          <input
-            id="axiom"
-            value={draftAxiom}
-            onChange={(event) => setDraftAxiom(event.target.value.toUpperCase())}
-            className="input"
-          />
-          <button
-            className="btn btn--primary"
-            onClick={() => applyAxiom(draftAxiom, axiomCost)}
-            disabled={!canAffordAxiom}
-          >
-            Mutate ({formatNumber(axiomCost)})
-          </button>
-        </div>
-      </div>
-
-      <div className="rule-section">
-        <div className="rule-section__title">Growth Rules</div>
-        <div className="rule-grid">
-          <div>
-            <div className="rule-section__label">Symbol X</div>
-            {renderRules("X")}
-          </div>
-          <div>
-            <div className="rule-section__label">Symbol F</div>
-            {renderRules("F")}
-          </div>
-        </div>
-      </div>
-
-      <div className="string-viewer">
-        <div className="string-viewer__label">String Viewer</div>
-        <div className="string-viewer__text">
-          {preview.split("").map((char, index) => (
-            <span
-              key={`${char}-${index}`}
-              className={highlightSymbol && char === highlightSymbol ? "string-viewer__highlight" : undefined}
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="axiom" className="text-xs uppercase tracking-wider text-muted-foreground">
+            Axiom (omega)
+          </Label>
+          <div className="flex gap-2">
+            <Input
+              id="axiom"
+              value={draftAxiom}
+              onChange={(event) => setDraftAxiom(event.target.value.toUpperCase())}
+              className="font-mono bg-background/50 border-primary/20"
+            />
+            <Button
+              onClick={() => applyAxiom(draftAxiom, axiomCost)}
+              disabled={!canAffordAxiom}
             >
-              {char}
-            </span>
-          ))}
+              Mutate ({formatNumber(axiomCost)})
+            </Button>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Growth Rules</div>
+          <div className="grid grid-cols-1 gap-4">
+            <div className="space-y-2">
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">Symbol X</div>
+              <div className="grid gap-2">{renderRules("X")}</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">Symbol F</div>
+              <div className="grid gap-2">{renderRules("F")}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="text-xs uppercase tracking-wider text-muted-foreground">String Viewer</div>
+          <div className="bg-black/5 dark:bg-black/20 p-3 rounded-lg font-mono text-xs break-all max-h-[110px] overflow-y-auto leading-relaxed">
+            {preview.split("").map((char, index) => (
+              <span
+                key={`${char}-${index}`}
+                className={highlightSymbol && char === highlightSymbol ? "text-red-500 font-bold" : undefined}
+              >
+                {char}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </CollapsiblePanel>

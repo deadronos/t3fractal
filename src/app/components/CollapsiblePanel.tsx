@@ -1,6 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/app/components/ui/card";
+import { Button } from "@/app/components/ui/button";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export type CollapsiblePanelProps = {
   title: string;
@@ -22,20 +26,38 @@ export default function CollapsiblePanel({
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
 
   return (
-    <section className={`panel ${className}`}>
-      <div className="panel__header panel__header--clickable" onClick={() => setIsCollapsed(!isCollapsed)}>
-        <div>
-          <div className="panel__title-row">
-            <span className="panel__title">{title}</span>
-            <button className="panel__toggle" aria-label={isCollapsed ? "Expand panel" : "Collapse panel"}>
-              {isCollapsed ? "▼" : "▲"}
-            </button>
+    <Card className={cn("backdrop-blur-md bg-white/70 dark:bg-black/70 border-primary/10 shadow-xl transition-all duration-300 ease-in-out", className)}>
+      <CardHeader 
+        className="p-4 cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/5 transition-colors" 
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-1">
+            <CardTitle className="text-lg font-display tracking-wide flex items-center gap-2">
+              {title}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-6 w-6 text-muted-foreground"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsCollapsed(!isCollapsed);
+                }}
+              >
+                {isCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+                <span className="sr-only">Toggle panel</span>
+              </Button>
+            </CardTitle>
+            {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
           </div>
-          {subtitle && <div className="panel__subtitle">{subtitle}</div>}
+          {badge && <div>{badge}</div>}
         </div>
-        {badge}
-      </div>
-      {!isCollapsed && <div className="panel__content">{children}</div>}
-    </section>
+      </CardHeader>
+      {!isCollapsed && (
+        <CardContent className="p-4 pt-0">
+          {children}
+        </CardContent>
+      )}
+    </Card>
   );
 }

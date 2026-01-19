@@ -1,8 +1,9 @@
-"use client";
-
 import { type RULE_LIBRARY } from "@/lib/gameData";
 import { formatNumber } from "@/lib/format";
 import { useGameStore } from "@/store/gameStore";
+import { Button } from "@/app/components/ui/button";
+import { Badge } from "@/app/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 type RuleCardProps = {
   rule: typeof RULE_LIBRARY[0];
@@ -41,37 +42,46 @@ export function RuleCard({ rule, symbol }: RuleCardProps) {
     (rule.cost.seeds ?? 0) <= seeds;
 
   return (
-    <div className={`rule-card ${active ? "rule-card--active" : ""}`}>
-      <div className="rule-card__header">
+    <div
+      className={cn(
+        "bg-background/40 rounded-lg p-3 border transition-colors",
+        active ? "border-accent/50 bg-accent/5" : "border-primary/5 hover:bg-background/60"
+      )}
+    >
+      <div className="flex justify-between gap-2 mb-2">
         <div>
-          <div className="rule-card__title">{rule.name}</div>
-          <div className="rule-card__desc">{rule.description}</div>
+          <div className="font-semibold text-sm">{rule.name}</div>
+          <div className="text-xs text-muted-foreground">{rule.description}</div>
         </div>
-        {requiresPitch || requiresRoll ? (
-          <span className="rule-card__badge">3D</span>
-        ) : null}
+        {(requiresPitch || requiresRoll) && (
+          <Badge variant="outline" className="h-5 text-[10px] px-1.5 uppercase">3D</Badge>
+        )}
       </div>
-      <div className="rule-card__string">
+      <div className="font-mono text-xs bg-black/5 dark:bg-black/20 p-2 rounded mb-3 break-all">
         {rule.symbol} {'->'} {rule.replacement}
       </div>
-      <div className="rule-card__actions">
+      <div className="flex justify-end">
         {unlocked ? (
-          <button
-            className={`btn ${active ? "btn--ghost" : "btn--primary"}`}
+          <Button
+            size="sm"
+            variant={active ? "ghost" : "default"}
+            className={cn("h-7 text-xs", active && "text-muted-foreground")}
             onClick={() => setActiveRule(symbol, rule.id)}
             disabled={active}
           >
             {active ? "Active" : "Activate"}
-          </button>
+          </Button>
         ) : (
-          <button
-            className="btn"
+          <Button
+            size="sm"
+            variant="secondary"
+            className="h-7 text-xs"
             onClick={() => unlockRule(rule.id)}
             disabled={!canUnlock}
             title={lockReason ? "Requires dimensionality unlock" : undefined}
           >
             Unlock {costLabel}
-          </button>
+          </Button>
         )}
       </div>
     </div>
