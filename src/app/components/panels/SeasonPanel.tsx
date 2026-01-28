@@ -17,32 +17,61 @@ export default function SeasonPanel() {
 
   const seasonData = SEASONS[season];
   const currentIndex = SEASON_ORDER.indexOf(season);
-  const nextSeason = SEASON_ORDER[(currentIndex + 1) % SEASON_ORDER.length] ?? season;
+  const nextSeason =
+    SEASON_ORDER[(currentIndex + 1) % SEASON_ORDER.length] ?? season;
   const seedPreview = getSeedYield(photosynthesis, sap, fruit);
 
   return (
-    <CollapsiblePanel title="Season Cycle" subtitle={seasonData.description} className="season-panel">
-      <div className="grid grid-cols-4 gap-2 mb-4">
+    <CollapsiblePanel
+      title="Season Cycle"
+      subtitle={seasonData.description}
+      className="season-panel"
+    >
+      <div className="mb-4 grid grid-cols-4 gap-2">
         {SEASON_ORDER.map((entry) => (
           <div
             key={entry}
             className={cn(
-              "p-2 py-3 text-center rounded-xl bg-background/40 border border-primary/5 text-xs flex flex-col items-center justify-center transition-colors",
-              entry === season ? "bg-accent/10 border-accent/60 shadow-sm" : "opacity-70"
+              "flex flex-col items-center justify-center rounded-xl border-2 p-2 py-3 text-center text-xs transition-all",
+              entry === season
+                ? "scale-105 shadow-lg"
+                : "opacity-60 hover:opacity-80",
             )}
+            style={{
+              backgroundColor:
+                entry === season
+                  ? `${SEASONS[entry].palette.accent}20`
+                  : `${SEASONS[entry].palette.accent}10`,
+              borderColor:
+                entry === season
+                  ? SEASONS[entry].palette.accent
+                  : `${SEASONS[entry].palette.accent}40`,
+              color:
+                entry === season ? SEASONS[entry].palette.accent : undefined,
+            }}
           >
-            <div className="font-semibold">{SEASONS[entry].name}</div>
-            <div className="text-[10px] text-muted-foreground mt-0.5">{SEASONS[entry].tagline}</div>
+            <div className="font-bold">{SEASONS[entry].name}</div>
+            <div className="mt-0.5 text-[10px] opacity-80">
+              {SEASONS[entry].tagline}
+            </div>
           </div>
         ))}
       </div>
       <div className="grid gap-2">
-        <Button onClick={advanceSeason} variant="outline" className="w-full">
+        <Button
+          onClick={advanceSeason}
+          variant="outline"
+          className="w-full font-semibold"
+        >
           Advance to {SEASONS[nextSeason].name}
         </Button>
         {season === "winter" && (
-          <Button onClick={harvest} className="w-full" variant="default">
-            Harvest for {formatNumber(seedPreview)} Seeds
+          <Button
+            onClick={harvest}
+            className="w-full font-semibold"
+            variant="accent"
+          >
+            🌱 Harvest for {formatNumber(seedPreview)} Seeds
           </Button>
         )}
       </div>

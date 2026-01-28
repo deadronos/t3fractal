@@ -52,58 +52,58 @@
 }
 
 :root {
-  --background: 40 20% 97%; /* #f7f2e9 approx */
-  --foreground: 24 13% 15%; /* #2a251f approx */
+  --background: 146 25% 96%; /* Light mint cream #f0f7f4 */
+  --foreground: 158 30% 15%; /* Deep forest green #1b3a2f */
   --card: 0 0% 100%;
-  --card-foreground: 24 13% 15%;
+  --card-foreground: 158 30% 15%;
   --popover: 0 0% 100%;
-  --popover-foreground: 24 13% 15%;
-  --primary: 24 13% 15%;
-  --primary-foreground: 40 20% 97%;
-  --secondary: 24 10% 96%;
-  --secondary-foreground: 24 13% 15%;
-  --muted: 24 10% 96%;
-  --muted-foreground: 24 5% 45%;
-  --accent: 25 45% 52%; /* #c47345 approx */
-  --accent-foreground: 40 20% 97%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 40 20% 97%;
-  --border: 24 10% 85%;
-  --input: 24 10% 85%;
-  --ring: 24 13% 15%;
-  --chart-1: 12 76% 61%;
-  --chart-2: 173 58% 39%;
-  --chart-3: 197 37% 24%;
-  --chart-4: 43 74% 66%;
-  --chart-5: 27 87% 67%;
+  --popover-foreground: 158 30% 15%;
+  --primary: 152 60% 35%; /* Rich emerald green #248855 */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 146 35% 88%; /* Soft sage #d4e8df */
+  --secondary-foreground: 158 30% 20%;
+  --muted: 146 25% 90%; /* Very light mint #e3f0ea */
+  --muted-foreground: 158 20% 40%; /* Medium forest #4d7566 */
+  --accent: 32 95% 55%; /* Vibrant orange #f97316 */
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 146 30% 75%; /* Soft green border #a8c9b8 */
+  --input: 146 30% 82%; /* Light input bg #bfd9cb */
+  --ring: 152 60% 45%; /* Bright emerald ring */
+  --chart-1: 152 75% 50%; /* Bright green */
+  --chart-2: 32 95% 55%; /* Vibrant orange */
+  --chart-3: 45 90% 60%; /* Golden yellow */
+  --chart-4: 280 60% 55%; /* Purple */
+  --chart-5: 340 75% 55%; /* Pink */
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: 24 13% 10%;
-  --foreground: 40 20% 97%;
-  --card: 24 13% 12%;
-  --card-foreground: 40 20% 97%;
-  --popover: 24 13% 12%;
-  --popover-foreground: 40 20% 97%;
-  --primary: 40 20% 97%;
-  --primary-foreground: 24 13% 15%;
-  --secondary: 24 10% 20%;
-  --secondary-foreground: 40 20% 97%;
-  --muted: 24 10% 20%;
-  --muted-foreground: 24 5% 65%;
-  --accent: 25 45% 52%;
-  --accent-foreground: 40 20% 97%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 40 20% 97%;
-  --border: 24 10% 20%;
-  --input: 24 10% 20%;
-  --ring: 24 10% 80%;
-  --chart-1: 220 70% 50%;
-  --chart-2: 160 60% 45%;
-  --chart-3: 30 80% 55%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 340 75% 55%;
+  --background: 158 40% 8%; /* Deep forest #0d1712 */
+  --foreground: 146 30% 92%; /* Soft mint white #e8f2ed */
+  --card: 158 35% 12%; /* Dark forest card #18261f */
+  --card-foreground: 146 30% 92%;
+  --popover: 158 35% 12%;
+  --popover-foreground: 146 30% 92%;
+  --primary: 152 70% 50%; /* Bright emerald #26b56a */
+  --primary-foreground: 158 40% 10%;
+  --secondary: 158 30% 18%; /* Dark teal #21372c */
+  --secondary-foreground: 146 30% 92%;
+  --muted: 158 25% 20%; /* Muted forest #2a4038 */
+  --muted-foreground: 146 20% 70%; /* Light sage #a3c2b3 */
+  --accent: 32 95% 55%; /* Vibrant orange #f97316 */
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 70% 50%; /* Bright red */
+  --destructive-foreground: 0 0% 100%;
+  --border: 158 25% 25%; /* Dark border #344d42 */
+  --input: 158 25% 22%; /* Dark input #2d4439 */
+  --ring: 152 70% 55%; /* Bright emerald ring */
+  --chart-1: 152 75% 55%; /* Bright green */
+  --chart-2: 32 95% 60%; /* Vibrant orange */
+  --chart-3: 45 90% 65%; /* Golden yellow */
+  --chart-4: 280 65% 60%; /* Purple */
+  --chart-5: 340 80% 60%; /* Pink */
 }
 
 @layer base {
@@ -126,19 +126,15 @@
   background:
     radial-gradient(
       circle at 20% 20%,
-      rgba(255, 255, 255, 0.6),
-      transparent 45%
+      rgba(38, 181, 106, 0.15),
+      transparent 50%
     ),
     radial-gradient(
       circle at 80% 10%,
-      rgba(196, 115, 69, 0.18),
+      rgba(249, 115, 22, 0.25),
       transparent 55%
     ),
-    radial-gradient(
-      circle at 50% 80%,
-      rgba(111, 191, 157, 0.22),
-      transparent 55%
-    );
+    radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.2), transparent 60%);
   animation: float 14s ease-in-out infinite;
 }
 

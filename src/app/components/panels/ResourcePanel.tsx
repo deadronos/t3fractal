@@ -25,39 +25,64 @@ export default function ResourcePanel({ rates }: ResourcePanelProps) {
       subtitle={seasonData.tagline}
       className={cn(season === "winter" ? "border-accent/30" : "")}
       badge={
-        <span className="text-[10px] px-2 py-0.5 rounded-full text-white font-medium uppercase tracking-wider" style={{ background: seasonData.palette.accent }}>
+        <span
+          className="rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wider text-white uppercase"
+          style={{ background: seasonData.palette.accent }}
+        >
           {seasonData.name}
         </span>
       }
     >
       <div className="flex flex-col gap-2">
-        <div className="flex justify-between items-center bg-background/50 rounded-lg p-3 border border-primary/5">
+        <div className="bg-primary/5 border-primary/20 hover:bg-primary/10 flex items-center justify-between rounded-lg border p-3 transition-all">
           <div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Photosynthesis</div>
-            <div className="text-lg font-semibold tabular-nums">{formatNumber(photosynthesis)}</div>
+            <div className="text-primary/80 text-[10px] font-semibold tracking-widest uppercase">
+              Photosynthesis
+            </div>
+            <div className="text-primary text-lg font-bold tabular-nums">
+              {formatNumber(photosynthesis)}
+            </div>
           </div>
-          <div className="text-xs text-muted-foreground/80">{formatRate(rates.photosynthesis)}</div>
+          <div className="text-primary/70 text-xs font-medium">
+            {formatRate(rates.photosynthesis)}
+          </div>
         </div>
-        <div className="flex justify-between items-center bg-background/50 rounded-lg p-3 border border-primary/5">
+        <div className="bg-accent/5 border-accent/20 hover:bg-accent/10 flex items-center justify-between rounded-lg border p-3 transition-all">
           <div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Sap</div>
-            <div className="text-lg font-semibold tabular-nums">{formatNumber(sap)}</div>
+            <div className="text-accent/80 text-[10px] font-semibold tracking-widest uppercase">
+              Sap
+            </div>
+            <div className="text-accent text-lg font-bold tabular-nums">
+              {formatNumber(sap)}
+            </div>
           </div>
-          <div className="text-xs text-muted-foreground/80">{formatRate(rates.sap)}</div>
+          <div className="text-accent/70 text-xs font-medium">
+            {formatRate(rates.sap)}
+          </div>
         </div>
-        <div className="flex justify-between items-center bg-background/50 rounded-lg p-3 border border-primary/5">
+        <div className="bg-chart-4/10 border-chart-4/30 hover:bg-chart-4/15 flex items-center justify-between rounded-lg border p-3 transition-all">
           <div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Seeds</div>
-            <div className="text-lg font-semibold tabular-nums text-accent-strong">{formatNumber(seeds)}</div>
+            <div className="text-chart-4 text-[10px] font-semibold tracking-widest uppercase">
+              Seeds
+            </div>
+            <div className="text-chart-4 text-lg font-bold tabular-nums">
+              {formatNumber(seeds)}
+            </div>
           </div>
-          <div className="text-xs text-muted-foreground/80">Prestige</div>
+          <div className="text-chart-4/80 text-xs font-medium">Prestige</div>
         </div>
-        <div className="flex justify-between items-center bg-background/50 rounded-lg p-3 border border-primary/5">
+        <div className="bg-chart-3/10 border-chart-3/30 hover:bg-chart-3/15 flex items-center justify-between rounded-lg border p-3 transition-all">
           <div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Fruit</div>
-            <div className="text-lg font-semibold tabular-nums">{formatNumber(fruit)}</div>
+            <div className="text-chart-3 text-[10px] font-semibold tracking-widest uppercase">
+              Fruit
+            </div>
+            <div className="text-chart-3 text-lg font-bold tabular-nums">
+              {formatNumber(fruit)}
+            </div>
           </div>
-          <div className="text-xs text-muted-foreground/80">Autumn harvest</div>
+          <div className="text-chart-3/80 text-xs font-medium">
+            Autumn harvest
+          </div>
         </div>
       </div>
     </CollapsiblePanel>

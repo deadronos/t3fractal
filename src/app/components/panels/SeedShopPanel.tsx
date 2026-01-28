@@ -31,33 +31,60 @@ export default function SeedShopPanel() {
       title="Seed Shop"
       subtitle="Meta-progression unlocks."
       className="seed-panel"
-      badge={<div className="font-mono text-accent-strong font-bold">{formatNumber(seeds)} Seeds</div>}
+      badge={
+        <div className="text-chart-4 font-mono text-lg font-bold">
+          🌱 {formatNumber(seeds)}
+        </div>
+      }
     >
       <div className="flex flex-col gap-2">
         {SEED_UPGRADES.map((upgrade) => {
           const owned = isUpgradePurchased(upgrade.id);
           const canAfford = seeds >= upgrade.cost;
           return (
-            <div key={upgrade.id} className={cn("rounded-lg p-3 border transition-colors flex justify-between items-center", owned ? "bg-accent/5 border-accent/20" : "bg-background/40 border-primary/5")}>
+            <div
+              key={upgrade.id}
+              className={cn(
+                "flex items-center justify-between rounded-lg border-2 p-3 transition-all",
+                owned
+                  ? "bg-primary/10 border-primary/40 shadow-sm"
+                  : "bg-background/60 border-primary/20 hover:bg-primary/5 hover:border-primary/30",
+              )}
+            >
               <div>
-                <div className="font-semibold text-sm">{upgrade.name}</div>
-                <div className="text-xs text-muted-foreground">{upgrade.description}</div>
+                <div
+                  className={cn(
+                    "text-sm font-bold",
+                    owned ? "text-primary" : "text-foreground",
+                  )}
+                >
+                  {owned ? "✓ " : ""}
+                  {upgrade.name}
+                </div>
+                <div className="text-muted-foreground text-xs">
+                  {upgrade.description}
+                </div>
               </div>
               <Button
                 size="sm"
-                variant={owned ? "ghost" : "default"}
+                variant={owned ? "ghost" : "accent"}
                 onClick={() => buySeedUpgrade(upgrade.id)}
                 disabled={owned || !canAfford}
-                className={cn("h-8 text-xs", owned && "text-muted-foreground")}
+                className={cn(
+                  "h-8 text-xs font-semibold",
+                  owned && "text-muted-foreground",
+                )}
               >
-                {owned ? "Unlocked" : `Buy (${formatNumber(upgrade.cost)})`}
+                {owned ? "Owned" : `${formatNumber(upgrade.cost)} 🌱`}
               </Button>
             </div>
           );
         })}
       </div>
-      <div className="h-px bg-border my-4" />
-      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Branch Geometry</div>
+      <div className="bg-primary/30 my-4 h-px" />
+      <div className="text-primary mb-3 text-xs font-bold tracking-wider uppercase">
+        Branch Geometry
+      </div>
       <div className="grid grid-cols-2 gap-2">
         {GEOMETRY_OPTIONS.map((option) => {
           const unlocked = geometryUnlocks[option.id];
@@ -66,16 +93,31 @@ export default function SeedShopPanel() {
             <button
               key={option.id}
               className={cn(
-                "p-3 rounded-xl border text-left transition-all",
-                selected ? "border-accent bg-accent/10 shadow-sm" : "border-primary/10 bg-background/40 hover:bg-background/60",
-                !unlocked && "opacity-50 cursor-not-allowed"
+                "rounded-xl border-2 p-3 text-left transition-all",
+                selected
+                  ? "border-accent bg-accent/20 scale-105 shadow-lg"
+                  : "border-primary/20 bg-background/60 hover:bg-primary/5 hover:border-primary/30",
+                !unlocked && "cursor-not-allowed opacity-40 grayscale",
               )}
               onClick={() => selectGeometry(option.id)}
               disabled={!unlocked}
             >
-              <div className="font-semibold text-sm">{option.name}</div>
-              <div className="text-[10px] text-muted-foreground mt-0.5">
-                {unlocked ? option.description : "Locked"}
+              <div
+                className={cn(
+                  "text-sm font-bold",
+                  selected ? "text-accent" : "text-foreground",
+                )}
+              >
+                {selected ? "✓ " : ""}
+                {option.name}
+              </div>
+              <div
+                className={cn(
+                  "mt-0.5 text-[10px]",
+                  selected ? "text-accent/80" : "text-muted-foreground",
+                )}
+              >
+                {unlocked ? option.description : "🔒 Locked"}
               </div>
             </button>
           );

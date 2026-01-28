@@ -20,22 +20,22 @@ export default function ControlPanel({ suggestedAngle }: ControlPanelProps) {
       subtitle="Adjust delta for optimal light."
       className="control-panel"
     >
-      <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-4">
         <AngleDial value={angle} onChange={setAngle} />
-        <div className="flex flex-col gap-2 flex-1">
-          <Button 
-            variant={analysisMode ? "default" : "secondary"} 
+        <div className="flex flex-1 flex-col gap-2">
+          <Button
+            variant={analysisMode ? "accent" : "secondary"}
             onClick={toggleAnalysis}
-            className="w-full text-xs"
+            className="w-full text-xs font-semibold"
             size="sm"
           >
-            {analysisMode ? "Analysis: ON" : "Analysis: OFF"}
+            {analysisMode ? "✓ Analysis: ON" : "Analysis: OFF"}
           </Button>
-          <div className="text-xs text-muted-foreground text-center">
-            Auto-tuner {autoTuner ? "engaged" : "locked"}.
+          <div className="text-muted-foreground text-center text-xs font-medium">
+            Auto-tuner {autoTuner ? "✓ engaged" : "🔒 locked"}.
           </div>
           {autoTuner && (
-            <div className="text-xs font-mono bg-accent/10 text-accent-strong rounded px-2 py-1 text-center">
+            <div className="bg-primary/10 text-primary border-primary/30 rounded border px-2 py-1 text-center font-mono text-xs font-bold">
               Target: {Math.round(suggestedAngle)}°
             </div>
           )}
