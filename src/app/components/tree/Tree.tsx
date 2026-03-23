@@ -40,7 +40,9 @@ export function Tree({
     if (growthStartRef.current !== null) {
       const elapsed = performance.now() - growthStartRef.current;
       const progress = Math.min(1, elapsed / 1200);
-      setGrowth(progress);
+      // Easing: easeOutCubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setGrowth(eased);
       if (progress >= 1) {
         growthStartRef.current = null;
       }

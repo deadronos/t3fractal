@@ -87,32 +87,38 @@ export function interpretSentence(
   const min = new THREE.Vector3(0, 0, 0);
   const max = new THREE.Vector3(0, 0, 0);
 
+  // Reuse vectors/quaternions to minimize GC
+  const _direction = new THREE.Vector3();
+  const _next = new THREE.Vector3();
+  const _segmentVector = new THREE.Vector3();
+  const _mid = new THREE.Vector3();
+
   let depth = 0;
   let moved = false;
 
   for (const char of sentence) {
     if (char === "F") {
-      const direction = UP.clone().applyQuaternion(rotation).normalize();
-      const next = position.clone().addScaledVector(direction, config.step);
+      _direction.copy(UP).applyQuaternion(rotation).normalize();
+      _next.copy(position).addScaledVector(_direction, config.step);
       const radius = Math.max(0.01, config.width * Math.pow(0.9, depth));
-      const segmentVector = next.clone().sub(position);
-      const length = segmentVector.length();
-      const quaternion = new THREE.Quaternion().setFromUnitVectors(
-        UP,
-        segmentVector.clone().normalize()
-      );
-      const mid = position.clone().addScaledVector(direction, config.step * 0.5);
+      _segmentVector.copy(_next).sub(position);
+      const length = _segmentVector.length();
+
+      _direction.copy(_segmentVector).normalize();
+      const segmentQuat = new THREE.Quaternion().setFromUnitVectors(UP, _direction);
+
+      _mid.copy(position).addScaledVector(_direction, config.step * 0.5);
       segments.push({
         start: position.clone(),
-        end: next.clone(),
-        mid,
-        quaternion,
+        end: _next.clone(),
+        mid: _mid.clone(),
+        quaternion: segmentQuat,
         radius,
         length,
         depth,
         exposure: 1,
       });
-      position.copy(next);
+      position.copy(_next);
       min.min(position);
       max.max(position);
       moved = true;
