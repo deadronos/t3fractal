@@ -26,6 +26,7 @@ export type GameState = {
   photosynthesis: number;
   sap: number;
   seeds: number;
+  lifetimeSeeds: number;
   fruit: number;
   iterations: number;
   widthLevel: number;
@@ -69,6 +70,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   photosynthesis: 0,
   sap: 0,
   seeds: 0,
+  lifetimeSeeds: 0,
   fruit: 0,
   iterations: 3,
   widthLevel: 0,
@@ -212,6 +214,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     const seedsEarned = getSeedYield(state.photosynthesis, state.sap, state.fruit);
     set({
       seeds: state.seeds + seedsEarned,
+      lifetimeSeeds: state.lifetimeSeeds + seedsEarned,
       photosynthesis: 0,
       sap: 0,
       fruit: 0,

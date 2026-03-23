@@ -1,4 +1,5 @@
 "use client";
+import { useGameStore } from "@/store/gameStore";
 
 import CollapsiblePanel from "@/app/components/CollapsiblePanel";
 import { formatNumber } from "@/lib/format";
@@ -9,6 +10,8 @@ export type StatsPanelProps = {
 };
 
 export default function StatsPanel({ stats }: StatsPanelProps) {
+  const lifetimeSeeds = useGameStore((state) => state.lifetimeSeeds);
+
   return (
     <CollapsiblePanel
       title="Analysis Readout"
@@ -40,7 +43,16 @@ export default function StatsPanel({ stats }: StatsPanelProps) {
           <div className="stats-label">Height</div>
           <div className="stats-value">{formatNumber(stats.maxHeight)}</div>
         </div>
+        <div>
+          <div className="stats-label">Lifetime Seeds</div>
+          <div className="stats-value">{formatNumber(lifetimeSeeds)}</div>
+        </div>
       </div>
+      {stats.limitReached && (
+        <div className="stats-warning">
+          Maximum growth limits reached.
+        </div>
+      )}
     </CollapsiblePanel>
   );
 }

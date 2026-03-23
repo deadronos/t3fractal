@@ -12,6 +12,7 @@ export type LSystemStats = {
   sentenceLength: number;
   suggestedAngle: number;
   center: THREE.Vector3;
+  limitReached: boolean;
 };
 
 export type UseLSystemResult = {
@@ -58,19 +59,7 @@ function distanceToSegment2D(
   return Math.sqrt(dx * dx + dz * dz);
 }
 
-function computeExposure(
-  point: THREE.Vector3,
-  occluders: { ax: number; az: number; bx: number; bz: number; maxY: number; radius: number }[]
-): number {
-  for (const segment of occluders) {
-    if (segment.maxY <= point.y + 0.02) continue;
-    const distance = distanceToSegment2D(point.x, point.z, segment.ax, segment.az, segment.bx, segment.bz);
-    if (distance < segment.radius * 1.2) {
-      return 0.15;
-    }
-  }
-  return 1;
-}
+
 
 export function useLSystem(config: UseLSystemConfig): UseLSystemResult {
   return useMemo(() => {
@@ -94,6 +83,10 @@ export function useLSystem(config: UseLSystemConfig): UseLSystemResult {
       maxSentenceLength: config.maxSentenceLength ?? DEFAULT_MAX_SENTENCE,
     });
 
+    // Spatial grid for exposure optimization
+    const gridSize = 1.5;
+    const grid = new Map<string, { ax: number; az: number; bx: number; bz: number; maxY: number; radius: number }[]>();
+
     const occluders = segments.map((segment) => ({
       ax: segment.start.x,
       az: segment.start.z,
@@ -103,15 +96,50 @@ export function useLSystem(config: UseLSystemConfig): UseLSystemResult {
       radius: segment.radius,
     }));
 
+    for (const occ of occluders) {
+      const minX = Math.min(occ.ax, occ.bx) - occ.radius;
+      const maxX = Math.max(occ.ax, occ.bx) + occ.radius;
+      const minZ = Math.min(occ.az, occ.bz) - occ.radius;
+      const maxZ = Math.max(occ.az, occ.bz) + occ.radius;
+
+      for (let x = Math.floor(minX / gridSize); x <= Math.floor(maxX / gridSize); x++) {
+        for (let z = Math.floor(minZ / gridSize); z <= Math.floor(maxZ / gridSize); z++) {
+          const key = `${x},${z}`;
+          if (!grid.has(key)) grid.set(key, []);
+          grid.get(key)!.push(occ);
+        }
+      }
+    }
+
+    function computeExposureGrid(
+      point: THREE.Vector3,
+      spatialGrid: Map<string, { ax: number; az: number; bx: number; bz: number; maxY: number; radius: number }[]>
+    ): number {
+      const gx = Math.floor(point.x / gridSize);
+      const gz = Math.floor(point.z / gridSize);
+      const key = `${gx},${gz}`;
+      const candidates = spatialGrid.get(key);
+      if (!candidates) return 1;
+
+      for (const segment of candidates) {
+        if (segment.maxY <= point.y + 0.02) continue;
+        const distance = distanceToSegment2D(point.x, point.z, segment.ax, segment.az, segment.bx, segment.bz);
+        if (distance < segment.radius * 1.2) {
+          return 0.15;
+        }
+      }
+      return 1;
+    }
+
     let exposureSum = 0;
     for (const leaf of leaves) {
-      const exposure = computeExposure(leaf.position, occluders);
+      const exposure = computeExposureGrid(leaf.position, grid);
       leaf.exposure = exposure;
       exposureSum += exposure;
     }
 
     for (const segment of segments) {
-      segment.exposure = computeExposure(segment.end, occluders);
+      segment.exposure = computeExposureGrid(segment.end, grid);
     }
 
     const totalVolume = segments.reduce(
@@ -125,6 +153,7 @@ export function useLSystem(config: UseLSystemConfig): UseLSystemResult {
     const maxHeight = bounds.max.y;
 
     const suggestedAngle = Math.min(85, Math.max(10, 20 + (1 - avgExposure) * 55));
+    const limitReached = segments.length >= (config.maxSegments ?? DEFAULT_MAX_SEGMENTS) || sentence.length >= (config.maxSentenceLength ?? DEFAULT_MAX_SENTENCE);
 
     return {
       sentence,
@@ -140,6 +169,7 @@ export function useLSystem(config: UseLSystemConfig): UseLSystemResult {
         sentenceLength: sentence.length,
         suggestedAngle,
         center: bounds.center,
+        limitReached,
       },
     };
   }, [
