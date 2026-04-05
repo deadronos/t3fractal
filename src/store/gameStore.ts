@@ -37,11 +37,11 @@ export type GameState = {
   activeRules: Record<string, string>;
   unlockedRules: string[];
   analysisMode: boolean;
-  geometryUnlocks: Record<GeometryType, boolean>;
   selectedGeometry: GeometryType;
-  unlocks: { pitch: boolean; roll: boolean; autoTuner: boolean };
+  purchasedSeedUpgrades: string[];
   lastMutation: number;
   lastRuleChanged: string | null;
+  _performUpgrade: (cost: number, currency: "photosynthesis" | "sap" | "seeds", updater: Partial<GameState>) => boolean;
   addResources: (dt: number, rates: ResourceRates) => void;
   setAngle: (angle: number) => void;
   toggleAnalysis: () => void;
@@ -56,13 +56,6 @@ export type GameState = {
   selectGeometry: (geometry: GeometryType) => void;
   buySeedUpgrade: (upgradeId: string) => void;
   harvest: () => void;
-};
-
-const defaultGeometryUnlocks: Record<GeometryType, boolean> = {
-  cylinder: true,
-  cone: false,
-  box: false,
-  tetra: false,
 };
 
 export const useGameStore = create<GameState>((set, get) => ({
@@ -81,11 +74,16 @@ export const useGameStore = create<GameState>((set, get) => ({
   activeRules: { X: "sprout", F: "stem" },
   unlockedRules: ["sprout", "stem"],
   analysisMode: false,
-  geometryUnlocks: defaultGeometryUnlocks,
   selectedGeometry: "cylinder",
-  unlocks: { pitch: false, roll: false, autoTuner: false },
+  purchasedSeedUpgrades: [],
   lastMutation: Date.now(),
   lastRuleChanged: null,
+  _performUpgrade: (cost: number, currency: "photosynthesis" | "sap" | "seeds", updater: Partial<GameState>) => {
+    const state = get();
+    if (state[currency] < cost) return false;
+    set({ [currency]: state[currency] - cost, ...updater, lastMutation: Date.now() });
+    return true;
+  },
   addResources: (dt, rates) => {
     if (dt <= 0) return;
     set((state) => ({
@@ -107,39 +105,31 @@ export const useGameStore = create<GameState>((set, get) => ({
     const state = get();
     if (state.iterations >= MAX_ITERATIONS) return;
     const cost = getIterationCost(state.iterations, state.season);
-    if (state.photosynthesis < cost) return;
-    set({
-      photosynthesis: state.photosynthesis - cost,
-      iterations: state.iterations + 1,
-      lastMutation: Date.now(),
-    });
+    get()._performUpgrade(cost, "photosynthesis", { iterations: state.iterations + 1 });
   },
   buyWidth: () => {
     const state = get();
     const cost = getWidthCost(state.widthLevel, state.season);
-    if (state.sap < cost) return;
-    set({ sap: state.sap - cost, widthLevel: state.widthLevel + 1, lastMutation: Date.now() });
+    get()._performUpgrade(cost, "sap", { widthLevel: state.widthLevel + 1 });
   },
   buyTickRate: () => {
     const state = get();
     const cost = getTickCost(state.tickLevel, state.season);
-    if (state.sap < cost) return;
-    set({ sap: state.sap - cost, tickLevel: state.tickLevel + 1, lastMutation: Date.now() });
+    get()._performUpgrade(cost, "sap", { tickLevel: state.tickLevel + 1 });
   },
   buyFruit: () => {
     const state = get();
     if (state.season !== "autumn") return;
     const cost = getFruitCost(state.fruit, state.season);
-    if (state.sap < cost) return;
-    set({ sap: state.sap - cost, fruit: state.fruit + 1, lastMutation: Date.now() });
+    get()._performUpgrade(cost, "sap", { fruit: state.fruit + 1 });
   },
   unlockRule: (ruleId) => {
     const state = get();
     if (state.unlockedRules.includes(ruleId)) return;
     const rule = RULE_LIBRARY.find((entry) => entry.id === ruleId);
     if (!rule) return;
-    if (rule.requires?.pitch && !state.unlocks.pitch) return;
-    if (rule.requires?.roll && !state.unlocks.roll) return;
+    if (rule.requires?.pitch && !state.purchasedSeedUpgrades.includes("pitch")) return;
+    if (rule.requires?.roll && !state.purchasedSeedUpgrades.includes("roll")) return;
     const photoCost = rule.cost.photosynthesis ?? 0;
     const sapCost = rule.cost.sap ?? 0;
     const seedCost = rule.cost.seeds ?? 0;
@@ -183,30 +173,15 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
   selectGeometry: (geometry) => {
     const state = get();
-    if (!state.geometryUnlocks[geometry]) return;
+    if (geometry !== "cylinder" && !state.purchasedSeedUpgrades.includes(`geometry_${geometry}`)) return;
     set({ selectedGeometry: geometry });
   },
   buySeedUpgrade: (upgradeId) => {
     const state = get();
+    if (state.purchasedSeedUpgrades.includes(upgradeId)) return;
     const upgrade = SEED_UPGRADES.find((entry) => entry.id === upgradeId);
     if (!upgrade) return;
-    if (state.seeds < upgrade.cost) return;
-
-    const nextUnlocks = { ...state.unlocks };
-    const nextGeometry = { ...state.geometryUnlocks };
-
-    if (upgradeId === "pitch") nextUnlocks.pitch = true;
-    if (upgradeId === "roll") nextUnlocks.roll = true;
-    if (upgradeId === "autoTuner") nextUnlocks.autoTuner = true;
-    if (upgradeId === "geometry_cone") nextGeometry.cone = true;
-    if (upgradeId === "geometry_box") nextGeometry.box = true;
-    if (upgradeId === "geometry_tetra") nextGeometry.tetra = true;
-
-    set({
-      seeds: state.seeds - upgrade.cost,
-      unlocks: nextUnlocks,
-      geometryUnlocks: nextGeometry,
-    });
+    get()._performUpgrade(upgrade.cost, "seeds", { purchasedSeedUpgrades: [...state.purchasedSeedUpgrades, upgradeId] });
   },
   harvest: () => {
     const state = get();

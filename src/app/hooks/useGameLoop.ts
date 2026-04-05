@@ -5,7 +5,7 @@ export type GameLoopRates = ResourceRates & { suggestedAngle: number };
 
 export function useGameLoop(rates: GameLoopRates) {
   const addResources = useGameStore((state) => state.addResources);
-  const autoTuner = useGameStore((state) => state.unlocks.autoTuner);
+  const autoTuner = useGameStore((state) => state.purchasedSeedUpgrades.includes("autoTuner"));
   const angle = useGameStore((state) => state.angle);
   const setAngle = useGameStore((state) => state.setAngle);
 

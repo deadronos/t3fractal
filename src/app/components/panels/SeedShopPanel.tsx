@@ -7,21 +7,12 @@ import { formatNumber } from "@/lib/format";
 
 export default function SeedShopPanel() {
   const seeds = useGameStore((state) => state.seeds);
-  const unlocks = useGameStore((state) => state.unlocks);
-  const geometryUnlocks = useGameStore((state) => state.geometryUnlocks);
+  const purchasedSeedUpgrades = useGameStore((state) => state.purchasedSeedUpgrades);
   const selectedGeometry = useGameStore((state) => state.selectedGeometry);
   const buySeedUpgrade = useGameStore((state) => state.buySeedUpgrade);
   const selectGeometry = useGameStore((state) => state.selectGeometry);
 
-  const isUpgradePurchased = (id: string) => {
-    if (id === "pitch") return unlocks.pitch;
-    if (id === "roll") return unlocks.roll;
-    if (id === "autoTuner") return unlocks.autoTuner;
-    if (id === "geometry_cone") return geometryUnlocks.cone;
-    if (id === "geometry_box") return geometryUnlocks.box;
-    if (id === "geometry_tetra") return geometryUnlocks.tetra;
-    return false;
-  };
+
 
   return (
     <CollapsiblePanel
@@ -32,7 +23,7 @@ export default function SeedShopPanel() {
     >
       <div className="seed-grid">
         {SEED_UPGRADES.map((upgrade) => {
-          const owned = isUpgradePurchased(upgrade.id);
+          const owned = purchasedSeedUpgrades.includes(upgrade.id);
           const canAfford = seeds >= upgrade.cost;
           return (
             <div key={upgrade.id} className={`seed-card ${owned ? "seed-card--owned" : ""}`}>
@@ -53,7 +44,7 @@ export default function SeedShopPanel() {
       <div className="panel__subtitle">Branch Geometry</div>
       <div className="geometry-grid">
         {GEOMETRY_OPTIONS.map((option) => {
-          const unlocked = geometryUnlocks[option.id];
+          const unlocked = option.id === "cylinder" || purchasedSeedUpgrades.includes(`geometry_${option.id}`);
           const selected = selectedGeometry === option.id;
           return (
             <button

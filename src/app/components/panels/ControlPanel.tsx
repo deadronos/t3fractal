@@ -11,7 +11,7 @@ export type ControlPanelProps = {
 export default function ControlPanel({ suggestedAngle }: ControlPanelProps) {
   const angle = useGameStore((state) => state.angle);
   const analysisMode = useGameStore((state) => state.analysisMode);
-  const autoTuner = useGameStore((state) => state.unlocks.autoTuner);
+  const autoTuner = useGameStore((state) => state.purchasedSeedUpgrades.includes("autoTuner"));
   const setAngle = useGameStore((state) => state.setAngle);
   const toggleAnalysis = useGameStore((state) => state.toggleAnalysis);
 

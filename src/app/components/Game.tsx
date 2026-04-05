@@ -24,7 +24,7 @@ export default function Game() {
   const axiom = useGameStore((state) => state.axiom);
   const activeRules = useGameStore((state) => state.activeRules);
   const analysisMode = useGameStore((state) => state.analysisMode);
-  const unlocks = useGameStore((state) => state.unlocks);
+  const purchasedSeedUpgrades = useGameStore((state) => state.purchasedSeedUpgrades);
   const fruit = useGameStore((state) => state.fruit);
   const geometry = useGameStore((state) => state.selectedGeometry);
 
@@ -40,8 +40,8 @@ export default function Game() {
     angle,
     step,
     width,
-    enablePitch: unlocks.pitch,
-    enableRoll: unlocks.roll,
+    enablePitch: purchasedSeedUpgrades.includes("pitch"),
+    enableRoll: purchasedSeedUpgrades.includes("roll"),
   });
 
   const rates = useMemo(() => {
