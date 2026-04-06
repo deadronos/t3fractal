@@ -15,7 +15,7 @@ export function RuleCard({ rule, symbol }: RuleCardProps) {
   const seeds = useGameStore((state) => state.seeds);
   const unlockedRules = useGameStore((state) => state.unlockedRules);
   const activeRules = useGameStore((state) => state.activeRules);
-  const unlocks = useGameStore((state) => state.unlocks);
+  const purchasedSeedUpgrades = useGameStore((state) => state.purchasedSeedUpgrades);
   const unlockRule = useGameStore((state) => state.unlockRule);
   const setActiveRule = useGameStore((state) => state.setActiveRule);
 
@@ -24,7 +24,7 @@ export function RuleCard({ rule, symbol }: RuleCardProps) {
   const requiresPitch = rule.requires?.pitch ?? false;
   const requiresRoll = rule.requires?.roll ?? false;
   const lockReason =
-    (requiresPitch && !unlocks.pitch) || (requiresRoll && !unlocks.roll);
+    (requiresPitch && !purchasedSeedUpgrades.includes("pitch")) || (requiresRoll && !purchasedSeedUpgrades.includes("roll"));
 
   const costLabel = rule.cost.photosynthesis
     ? `P ${formatNumber(rule.cost.photosynthesis)}`

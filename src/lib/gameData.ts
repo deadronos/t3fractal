@@ -245,24 +245,25 @@ export function getTickMultiplier(level: number): number {
   return 1 + level * 0.15;
 }
 
+export function calculateCost(base: number, multiplier: number, level: number, season: SeasonId): number {
+  const costBase = base * Math.pow(multiplier, level);
+  return Math.round(costBase * SEASONS[season].costMultiplier);
+}
+
 export function getIterationCost(iterations: number, season: SeasonId): number {
-  const base = 24 * Math.pow(1.85, iterations);
-  return Math.round(base * SEASONS[season].costMultiplier);
+  return calculateCost(24, 1.85, iterations, season);
 }
 
 export function getWidthCost(level: number, season: SeasonId): number {
-  const base = 20 * Math.pow(1.55, level + 1);
-  return Math.round(base * SEASONS[season].costMultiplier);
+  return calculateCost(20, 1.55, level + 1, season);
 }
 
 export function getTickCost(level: number, season: SeasonId): number {
-  const base = 26 * Math.pow(1.7, level + 1);
-  return Math.round(base * SEASONS[season].costMultiplier);
+  return calculateCost(26, 1.7, level + 1, season);
 }
 
 export function getFruitCost(fruit: number, season: SeasonId): number {
-  const base = 35 * Math.pow(1.35, fruit + 1);
-  return Math.round(base * SEASONS[season].costMultiplier);
+  return calculateCost(35, 1.35, fruit + 1, season);
 }
 
 export function getAxiomCost(nextAxiom: string): number {
